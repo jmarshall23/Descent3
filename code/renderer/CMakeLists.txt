@@ -1,5 +1,4 @@
 SET (HEADERS 
-		dyna_gl.h
 		HardwareInternal.h
 		RendererConfig.h
 		)
@@ -12,7 +11,7 @@ SET (CPPS
 		HardwarePoints.cpp
 		HardwareSetup.cpp
 		HardwareTransforms.cpp
-	
+	    glew.c
 		
 		
 		
@@ -34,3 +33,4 @@ ENDIF()
 #Direct3D.cpp
 
 ADD_LIBRARY(renderer STATIC ${HEADERS} ${CPPS})
+target_link_libraries(renderer opengl32)
