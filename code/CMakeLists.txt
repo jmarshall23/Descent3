@@ -1,8 +1,6 @@
 # CMake compatibility issues: don't modify this, please!
-CMAKE_MINIMUM_REQUIRED( VERSION 2.4.6 )
+CMAKE_MINIMUM_REQUIRED( VERSION 3.20 )
 
-MARK_AS_ADVANCED(CMAKE_BACKWARDS_COMPATIBILITY)
-# allow more human readable "if then else" constructs
 SET( CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE )
 
 # TODO: Apple Silicon (arm64) later
@@ -137,3 +135,7 @@ ENDIF()
 IF( NOT CMAKE_BUILD_TYPE )
 SET( CMAKE_BUILD_TYPE "Debug" )
 ENDIF()
+
+set_target_properties(Descent3 PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../../../
+)

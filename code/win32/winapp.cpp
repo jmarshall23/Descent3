@@ -362,7 +362,7 @@ void oeWin32Application::get_info(void *info) {
 }
 
 //	Function to get the flags
-int oeWin32Application::flags(void) const { return m_Flags; }
+int oeWin32Application::flags(void) const { return m_Flags | OEAPP_WINDOWED; }
 
 void oeWin32Application::set_sizepos(int x, int y, int w, int h) {
   if (!m_hWnd)
