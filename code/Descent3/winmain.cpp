@@ -13,6 +13,24 @@
 #include "dedicated_server.h"
 #include "resource.h"
 
+/*
+    +------------------------------------------------------+
+    |                      Descent 3                       |
+    |                  Windows Application                 |
+    +------------------------------------------------------+
+    | +----------------+  +----------------+  +----------+ |
+    | | oeD3Win32App   |  | Localization   |  | Database | |
+    | | (Application   |  | (Multilingual  |  | Management |
+    | |  Management)   |  |  Support)      |  | (Settings  |
+    | |                |  |                |  | & Config)  |
+    | +----------------+  +----------------+  +----------+ |
+    | | Windows API    |  | String Arrays  |  | oeD3Win32  |
+    | | (System Msgs & |  | (English,      |  | Database   |
+    | | User Interact.)|  |  French, etc.) |  | Class      |
+    | +----------------+  +----------------+  +----------+ |
+    +------------------------------------------------------+
+*/
+
 const char *English_strings[] = {"Descent 3 under Windows NT requires version 4.0 or greater of NT to run.",
                                  "Descent 3 requires  Windows 9x, NT 4.0 or greater to run.",
                                  "",
@@ -638,11 +656,7 @@ int PASCAL HandledWinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR szCmdLine,
 int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR szCmdLine, int nCmdShow) {
 
   int result = -1;
-
-  __try {
-    result = HandledWinMain(hInst, hPrevInst, szCmdLine, nCmdShow);
-  } __except (RecordExceptionInfo(GetExceptionInformation(), "WinMain()")) {
-  }
+  result = HandledWinMain(hInst, hPrevInst, szCmdLine, nCmdShow);
   return result;
 }
 
