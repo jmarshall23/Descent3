@@ -673,11 +673,11 @@ void ddio_InternalKeyResume() {
 
 bool ddio_Win_KeyInit() {
   /*	Initialize hook handlers */
-  WKD.winhook = SetWindowsHookEx(WH_KEYBOARD, (HOOKPROC)KeyboardProc, (HINSTANCE)DInputData.app->m_hInstance,
-                                 GetCurrentThreadId());
-  if (!WKD.winhook) {
-    return false;
-  }
+ // WKD.winhook = SetWindowsHookEx(WH_KEYBOARD, (HOOKPROC)KeyboardProc, (HINSTANCE)DInputData.app->m_hInstance,
+ //                                GetCurrentThreadId());
+ // if (!WKD.winhook) {
+ //   return false;
+ // }
 
   mprintf((0, "Keyboard initialized.\n"));
 
@@ -717,9 +717,6 @@ int ddio_KeyHandler(HWnd wnd, unsigned msg, unsigned wParam, long lParam) {
   ubyte scan_code;
   float timer = timer_GetTime();
 
-  if (!WKD.winhook)
-    return 1;
-
   switch ((UINT)msg) {
   case WM_KEYDOWN:
   case WM_SYSKEYDOWN:
@@ -740,7 +737,7 @@ int ddio_KeyHandler(HWnd wnd, unsigned msg, unsigned wParam, long lParam) {
       WKeys[scan_code].status = true;
       ddio_UpdateKeyState(scan_code, true);
     }
-    break;
+    return 1;
 
   case WM_KEYUP:
   case WM_SYSKEYUP:
@@ -763,8 +760,8 @@ int ddio_KeyHandler(HWnd wnd, unsigned msg, unsigned wParam, long lParam) {
       ddio_UpdateKeyState(scan_code, false);
     }
 
-    break;
+    return 1;
   }
 
-  return 1;
+  return 0;
 }

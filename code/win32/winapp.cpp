@@ -517,9 +517,15 @@ tWin32OS oeWin32Application::version(int *major, int *minor, int *build, char *s
   return os;
 }
 
+int ddio_KeyHandler(HWnd wnd, unsigned msg, unsigned wParam, long lParam);
+
 //	This Window Procedure is called from the global WindowProc.
 int oeWin32Application::WndProc(HWnd hwnd, unsigned msg, unsigned wParam, long lParam) {
-  switch (msg) {
+  if (ddio_KeyHandler(hwnd, msg, wParam, lParam)) {
+     return 1;
+  }
+
+switch (msg) {
   case WM_ACTIVATEAPP:
     m_AppActive = wParam ? true : false;
     //	mprintf((0, "WM_ACTIVATEAPP (%u,%l)\n", wParam, lParam));
