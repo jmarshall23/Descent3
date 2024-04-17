@@ -1,6 +1,4 @@
 #include "RendererConfig.h"
-#ifndef USE_SOFTWARE_TNL
-
 #include "pserror.h"
 #include "3d.h"
 #include "HardwareInternal.h"
@@ -372,4 +370,3 @@ void g3_SetCustomClipPlane(ubyte state, vector *pnt, vector *normal) {
   }
 }
 
-#endif

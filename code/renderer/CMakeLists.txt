@@ -2,7 +2,7 @@ SET (HEADERS
 		dyna_gl.h
 		HardwareInternal.h
 		RendererConfig.h
-		SoftwareInternal.h)
+		)
 SET (CPPS
 		HardwareClipper.cpp
 		HardwareDraw.cpp
@@ -13,14 +13,14 @@ SET (CPPS
 		HardwareSetup.cpp
 		HardwareTransforms.cpp
 	
-		SoftwareClipper.cpp
-		SoftwareDraw.cpp
-		SoftwareGlobalVars.cpp
-		SoftwareInstance.cpp
-		SoftwareOpenGL.cpp
-		SoftwareOpenGLMeshBuilder.cpp
-		SoftwarePoints.cpp
-		SoftwareSetup.cpp)
+		
+		
+		
+		
+		
+		
+		
+		)
 
 IF(UNIX)
 

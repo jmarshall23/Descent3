@@ -1,6 +1,4 @@
 #include "RendererConfig.h"
-#ifndef USE_SOFTWARE_TNL
-
 #include "3d.h"
 #include "HardwareInternal.h"
 #include "renderer.h"
@@ -418,4 +416,3 @@ void g3_DrawBox(ddgr_color color, g3Point *pnt, float rad) {
 // Sets the triangulation test to on or off
 void g3_SetTriangulationTest(int state) { Triangulate_test = state; }
 
-#endif

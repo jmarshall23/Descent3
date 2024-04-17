@@ -1,6 +1,4 @@
 #include "RendererConfig.h"
-#ifndef USE_SOFTWARE_TNL
-
 #include <stdlib.h>
 #include <string.h>
 #include "3d.h"
@@ -145,4 +143,3 @@ void g3_GetUnscaledMatrix(matrix *mat) { *mat = Unscaled_matrix; }
 // Gets the matrix scale vector
 void g3_GetMatrixScale(vector *matrix_scale) { *matrix_scale = Matrix_scale; }
 
-#endif

@@ -676,6 +676,32 @@
 #include "osiris_share.h"
 #include "demofile.h"
 
+/*
++---------------------------------------------------------------------------------------+
+| Game Execution Management                                                             |
+| 1. Initialization and Setup:                                                          |
+|    - InitGame(): Initialize game settings, HUD, game script, and controller settings  |
+| 2. Game Screen Setup:                                                                 |
+|    - InitGameScreen(): Set up game window dimensions and position based on resolution |
+| 3. Game Loop Management:                                                              |
+|    - PlayGame(): Initialize game, execute game sequencer, and handle game cleanup     |
+|      +----------------------------------------------------------------------------+   |
+|      | GameSequencer(): Core game loop managing transitions and gameplay states   |   |
+|      +----------------------------------------------------------------------------+   |
+| 4. Rendering and Frame Management:                                                    |
+|    - StartFrame() / EndFrame(): Manage rendering frames, handle UI and view updates   |
+| 5. Game Mode and Script Handling:                                                     |
+|    - SetGamemodeScript(): Load and initialize specific game mode scripts              |
+|    - CloseGameScript(): Clean up and free resources related to game scripts           |
+| 6. Screen Mode Handling:                                                              |
+|    - SetScreenMode(): Set screen resolution, handle renderer setup and cleanup        |
+| 7. Utility Functions:                                                                 |
+|    - Frame Management: Push, pop, and manage frame stack for rendering contexts       |
+|    - DoScreenshot(): Capture and save screenshots                                     |
+|    - GetFPS(): Calculate and return current frames per second                         |
++---------------------------------------------------------------------------------------+
+*/
+
 ///////////////////////////////////////////////////////////////////////////////
 //	Variables
 

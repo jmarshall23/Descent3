@@ -1,6 +1,4 @@
 #include "RendererConfig.h"
-#ifndef USE_SOFTWARE_TNL
-
 #include "3d.h"
 #include "HardwareInternal.h"
 #include <string.h>
@@ -74,4 +72,3 @@ void g3_DoneInstance() {
   g3_UpdateFullTransform();
 }
 
-#endif

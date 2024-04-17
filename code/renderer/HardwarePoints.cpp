@@ -1,6 +1,4 @@
 #include "RendererConfig.h"
-#ifndef USE_SOFTWARE_TNL
-
 #include "3d.h"
 #include "HardwareInternal.h"
 #include <string.h>
@@ -131,5 +129,3 @@ float g3_CalcPointDepth(vector *pnt) {
   return ((pnt->x - View_position.x) * View_matrix.fvec.x) + ((pnt->y - View_position.y) * View_matrix.fvec.y) +
          ((pnt->z - View_position.z) * View_matrix.fvec.z);
 }
-
-#endif

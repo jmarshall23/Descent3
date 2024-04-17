@@ -1,6 +1,4 @@
 #include "RendererConfig.h"
-#ifndef USE_SOFTWARE_TNL
-
 #include "byteswap.h"
 #if defined(WIN32)
 #include <windows.h>
@@ -3193,4 +3191,3 @@ void rend_TransformSetModelView(float trans[4][4]) {
   dglLoadMatrixf(&trans[0][0]);
 }
 
-#endif
