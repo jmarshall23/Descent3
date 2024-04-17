@@ -34,6 +34,66 @@
 #include "HardwareInternal.h"
 #include "../Descent3/args.h"
 
+/*
+3D Rendering Functions
+    opengl_DrawMultitexturePolygon3D
+    opengl_DrawFlatPolygon3D
+    rend_DrawPolygon3D
+    rend_DrawMultitexturePolygon3D
+    rend_SetZBias
+    rend_DrawSimpleBitmap
+    rend_DrawScaledBitmap
+    opengl_DrawSimpleBitmap
+    opengl_DrawScaledBitmap
+    opengl_DrawChunkedBitmap
+    opengl_DrawScaledChunkedBitmap
+    opengl_MakeBitmapCurrent
+    opengl_TranslateBitmapToOpenGL
+2. 2D Rendering Functions
+    rend_DrawFontCharacter
+    rend_DrawPolygon2D
+    rend_SetCharacterParameters
+3. State Machine Changes
+    rend_SetRendererType
+    rend_SetLighting
+    rend_SetColorModel
+    rend_SetTextureType
+    rend_SetAlphaType
+    rend_SetAlphaValue
+    rend_SetAlphaFactor
+    rend_GetAlphaFactor
+    rend_SetZBufferState
+    rend_SetZValues
+    rend_SetFogState
+    rend_SetFogBorders
+    rend_SetFogColor
+    rend_SetWrapType
+    rend_SetGammaValue
+    rend_SetPreferredState
+    rend_SetFiltering
+    rend_SetOverlayMap
+    rend_SetOverlayType
+    rend_SetZBufferWriteMask
+    rend_SetFrameBufferCopyState
+    rend_SetResolution
+4. Texture and Bitmap Management
+    opengl_InitCache
+    opengl_ResetCache
+    rend_PreUploadTextureToCard
+    rend_FreePreUploadedTexture
+    opengl_MakeTextureObject
+5. Utility and Helper Functions
+    rend_GetErrorMessage
+    rend_SetErrorMessage
+    rend_GetStatistics
+    rend_Screenshot
+6. Viewport and Transformation Management
+    rend_TransformSetProjection
+    rend_TransformSetModelView
+    rend_TransformSetToPassthru
+    rend_TransformSetViewport
+*/
+
 #define _USE_OGL_ACTIVE_TEXTURES
 
 int FindArg(char *);
@@ -165,55 +225,10 @@ bool opengl_Blending_on = 0;
 
 static oeApplication *ParentApplication = NULL;
 
-#if 0
-int checkForGLErrors( char *file, int line )
-{
-  /*
-  int errors = 0 ;
-  int counter = 0 ;
-  static int errcnt = 0;
-  if(!glGetError)
-    return 0;
-  while ( counter < 1000 )
-    {
-      GLenum x = glGetError() ;
-
-      if ( x == GL_NO_ERROR )
-        return errors ;
-
-      printf( "%s:%d OpenGL error: %s [%08x]\n", file,line, gluErrorString ( x ), errcnt++ ) ;
-      errors++ ;
-      counter++ ;
-    }
-  */
-  char *sdlp = SDL_GetError();
-  if(sdlp && *sdlp)
-    mprintf((0,"SDL: %s",sdlp));
-	return 1;
-}
-#endif
-
 // Sets up multi-texturing using ARB extensions
 void opengl_GetDLLFunctions(void) {
   UseMultitexture = true;
   return;
-}
-
-// returns true if the passed in extension name is supported
-bool opengl_CheckExtension(char *extName) {
-  char *p = (char *)glGetString(GL_EXTENSIONS);
-  int extNameLen = strlen(extName);
-  char *end = p + strlen(p);
-
-  while (p < end) {
-    int n = strcspn(p, " ");
-    if ((extNameLen == n) && (strncmp(extName, p, n) == 0))
-      return true;
-
-    p += (n + 1);
-  }
-
-  return false;
 }
 
 // Gets some specific information about this particular flavor of opengl
@@ -803,11 +818,8 @@ int opengl_Init(oeApplication *app, renderer_preferred_state *pref_state) {
   mprintf((0, "Setting up multitexture...\n"));
 
   // Determine if Multitexture is supported
-  bool supportsMultiTexture = opengl_CheckExtension("GL_ARB_multitexture");
-  if (!supportsMultiTexture) {
-    supportsMultiTexture = opengl_CheckExtension("GL_SGIS_multitexture");
-  }
-
+  bool supportsMultiTexture = true;
+  
   if (FindArg("-NoMultitexture")) {
     supportsMultiTexture = false;
   }
@@ -821,7 +833,7 @@ int opengl_Init(oeApplication *app, renderer_preferred_state *pref_state) {
   }
 
   // Do we have packed pixel formats?
-  OpenGL_packed_pixels = opengl_CheckExtension("GL_EXT_packed_pixels");
+  OpenGL_packed_pixels = true; 
 
   opengl_InitCache();
 
