@@ -185,28 +185,12 @@ bool Debug_ConsoleInit() {
   // Only use monochrome if D3_MONO environment var is set
   atexit(Debug_ConsoleExit);
 
-  if (Debug_NT == true) {
-    hNTMonoDriver =
-        CreateFile("\\\\.\\MONO", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (hNTMonoDriver != (HANDLE)(-1))
-      Mono_initialized = 1;
-    else
-      Mono_initialized = 0;
-  } else {
-    _outp(0x3b4, 0x0f);
-    _outp(0x3b4 + 1, 0x55);
-
-    if (_inp(0x3b4 + 1) != 0x55) {
-      if (getenv("D3_MONO"))
-        Mono_initialized = 1;
-      else
-        Mono_initialized = 0;
-    } else {
-      _outp(0x3b4 + 1, 0);
-      Mono_initialized = 1;
-    }
-    Mono_screen = (mono_element(*)[25][80])0xB0000;
-  }
+  hNTMonoDriver =
+      CreateFile("\\\\.\\MONO", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+  if (hNTMonoDriver != (HANDLE)(-1))
+    Mono_initialized = 1;
+  else
+    Mono_initialized = 0;
 
   if (Mono_initialized)
     OPEN = 1;
@@ -522,7 +506,7 @@ void copy_row(int nwords, short *src, short *dest1, short *dest2) {
 }
 
 void con_scroll(int n) {
-  register row, col;
+  int row, col;
 
   if (!OPEN)
     return;
@@ -554,11 +538,6 @@ void con_setcursor(int row, int col) {
   if (Debug_NT) {
     return;
   }
-
-  _outp(0x3b4, 15);
-  _outp(0x3b5, pos & 0xFF);
-  _outp(0x3b4, 14);
-  _outp(0x3b5, (pos >> 8) & 0xff);
 }
 
 void con_drawbox(int n) {

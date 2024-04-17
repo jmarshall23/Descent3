@@ -3817,18 +3817,18 @@ int Cned_OrthoWnd::Find2DDistance(int view_flag, vec2D search_pos, vector vec) {
 
   switch (view_flag) {
   case VIEW_XY:
-    x_delta = abs(vec.x - search_pos.x);
-    y_delta = abs(vec.y - search_pos.y);
+    x_delta = fabs(vec.x - search_pos.x);
+    y_delta = fabs(vec.y - search_pos.y);
     break;
 
   case VIEW_XZ:
-    x_delta = abs(vec.x - search_pos.x);
-    y_delta = abs(vec.z - search_pos.y);
+    x_delta = fabs(vec.x - search_pos.x);
+    y_delta = fabs(vec.z - search_pos.y);
     break;
 
   case VIEW_ZY:
-    x_delta = abs(vec.z - search_pos.x);
-    y_delta = abs(vec.y - search_pos.y);
+    x_delta = fabs(vec.z - search_pos.x);
+    y_delta = fabs(vec.y - search_pos.y);
     break;
   }
 
@@ -3953,16 +3953,16 @@ void Cned_OrthoWnd::SnapPoint(vec2D *pos) {
 
   dist = fmod(pos->x, grid_size);
   dist < 0 ? sign = -1 : sign = 1;
-  if (abs(dist) <= grid_size / 2)
+  if (fabs(dist) <= grid_size / 2)
     found_pos.x = ROUND_FLOAT(pos->x - dist);
   else
-    found_pos.x = ROUND_FLOAT(pos->x + sign * (grid_size - abs(dist)));
+    found_pos.x = ROUND_FLOAT(pos->x + sign * (grid_size - fabs(dist)));
   dist = fmod(pos->y, grid_size);
   dist < 0 ? sign = -1 : sign = 1;
-  if (abs(dist) <= grid_size / 2)
+  if (fabs(dist) <= grid_size / 2)
     found_pos.y = ROUND_FLOAT(pos->y - dist);
   else
-    found_pos.y = ROUND_FLOAT(pos->y + sign * (grid_size - abs(dist)));
+    found_pos.y = ROUND_FLOAT(pos->y + sign * (grid_size - fabs(dist)));
   *pos = found_pos;
 }
 

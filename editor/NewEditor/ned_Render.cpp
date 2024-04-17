@@ -433,7 +433,7 @@ void RenderFace(room *rp, int facenum) {
   texture_type tt;
   ubyte do_triangle_test = 0;
   g3Codes face_cc;
-  static first = 1;
+  static int first = 1;
   static float lm_red[32], lm_green[32], lm_blue[32];
   bool spec_face = 0;
   face_cc.cc_and = 0xff;
@@ -1288,7 +1288,7 @@ void MarkFacesForRendering(int roomnum, clip_wnd *wnd) {
   }
 }
 
-#include "3d\clipper.h"
+#include "clipper.h"
 
 extern int GetFreePoints();
 

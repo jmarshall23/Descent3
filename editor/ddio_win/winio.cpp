@@ -26,6 +26,8 @@
 #include "ddio.h"
 #include "dinput.h"
 
+typedef HRESULT(WINAPI *LPDIRECTINPUTCREATE)(HINSTANCE, DWORD, LPDIRECTINPUTA *, LPUNKNOWN);
+
 //#include "forcefeedback.h"
 
 bool DDIO_init = 0;
@@ -41,6 +43,15 @@ bool ddio_InternalInit(ddio_init_info *init_info) {
   HRESULT dires;
 
   ASSERT(!DDIO_init);
+
+   HINSTANCE hDll = LoadLibrary("dinput.dll");
+
+  if (!hDll) {
+     Error("Failed to load dinput.dll\n");
+     return 1;
+  }
+
+  LPDIRECTINPUTCREATE DirectInputCreate = (LPDIRECTINPUTCREATE)GetProcAddress(hDll, "DirectInputCreateA");
 
   //	Initialize DirectInput subsystem
   mprintf((0, "DI system initializing.\n"));

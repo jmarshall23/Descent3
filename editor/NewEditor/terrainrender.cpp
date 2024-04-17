@@ -12,7 +12,7 @@
  */
 
 #ifdef NEWEDITOR
-#include "neweditor\globals.h"
+#include "globals.h"
 void RenderMine(int viewer_roomnum, int flag_automap, int called_from_terrain, bool render_all, bool outline, bool flat,
                 prim *prim);
 #endif
@@ -531,7 +531,7 @@ void RenderTerrain(ubyte from_mine, int left, int top, int right, int bot) {
   float w2, h2;
   vector viewer_eye;
   matrix viewer_orient;
-  static first = 1;
+  static int first = 1;
   if (first) {
     InitTerrainRenderSpeedups();
     first = 0;
@@ -644,7 +644,7 @@ void RenderTerrain(ubyte from_mine, int left, int top, int right, int bot) {
 void DrawLightningSegment(vector *from, vector *to) {
   vector src_vecs[2], world_vecs[6];
   g3Point rot_src_pnts[2], world_points[6], *pntlist[6];
-  static alphas[] = {.3f, 1.0, .3f, .3f, 1.0, .3f};
+  static float alphas[] = {.3f, 1.0, .3f, .3f, 1.0, .3f};
   src_vecs[0] = *from;
   src_vecs[1] = *to;
 

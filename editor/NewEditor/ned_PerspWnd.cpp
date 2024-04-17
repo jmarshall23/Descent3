@@ -467,7 +467,7 @@ void Cned_PerspWnd::OnLButtonUp(UINT nFlags, CPoint point) {
             // Copy uv values from marked face
             static int last_copy_marked_room = -1, last_copy_marked_face = -1;
             static int last_copy_room = -1, last_copy_face = -1;
-            static count;
+            static int count;
 
             if (Markedroomp == NULL) {
               OutrageMessageBox("You must have a marked face for this operation.");
@@ -894,11 +894,11 @@ void Cned_PerspWnd::OnTimer(UINT nIDEvent) {
   if (m_Cam.moving) {
     vector target = {m_Cam.target.x + m_Cam.step.x, m_Cam.target.y + m_Cam.step.y, m_Cam.target.z + m_Cam.step.z};
     PlaceCamera(target, m_Cam.orient, m_Cam.dist);
-    if (abs(m_Cam.target.x - m_Cam.desttarget.x) <= abs(m_Cam.step.x))
+    if (fabs(m_Cam.target.x - m_Cam.desttarget.x) <= fabs(m_Cam.step.x))
       m_Cam.step.x = 0;
-    if (abs(m_Cam.target.y - m_Cam.desttarget.y) <= abs(m_Cam.step.y))
+    if (fabs(m_Cam.target.y - m_Cam.desttarget.y) <= fabs(m_Cam.step.y))
       m_Cam.step.y = 0;
-    if (abs(m_Cam.target.z - m_Cam.desttarget.z) <= abs(m_Cam.step.z))
+    if (fabs(m_Cam.target.z - m_Cam.desttarget.z) <= fabs(m_Cam.step.z))
       m_Cam.step.z = 0;
     if (m_Cam.step.x == 0 && m_Cam.step.y == 0 && m_Cam.step.z == 0) {
       PlaceCamera(m_Cam.desttarget, m_Cam.orient, m_Cam.dist);

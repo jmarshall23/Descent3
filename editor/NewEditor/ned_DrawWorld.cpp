@@ -264,8 +264,8 @@ int FindNearestVertInFace(face *fp, int search_x, int search_y) {
     x = World_point_buffer[fp->face_verts[v]].p3_sx;
     y = World_point_buffer[fp->face_verts[v]].p3_sy;
 
-    x_delta = abs(x - search_x);
-    y_delta = abs(y - search_y);
+    x_delta = fabs(x - search_x);
+    y_delta = fabs(y - search_y);
     if (dist_2d(x_delta, y_delta) < dist_2d(old_x_delta, old_y_delta)) {
       old_x_delta = x_delta;
       old_y_delta = y_delta;

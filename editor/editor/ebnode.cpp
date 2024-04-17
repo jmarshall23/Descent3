@@ -12,8 +12,8 @@
  */
 
 #ifdef NEWEDITOR
-#include "neweditor/stdafx.h"
-#include "neweditor/NewEditor.h"
+#include "stdafx.h"
+#include "NewEditor.h"
 #endif
 
 #include "bnode.h"
@@ -1072,7 +1072,7 @@ void EBNode_MakeFirstPass(void) {
 #ifndef NEWEDITOR
 #include "editor/d3edit.h"
 #else
-#include "neweditor/globals.h"
+#include "globals.h"
 #include "terrain.h"
 #include "renderer.h"
 #endif

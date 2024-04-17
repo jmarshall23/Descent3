@@ -18,6 +18,9 @@
 #include <ctype.h>
 #endif
 
+#include <stdio.h>
+#include <ctype.h>
+
 // Returns 1 if string contains globbing characters in it
 int PSGlobHasPattern(char *string) {
   register char *p = string;

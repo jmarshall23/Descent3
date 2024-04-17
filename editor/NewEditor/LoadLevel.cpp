@@ -30,7 +30,7 @@
 #ifdef NEWEDITOR
 #include "..\neweditor\ned_gametexture.h"
 #include "..\neweditor\ned_Object.h"
-#include "editor\Erooms.h"
+#include "Erooms.h"
 #endif
 
 #include "trigger.h"
@@ -3765,7 +3765,7 @@ void WritePlayerStarts(CFILE *outfile) {
   }
 }
 
-#include "editor/ebnode.h"
+#include "ebnode.h"
 
 // Save a level file
 // Returns 1 if file saved ok, else 0

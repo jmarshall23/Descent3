@@ -34,7 +34,7 @@ void FreeGamePath(int n) {
 }
 
 void InitGamePaths() {
-  static f_game_paths_init = false;
+  static bool f_game_paths_init = false;
   int i;
 
   if (f_game_paths_init) {

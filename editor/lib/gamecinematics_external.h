@@ -14,13 +14,9 @@
 #ifndef __GAMECINEMATICS_EXTERNAL_H_
 #define __GAMECINEMATICS_EXTERNAL_H_
 
-#ifdef MACINTOSH
 #include "vecmat_external.h"
 #include "manage_external.h"
-#else
-#include "lib/vecmat_external.h"
-#include "lib/manage_external.h"
-#endif
+
 
 /*
 ==========================================================

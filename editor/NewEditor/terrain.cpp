@@ -11,7 +11,7 @@
  COPYRIGHT 1996-2000 OUTRAGE ENTERTAINMENT, INC.  ALL RIGHTS RESERVED.
  */
 #ifdef NEWEDITOR
-#include "neweditor\globals.h"
+#include "globals.h"
 #else
 #include <stdlib.h>
 #endif

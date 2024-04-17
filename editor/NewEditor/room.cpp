@@ -36,7 +36,7 @@
 #include "editor\editor_lighting.h"
 #endif
 #ifdef NEWEDITOR
-#include "neweditor\editor_lighting.h"
+#include "editor_lighting.h"
 #endif
 #include "bnode.h"
 
