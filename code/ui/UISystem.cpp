@@ -556,8 +556,9 @@ bool ui_HideCursor() {
 void ui_SetScreenMode(int w, int h) {
   int old_w = UI_screen_width;
   int old_h = UI_screen_height;
-  UI_screen_width = w;
-  UI_screen_height = h;
+  //UI_screen_width = w;
+  //UI_screen_height = h;
+  rend_GetScreenDimensions(&UI_screen_width, &UI_screen_height);
   UI_aspect_x = (float)w / (float)FIXED_SCREEN_WIDTH;
   UI_aspect_y = (float)h / (float)FIXED_SCREEN_HEIGHT;
   ddio_MouseReset();

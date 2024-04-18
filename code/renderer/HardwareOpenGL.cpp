@@ -322,6 +322,11 @@ int opengl_InitCache(void) {
   return 1;
 }
 
+void rend_GetScreenDimensions(int *width, int *height) {
+  *width = OpenGL_state.screen_width;
+  *height = OpenGL_state.screen_height;
+}
+
 // Sets default states for our renderer
 void opengl_SetDefaults() {
   mprintf((0, "Setting states\n"));

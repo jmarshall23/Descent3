@@ -668,6 +668,8 @@ void *rend_RetrieveDirectDrawObj(void **frontsurf, void **backsurf);
 #endif
 #endif
 
+void rend_GetScreenDimensions(int *width, int *height);
+
 ///////////////////////////////////////////////////////////////
 #include "../renderer/RendererConfig.h"
 

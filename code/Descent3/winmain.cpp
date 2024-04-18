@@ -616,11 +616,7 @@ int PASCAL HandledWinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR szCmdLine,
   if (Dedicated_server) {
     d3 = new oeD3Win32App(OEAPP_CONSOLE, (HInstance)hInst);
   } else {
-    unsigned int flags = OEAPP_FULLSCREEN;
-    if (FindArg("-windowed")) {
-      // switch to windowed mode instead
-      flags = OEAPP_WINDOWED;
-    }
+    unsigned int flags = OEAPP_WINDOWED;
 
     d3 = new oeD3Win32App(flags, (HInstance)hInst);
   }

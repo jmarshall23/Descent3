@@ -235,7 +235,7 @@ oeWin32Application::oeWin32Application(const char *name, unsigned flags, HInstan
 #ifdef RELEASE
     SetRect(&rect, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
 #else
-    SetRect(&rect, 0, 0, 640, 480);
+    SetRect(&rect, 0, 0, 1280, 720);
 #endif
 
     int cx = 0;
@@ -518,6 +518,7 @@ tWin32OS oeWin32Application::version(int *major, int *minor, int *build, char *s
 }
 
 int ddio_KeyHandler(HWnd wnd, unsigned msg, unsigned wParam, long lParam);
+int RawInputHandler(HWND hWnd, unsigned int msg, unsigned int wParam, long lParam);
 
 //	This Window Procedure is called from the global WindowProc.
 int oeWin32Application::WndProc(HWnd hwnd, unsigned msg, unsigned wParam, long lParam) {
@@ -525,11 +526,16 @@ int oeWin32Application::WndProc(HWnd hwnd, unsigned msg, unsigned wParam, long l
      return 1;
   }
 
+  if (RawInputHandler((HWND)hwnd, msg, wParam, lParam)) {
+    return 1;
+  }
+
 switch (msg) {
   case WM_ACTIVATEAPP:
     m_AppActive = wParam ? true : false;
     //	mprintf((0, "WM_ACTIVATEAPP (%u,%l)\n", wParam, lParam));
     break;
+
   }
 
   return DefWindowProc((HWND)hwnd, (UINT)msg, (UINT)wParam, (LPARAM)lParam);

@@ -38,30 +38,27 @@ void g3_GetViewPortMatrix(float *viewMat) {
 }
 
 void g3_GetProjectionMatrix(float zoom, float *projMat) {
-  // get window size
+  // Get window size
   int viewportWidth, viewportHeight;
   rend_GetProjectionParameters(&viewportWidth, &viewportHeight);
 
-  // compute aspect ratio for this ViewPort
-  float screenAspect = rend_GetAspectRatio();
-  if (sAspect != 0.0f) {
-    // check for user override
-    screenAspect = screenAspect * 4.0f / 3.0f / sAspect;
-  }
-  float s = screenAspect * ((float)viewportWidth) / ((float)viewportHeight);
+  // Compute aspect ratio for this ViewPort, assuming a 16:9 screen
+  float aspectRatio = 16.0f / 9.0f;
 
-  // setup the matrix
+  // Setup the matrix to all zeros
   memset(projMat, 0, sizeof(float) * 16);
 
-  // calculate 1/tan(fov)
-  float oOT = 1.0f / zoom;
+  // Calculate 1/tan(fov / 2), fov expected in degrees
+  float fov = 85.0f * zoom;
+  float fovy = fov * 3.14159265f / 180.0f; // Convert degrees to radians
+  float oOT = 1.0f / tan(fovy / 2.0f);
 
-  // fill in the matrix
-  projMat[0] = oOT;
-  projMat[5] = oOT * s;
-  projMat[10] = 1.0f;
-  projMat[11] = 1.0f;
-  projMat[14] = -1.0f;
+  // Fill in the matrix for a typical perspective projection
+  projMat[0] = oOT / aspectRatio; // Scale x-axis by aspect ratio
+  projMat[5] = oOT;               // y-axis scaling
+  projMat[10] = 1.0f;            // Define z-axis for projection (assuming zFar >> zNear)
+  projMat[11] = 1.0f;            // Indicate a projection matrix
+  projMat[14] = -1.0f * (1.0f - 1e-7f);            // Near plane at -1 units
 }
 
 // start the frame
