@@ -2255,6 +2255,7 @@ void rend_StartFrame(int x1, int y1, int x2, int y2, int clear_flags) {
   if (clear_flags & RF_CLEAR_ZBUFFER) {
     glClear(GL_DEPTH_BUFFER_BIT);
   }
+
   OpenGL_state.clip_x1 = x1;
   OpenGL_state.clip_y1 = y1;
   OpenGL_state.clip_x2 = x2;
@@ -2317,6 +2318,9 @@ void rend_Flip(void) {
 #elif defined(__LINUX__)
   SDL_GL_SwapBuffers();
 #endif
+
+   glClear(GL_COLOR_BUFFER_BIT);
+
 
 #ifdef __PERMIT_GL_LOGGING
   if (__glLog == true) {
