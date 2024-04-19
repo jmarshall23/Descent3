@@ -1720,7 +1720,7 @@ void RenderFace(room *rp, int facenum) {
   static int first = 1;
   static float lm_red[32], lm_green[32], lm_blue[32];
   bool spec_face = 0;
-  face_cc.cc_and = 0xff;
+  face_cc.cc_and = 0;
   face_cc.cc_or = 0;
 #ifdef EDITOR
   if (fp->flags & FF_FLOATING_TRIG) {
@@ -1823,16 +1823,18 @@ void RenderFace(room *rp, int facenum) {
       face_cc.cc_or |= p->p3_codes;
     }
   }
-#ifndef MACINTOSH
-  if (face_cc.cc_and) // This entire face is off the screen
-  {
-    if (spec_face && GameTextures[fp->tmap].flags & TF_SMOOTH_SPECULAR) {
-      fp->flags |= FF_SPEC_INVISIBLE;
-      UpdateSpecularFace(rp, fp);
-    }
-    return;
-  }
-#endif
+//#ifndef MACINTOSH
+//  if (face_cc.cc_and) // This entire face is off the screen
+//  {
+//    if (spec_face && GameTextures[fp->tmap].flags & TF_SMOOTH_SPECULAR) {
+//      fp->flags |= FF_SPEC_INVISIBLE;
+//      UpdateSpecularFace(rp, fp);
+//    }
+//    return;
+//  }
+//#endif
+  face_cc.cc_and = 0;
+
   // Do stupid gouraud shading for lightmap
   if (NoLightmaps) {
     if (first) {
@@ -2716,6 +2718,9 @@ void BuildMirroredRoomListSub(int start_room_num, clip_wnd *wnd) {
       cc.cc_and &= c;
       cc.cc_or |= c;
     }
+
+    cc.cc_and = 0;
+
     // If points are on screen, see if they're in the clip window
     if (cc.cc_and == 0 || external_door_hack) {
       bool clipped = 0;
