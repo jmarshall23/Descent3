@@ -289,10 +289,8 @@ LONG CTextureDialogBar::OnInitDialog(UINT wParam, LONG lParam) {
   dlgTextureDialogBar = this;
   ltex_init();
 
-  if (!HandleInitDialog(wParam, lParam) || !UpdateData(FALSE)) {
-    TRACE0("Warning: UpdateData failed during dialog init.\n");
-    return FALSE;
-  }
+  HandleInitDialog(wParam, lParam);
+  UpdateData(FALSE);
 
   m_TextureTabDialog = NULL;
   m_CustomDialog = NULL;

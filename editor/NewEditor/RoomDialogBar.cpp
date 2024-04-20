@@ -184,10 +184,8 @@ void CRoomDialogBar::InitBar() {
 // CRoomDialogBar message handlers
 
 LONG CRoomDialogBar::OnInitDialog(UINT wParam, LONG lParam) {
-  if (!HandleInitDialog(wParam, lParam) || !UpdateData(FALSE)) {
-    TRACE0("Warning: UpdateData failed during dialog init.\n");
-    return FALSE;
-  }
+  HandleInitDialog(wParam, lParam);
+  UpdateData(FALSE);
 
   InitBar();
 

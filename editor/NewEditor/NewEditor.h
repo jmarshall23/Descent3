@@ -40,6 +40,9 @@
 #include "MatcenDialog.h"
 #include "ScriptCompiler.h"
 
+#include <afxwin.h>  // MFC core and standard components
+#include <afxdisp.h> // MFC Automation classes
+
 class CDallasMainDlg;
 
 /////////////////////////////////////////////////////////////////////////////

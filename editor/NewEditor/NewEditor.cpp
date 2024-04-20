@@ -168,6 +168,9 @@ BOOL CNewEditorApp::InitInstance() {
   AfxOleInit();
   AfxInitRichEdit();
   // AfxEnableControlContainer();
+  if (afxOccManager == nullptr) {
+    afxOccManager = new COccManager;
+  }
 
   gSplashScreen = new CSplashScreen(NULL);
   if (IsWindow(gSplashScreen->m_hWnd)) {
@@ -1490,7 +1493,7 @@ void OpenResourceLists(char *filename, DWORD flags) {
   infile = (CFILE *)cfopen(filename, "rt");
   if (!infile) {
     mprintf((0, "Couldn't open list %s!\n", filename));
-    Int3();
+    //Int3();
     return;
   }
 

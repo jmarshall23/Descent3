@@ -74,10 +74,8 @@ CPathDialogBar *dlgPathDialogBar = NULL;
 LONG CPathDialogBar::OnInitDialog(UINT wParam, LONG lParam) {
   dlgPathDialogBar = this;
 
-  if (!HandleInitDialog(wParam, lParam) || !UpdateData(FALSE)) {
-    TRACE0("Warning: UpdateData failed during dialog init.\n");
-    return FALSE;
-  }
+   HandleInitDialog(wParam, lParam);
+  UpdateData(FALSE);
 
   return TRUE; // return TRUE unless you set the focus to a control
                // EXCEPTION: OCX Property Pages should return FALSE

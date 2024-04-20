@@ -111,10 +111,8 @@ LONG CDoorwayDialogBar::OnInitDialog(UINT wParam, LONG lParam) {
   dlgDoorwayDialogBar = this;
   ldoor_init();
 
-  if (!HandleInitDialog(wParam, lParam) || !UpdateData(FALSE)) {
-    TRACE0("Warning: UpdateData failed during dialog init.\n");
-    return FALSE;
-  }
+   HandleInitDialog(wParam, lParam);
+  UpdateData(FALSE);
 
   InitKeyPad();
 

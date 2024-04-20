@@ -6,8 +6,11 @@ if(POLICY CMP0076)
   cmake_policy(SET CMP0076 NEW)
 endif()
 
+# Specify to use shared MFC libraries
+set(CMAKE_MFC_FLAG 2)
+
 # Specify the C++ standard
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Individual project inclusions
@@ -99,8 +102,10 @@ add_library(misc STATIC
 )
 target_include_directories(misc PRIVATE ${PROJECT_SOURCE_DIR}/misc)
 
+set(CMAKE_MFC_FLAG 2)  # Use this for shared MFC DLLs
+
 # NewEditor project
-add_executable(NewEditor
+add_executable(NewEditor WIN32
   NewEditor/ambient.cpp
   NewEditor/BendDialog.cpp
   NewEditor/bnode.cpp
@@ -169,7 +174,6 @@ add_executable(NewEditor
   NewEditor/ned_Trigger.cpp
   NewEditor/ned_Util.cpp
   NewEditor/NewEditor.cpp
-  NewEditor/NewEditor.rc
   NewEditor/object_lighting.cpp
   NewEditor/ObjectDialogBar.cpp
   Editor/ObjectListCombo.cpp
@@ -211,6 +215,8 @@ add_executable(NewEditor
   Editor/TriggerListCombo.cpp
   NewEditor/Vclip.cpp
 )
+
+target_sources(NewEditor PRIVATE NewEditor/NewEditor.rc)
 
 add_library(module STATIC
     module/module.cpp
@@ -305,3 +311,10 @@ include_directories(
 set_property(TARGET 2dlib 3d bitmap cfile ddgr_win32 ddio_common ddio_win ddvid_win32 fix mem misc NewEditor PROPERTY
   MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
 )
+
+set_target_properties(NewEditor PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../../../
+)
+
+# Add definitions for DLL and MFC usage
+add_compile_definitions(_AFXDLL)

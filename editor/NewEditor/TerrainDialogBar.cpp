@@ -129,10 +129,8 @@ void CTerrainDialogBar::InitBar() {
 LONG CTerrainDialogBar::OnInitDialog(UINT wParam, LONG lParam) {
   dlgTerrainDialogBar = this;
 
-  if (!HandleInitDialog(wParam, lParam) || !UpdateData(FALSE)) {
-    TRACE0("Warning: UpdateData failed during dialog init.\n");
-    return FALSE;
-  }
+   HandleInitDialog(wParam, lParam);
+  UpdateData(FALSE);
 
   InitBar();
   Current_satellite = 0;
