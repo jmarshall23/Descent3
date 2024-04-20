@@ -16,6 +16,7 @@
 #include <io.h>
 #include <fcntl.h>
 #include <sys\stat.h>
+#include "../devcon/DevConsole.h"
 
 extern bool Debug_NT;
 extern bool Debug_print_block = false;
@@ -388,6 +389,7 @@ void Debug_ConsolePrintf(int n, char *format, ...) {
   Debug_LogWrite(Mono_buffer);
 
   if (n == 0) {
+    console.Printf(Mono_buffer);
     OutputDebugString(Mono_buffer);
     nw_TCPPrintf(n, Mono_buffer);
   }
@@ -430,8 +432,10 @@ void Debug_ConsolePrintf(int n, int row, int col, char *format, ...) {
   CROW = r;
   CCOL = c;
 
-  if (n == 0)
+  if (n == 0) {
+    console.Printf(Mono_buffer);
     OutputDebugString(Mono_buffer);
+  }
 }
 
 void con_mputc(int n, char c) {

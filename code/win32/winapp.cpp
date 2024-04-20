@@ -144,6 +144,8 @@
 #include "win\directx\ddraw.h"
 #include "win\directx\dsound.h"
 
+#include "../devcon/DevConsole.h"
+
 // taken from winuser.h
 #ifndef WHEEL_DELTA
 #define WHEEL_DELTA 120
@@ -522,13 +524,26 @@ int RawInputHandler(HWND hWnd, unsigned int msg, unsigned int wParam, long lPara
 
 //	This Window Procedure is called from the global WindowProc.
 int oeWin32Application::WndProc(HWnd hwnd, unsigned msg, unsigned wParam, long lParam) {
-  if (ddio_KeyHandler(hwnd, msg, wParam, lParam)) {
-     return 1;
-  }
+    // We trap the console key first. 
+    if (msg == WM_KEYDOWN && wParam == VK_OEM_3) {
+      if (console.IsVisible()) {
+        console.SetVisible(false);
+        ShowCursor(false);
+      } else {
+        console.SetVisible(true);
+        ShowCursor(true);
+      }
+    }
 
-  if (RawInputHandler((HWND)hwnd, msg, wParam, lParam)) {
-    return 1;
-  }
+    if (!console.IsVisible()) {
+      if (ddio_KeyHandler(hwnd, msg, wParam, lParam)) {
+        return 1;
+      }
+
+      if (RawInputHandler((HWND)hwnd, msg, wParam, lParam)) {
+        return 1;
+      }
+    }
 
 switch (msg) {
   case WM_ACTIVATEAPP:

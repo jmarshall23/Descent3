@@ -121,7 +121,9 @@ ADD_SUBDIRECTORY (vecmat)
 ADD_SUBDIRECTORY (libmve)
 ADD_SUBDIRECTORY (md5)
 ADD_SUBDIRECTORY (libacm)
-ADD_SUBDIRECTORY (Descent3 )
+ADD_SUBDIRECTORY (libimgui)
+ADD_SUBDIRECTORY (devcon)
+ADD_SUBDIRECTORY (Descent3)
 
 # For now we don't need to build the scripts under windows, so we'll only include
 # the directory when building for linux/osx. In the future we may want to to fix bugs, etc.

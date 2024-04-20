@@ -33,6 +33,10 @@
 #include "gl/glew.h"
 #include "HardwareInternal.h"
 #include "../Descent3/args.h"
+#include "../libimgui/imgui.h"
+#include "../libimgui/imgui_impl_win32.h"
+#include "../libimgui/imgui_impl_opengl3.h"
+#include "../devcon/DevConsole.h"
 
 /*
 3D Rendering Functions
@@ -170,7 +174,6 @@ static int OpenGL_verts_processed = 0;
 static int OpenGL_uploads = 0;
 static int OpenGL_sets_this_frame[10];
 static int OpenGL_packed_pixels = 0;
-static int Cur_texture_object_num = 1;
 static int OpenGL_cache_initted = 0;
 static int OpenGL_last_bound[2];
 static int Last_texel_unit_set = -1;
@@ -178,6 +181,9 @@ static int OpenGL_last_frame_polys_drawn = 0;
 static int OpenGL_last_frame_verts_processed = 0;
 static int OpenGL_last_uploaded = 0;
 static float OpenGL_Alpha_factor = 1.0f;
+static bool OpenGL_Imgui_FirstRender = false;
+
+int Cur_texture_object_num = 1;
 
 #ifndef RELEASE
 // This is for the Microsoft OpenGL reference driver
@@ -492,8 +498,18 @@ int opengl_Setup(HDC glhdc) {
     return NULL;
   }
 
+   IMGUI_CHECKVERSION();
+   ImGui::CreateContext();
+   ImGuiIO &io = ImGui::GetIO();
 
-  Already_loaded = 1;
+   ImGui::StyleColorsDark();
+
+   // Setup Platform/Renderer bindings
+   ImGui_ImplWin32_InitForOpenGL(hOpenGLWnd);
+   ImGui_ImplOpenGL3_Init("#version 130"); // GLSL version, change if necessary
+   io.Fonts->AddFontDefault();
+
+   Already_loaded = 1;
 
   return 1;
 }
@@ -988,6 +1004,11 @@ void opengl_Close() {
     glDeleteTextures(Cur_texture_object_num, (const uint *)delete_list);
 
   mem_free(delete_list);
+
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplWin32_Shutdown();
+  ImGui::DestroyContext();
+  OpenGL_Imgui_FirstRender = false;
 
 #if defined(WIN32)
    wglMakeCurrent(NULL, NULL);
@@ -2288,7 +2309,7 @@ static void slownessAbort(void) {
 #endif
 
 // Flips the screen
-void rend_Flip(void) {
+void rend_Flip(void) {  
 #ifndef RELEASE
   int i;
 
@@ -2311,16 +2332,26 @@ void rend_Flip(void) {
 
   OpenGL_uploads = 0;
   OpenGL_polys_drawn = 0;
-  OpenGL_verts_processed = 0;
+  OpenGL_verts_processed = 0;  
 
-#if defined(WIN32)
+  if (OpenGL_Imgui_FirstRender) {
+    console.Draw("Descent 3 Developer Console");
+
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+  }
+
   SwapBuffers((HDC)hOpenGLDC);
-#elif defined(__LINUX__)
-  SDL_GL_SwapBuffers();
-#endif
 
    glClear(GL_COLOR_BUFFER_BIT);
 
+   {
+     // Start the Dear ImGui frame
+     ImGui_ImplOpenGL3_NewFrame();
+     ImGui_ImplWin32_NewFrame();
+     ImGui::NewFrame();
+     OpenGL_Imgui_FirstRender = true;
+   }
 
 #ifdef __PERMIT_GL_LOGGING
   if (__glLog == true) {
