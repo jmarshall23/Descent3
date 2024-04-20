@@ -543,6 +543,18 @@ int oeWin32Application::WndProc(HWnd hwnd, unsigned msg, unsigned wParam, long l
       if (RawInputHandler((HWND)hwnd, msg, wParam, lParam)) {
         return 1;
       }
+
+      RECT rect;
+      GetClientRect((HWND)hwnd, &rect);
+      POINT ptCenter;
+      ptCenter.x = (rect.right - rect.left) / 2;
+      ptCenter.y = (rect.bottom - rect.top) / 2;
+
+      // Convert the client area point to screen coordinates
+      ClientToScreen((HWND)hwnd, &ptCenter);
+
+      // Set the cursor to the center of the window
+      SetCursorPos(ptCenter.x, ptCenter.y);
     }
 
 switch (msg) {

@@ -204,24 +204,37 @@ int RawInputHandler(HWND hWnd, unsigned int msg, unsigned int wParam, long lPara
   t_mse_event ev;
   switch (msg) {
   case WM_MOUSEMOVE: {
+    // Get the center of the window
+    RECT rect;
+    GetClientRect(hWnd, &rect);
+    int centerX = (rect.right - rect.left) / 2;
+    int centerY = (rect.bottom - rect.top) / 2;
+
+    // Calculate the mouse position relative to the center of the window
     int xPos = GET_X_LPARAM(lParam);
     int yPos = GET_Y_LPARAM(lParam);
-    DDIO_mouse_state.dx += xPos - DDIO_mouse_state.x;
-    DDIO_mouse_state.dy += yPos - DDIO_mouse_state.y;
-    DDIO_mouse_state.x += xPos - DDIO_mouse_state.x;
-    DDIO_mouse_state.y += yPos - DDIO_mouse_state.y;
+
+    // Calculate delta from center
+    int dx = xPos - centerX;
+    int dy = yPos - centerY;
+
+    // Update delta state
+    DDIO_mouse_state.dx += dx;
+    DDIO_mouse_state.dy += dy;
+
+    // Update the current mouse position as if it weren't re-centered
+    DDIO_mouse_state.x += dx;
+    DDIO_mouse_state.y += dy;
+
+    // Correct mouse position if it goes out of the client area
     if (DDIO_mouse_state.x < DDIO_mouse_state.brect.left)
-      DDIO_mouse_state.x = (short)DDIO_mouse_state.brect.left;
+      DDIO_mouse_state.x = DDIO_mouse_state.brect.left;
     if (DDIO_mouse_state.x >= DDIO_mouse_state.brect.right)
-      DDIO_mouse_state.x = (short)DDIO_mouse_state.brect.right - 1;
+      DDIO_mouse_state.x = DDIO_mouse_state.brect.right - 1;
     if (DDIO_mouse_state.y < DDIO_mouse_state.brect.top)
-      DDIO_mouse_state.y = (short)DDIO_mouse_state.brect.top;
+      DDIO_mouse_state.y = DDIO_mouse_state.brect.top;
     if (DDIO_mouse_state.y >= DDIO_mouse_state.brect.bottom)
-      DDIO_mouse_state.y = (short)DDIO_mouse_state.brect.bottom - 1;
-    if (DDIO_mouse_state.z > DDIO_mouse_state.zmax)
-      DDIO_mouse_state.z = (short)DDIO_mouse_state.zmax;
-    if (DDIO_mouse_state.z < DDIO_mouse_state.zmin)
-      DDIO_mouse_state.z = (short)DDIO_mouse_state.zmin;
+      DDIO_mouse_state.y = DDIO_mouse_state.brect.bottom - 1;
   }
     return true;
   case WM_LBUTTONDOWN: {
