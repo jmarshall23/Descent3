@@ -161,23 +161,23 @@ public:
 
     switch (msg) {
     case WM_ACTIVATEAPP: {
-      if (wParam == false) {
-        this->deactivate();
-
-        if (!shutdown) {
-          ShutdownD3();
-          shutdown = true;
-          ShowWindow((HWND)hwnd, SW_MINIMIZE);
-        }
-      } else {
-        this->activate();
-
-        if (shutdown) {
-          ShowWindow((HWND)hwnd, SW_RESTORE);
-          RestartD3();
-          shutdown = false;
-        }
-      }
+      //if (wParam == false) {
+      //  this->deactivate();
+      //
+      //  if (!shutdown) {
+      //    ShutdownD3();
+      //    shutdown = true;
+      //    ShowWindow((HWND)hwnd, SW_MINIMIZE);
+      //  }
+      //} else {
+      //  this->activate();
+      //
+      //  if (shutdown) {
+      //    ShowWindow((HWND)hwnd, SW_RESTORE);
+      //    RestartD3();
+      //    shutdown = false;
+      //  }
+      //}
     } break;
     }
 

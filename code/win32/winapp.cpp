@@ -558,10 +558,10 @@ int oeWin32Application::WndProc(HWnd hwnd, unsigned msg, unsigned wParam, long l
     }
 
 switch (msg) {
-  case WM_ACTIVATEAPP:
-    m_AppActive = wParam ? true : false;
-    //	mprintf((0, "WM_ACTIVATEAPP (%u,%l)\n", wParam, lParam));
-    break;
+  //case WM_ACTIVATEAPP:
+  //  m_AppActive = wParam ? true : false;
+  //  //	mprintf((0, "WM_ACTIVATEAPP (%u,%l)\n", wParam, lParam));
+  //  break;
 
   }
 
