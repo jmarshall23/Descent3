@@ -13,6 +13,5 @@
 
 #include <afxole.h>			// MFC OLE support (ADDED BY SAMIR)
 
-
-
-
+void rend_SetupPixelFormatForTools(HDC hDC);
+void rend_MakeCurrent(HWND hwnd, HDC hdc);

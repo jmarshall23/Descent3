@@ -192,7 +192,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-
 /////////////////////////////////////////////////////////////////////////////
 // CWireframeGrWnd
 
@@ -294,7 +293,13 @@ BOOL CWireframeGrWnd::Create(RECT &rect, BOOL movable, CWnd *pParent)
 
 	lstrcpy(m_Name, "Wireframe");
 
-	return CWnd::Create(NULL, m_Name, dwstyle, rect, pParent, IDC_WIREFRAME_WND);
+	if (!CWnd::Create(NULL, m_Name, dwstyle, rect, pParent, IDC_WIREFRAME_WND))
+          return false;
+
+	HDC hdc = GetDC()->GetSafeHdc();
+	rend_SetupPixelFormatForTools(hdc);
+	
+	return true;
 }
 
 
@@ -332,7 +337,11 @@ void CWireframeGrWnd::OnPaint()
 	CPaintDC dc(this); // device context for painting
 
 	//	Draw what's on the screen back page to the desktop
-	m_grScreen->flip();
+	//m_grScreen->flip();
+    rend_MakeCurrent(m_hWnd, dc.m_hDC);
+    Render();
+    rend_Flip();
+    rend_MakeCurrent(NULL, NULL);
 	draw_tile_caption(&dc);
 }
 

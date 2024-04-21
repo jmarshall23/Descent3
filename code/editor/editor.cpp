@@ -765,7 +765,7 @@ BOOL CEditorApp::OnIdle(LONG lCount)
 	//Redraw the wireframe view if the world changed or the view was changed
 	if (wireframe_view && !suppress_wireframe_redraw && ((World_changed || State_changed || Edview_changed) || (!Viewer_moved && !viewer_rotated && Dirty_wireframe && !(Editor_view_mode==VM_TERRAIN)))) {
 		if (!Object_moved) {
-	  		wireframe_view->Render();
+	  		//wireframe_view->Render();
 			wireframe_view->InvalidateRect(NULL, FALSE);
 			Dirty_wireframe = 0;
 		}

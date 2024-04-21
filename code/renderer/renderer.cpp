@@ -412,14 +412,19 @@
 #include "application.h"
 #include "3d.h"
 
+
 // Renderers for Windows version.  Mac gets these through a global include file.
 #if defined(WIN32)
 #define USE_OPENGL
 // #define USE_GLIDE
-#define USE_D3D
+//#define USE_D3D
 // #define USE_SOFTWARE
 #endif
 
+#ifdef USE_OPENGL
+int OpenGL_window_initted = 0;
+#endif
+#if 0
 // Renderers for Linux version
 #if defined(__LINUX__)
 #define USE_OPENGL
@@ -441,9 +446,7 @@
 #include "rend_d3d.h"
 #endif
 extern int FindArg(char *);
-#ifdef USE_OPENGL
-int OpenGL_window_initted = 0;
-#endif
+
 
 // The font characteristics
 static float rend_FontRed[4], rend_FontBlue[4], rend_FontGreen[4], rend_FontAlpha[4];
@@ -2022,18 +2025,19 @@ void rend_CloseOpenGLWindow() {
   mprintf((1, "SHUTTING DOWN WINDOWED OPENGL!"));
 #endif
 }
+#endif
+
 // Sets the state of the OpenGLWindow to on or off
 static renderer_type Save_rend;
 static bool Save_state_limit;
 void rend_SetOpenGLWindowState(int state, oeApplication *app, renderer_preferred_state *pref_state) {
 #ifdef USE_OPENGL
   if (state) {
-    if (!OpenGL_window_initted) {
-      if (rend_InitOpenGLWindow(app, pref_state))
-        OpenGL_window_initted = 1;
-      else
-        return;
-    }
+   // if (!OpenGL_window_initted) {
+    rend_InitOpenGLWindow(app, pref_state);
+ //     else
+ //       return;
+ //   }
     UseHardware = 1;
     Save_rend = Renderer_type;
     Save_state_limit = StateLimited;
@@ -2050,6 +2054,7 @@ void rend_SetOpenGLWindowState(int state, oeApplication *app, renderer_preferred
 #endif
 }
 
+#if 0
 // Sets the hardware bias level for coplanar polygons
 // This helps reduce z buffer artifaces
 void rend_SetCoplanarPolygonOffset(float factor) {
@@ -2245,3 +2250,4 @@ void rend_GetStatistics(tRendererStats *stats) {
     memset(stats, 0, sizeof(tRendererStats));
   }
 }
+#endif

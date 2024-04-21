@@ -124,6 +124,8 @@ grSurface::grSurface(int w, int h, int bpp, unsigned type, unsigned flags, const
   surf_Locked = 0;
   m_SurfInit = 0;
 
+  flags = SURFFLAG_RENDERER;
+
   grSurface::create(w, h, bpp, type, flags, name);
 }
 

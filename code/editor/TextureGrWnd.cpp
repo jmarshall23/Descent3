@@ -544,8 +544,7 @@ static char THIS_FILE[] = __FILE__;
 #define POPUP_SOUND						0x6e
 
 grViewport *rad_Viewport;
-static int DoOpenGL=0;
-
+static int DoOpenGL=1;
 
 /////////////////////////////////////////////////////////////////////////////
 // CTextureGrWnd
@@ -599,7 +598,7 @@ void CTextureGrWnd::TexGrStartOpenGL()
 		StateLimited=1;
 		save_wnd=(HWND)app->m_hWnd;
 		app->m_hWnd=(HWnd)m_hWnd;
-		rend_SetOpenGLWindowState (1,Descent,NULL);
+	;	rend_SetOpenGLWindowState (1,Descent,NULL);
 		rend_ClearScreen(0);
 		StateLimited=1;
 		UseMultitexture=0;
@@ -655,7 +654,7 @@ void CTextureGrWnd::Render()
 
 	rad_Viewport=m_grViewport;
 
-	TexGrStartOpenGL ();
+	//TexGrStartOpenGL ();
 
 
 	ResetPostrenderList();
@@ -722,7 +721,7 @@ void CTextureGrWnd::Render()
 	DrawAllPaths(m_grViewport,&Viewer_object->pos,&Viewer_object->orient,D3_DEFAULT_ZOOM);
 	EBNode_Draw (EBN_draw_type, m_grViewport,&Viewer_object->pos,&Viewer_object->orient,D3_DEFAULT_ZOOM);
 
-	TexGrStopOpenGL();
+	//TexGrStopOpenGL();
 
 	
 	m_StartFlip = TRUE;
@@ -765,6 +764,8 @@ BOOL CTextureGrWnd::Create(RECT &rect, BOOL movable, CWnd *pParent)
 
 	ObjectInBuffer=false;
 
+//	rend_SetupPixelFormatForTools(GetDC()->GetSafeHdc());
+
 	return CWnd::Create(NULL, m_Name, dwstyle, rect, pParent, IDC_TEXTURE_WND);
 }
 
@@ -787,44 +788,27 @@ void CTextureGrWnd::OnSize(UINT nType, int cx, int cy)
 	SetWindowText(m_Name);
 }
 
-void rend_SetOpenGLWindowState(int state, oeApplication* app, renderer_preferred_state* pref_state) {
-	// IceColdDuke
-}
-
 void CTextureGrWnd::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
 
 //	Draw what's on the screen back page to the desktop
-	if (theApp.paused()) return;
+	//if (theApp.paused()) return;
 
-	if (m_StartFlip) {	// do if a flip was signaled
-		m_StartFlip = FALSE;
+	HWND save_wnd;
+    oeWin32Application *app;
 
-		if (DoOpenGL)
-		{
-			HWND save_wnd;
-			oeWin32Application *app;
+    app = (oeWin32Application *)Descent;
 
-			app=(oeWin32Application *)Descent;
-
-			save_wnd=(HWND)app->m_hWnd;
-			app->m_hWnd=(HWnd)m_hWnd;
-			rend_SetOpenGLWindowState (1,Descent,NULL);
-
-			rend_Flip();
-
-			rend_SetOpenGLWindowState (0,Descent,NULL);
-			app->m_hWnd=(HWnd)save_wnd;
-		}
-		else
-		{
-	  		m_grScreen->flip();
-			m_grViewport->clear();
-		}
-
-		
-	}
+    save_wnd = (HWND)app->m_hWnd;
+    app->m_hWnd = (HWnd)m_hWnd;
+    // rend_SetOpenGLWindowState (1,Descent,NULL);
+    rend_MakeCurrent(m_hWnd, dc.m_hDC);
+    Render();
+    rend_Flip();
+    rend_MakeCurrent(NULL, NULL);
+    // rend_SetOpenGLWindowState (0,Descent,NULL);
+    app->m_hWnd = (HWnd)save_wnd;
 
 // Do not call CWnd::OnPaint() for painting messages
    	if (!m_Movable) {					// print out window title, since there is no caption
@@ -866,6 +850,7 @@ int CTextureGrWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 // TODO: Add your specialized creation code here
 	theApp.textured_view = this;
+	TexGrStartOpenGL();
 
 	return 0;
 }
@@ -967,7 +952,11 @@ void SelectObject(int objnum);
 
 void CTextureGrWnd::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	TexGrStartOpenGL();
+  return;
+
+    //rend_MakeCurrent(GetDC()->m_hDC);
+
+//	TexGrStartOpenGL();
 
 	ResetPostrenderList();
 
@@ -1239,6 +1228,7 @@ void CTextureGrWnd::OnLButtonDown(UINT nFlags, CPoint point)
 
 	TexGrStopOpenGL();
 					 
+	//rend_MakeCurrent(NULL);
 	CWnd::OnLButtonDown(nFlags, point);
 }
 
@@ -1254,7 +1244,7 @@ void CTextureGrWnd::OnRButtonDown(UINT nFlags, CPoint point)
 	int newobjnum = -1;
 	bool do_popup = false;
 
-	TexGrStartOpenGL();
+//	TexGrStartOpenGL();
 
 	if (Editor_view_mode==VM_TERRAIN)
 	{

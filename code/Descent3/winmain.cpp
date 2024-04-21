@@ -120,6 +120,12 @@ int no_debug_dialog = 0;
 
 void getcpudata(cpuinfo *info);
 
+#if defined(EDITOR)
+bool IsEditor() { return true; }
+#else
+bool IsEditor() { return false; }
+#endif
+
 //	---------------------------------------------------------------------------
 //	Define our operating system specific extensions to the gameos system
 //	---------------------------------------------------------------------------

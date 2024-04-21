@@ -499,8 +499,8 @@ void CEditorView::OnDraw(CDC* pDC)
 
 // TODO: add draw code for native data here
 	if (!theApp.paused()) {
-		if (theApp.wireframe_view) m_grwndWireframe.Render();
-		if (theApp.textured_view) m_grwndTexture.Render();
+		//if (theApp.wireframe_view) m_grwndWireframe.Render();
+		//if (theApp.textured_view) m_grwndTexture.Render();
 	}
 }
 
@@ -553,7 +553,7 @@ void CEditorView::OnSize(UINT nType, int cx, int cy)
 //	ReCreate wireframe and texture screen/windows
 	if (!m_grwndActive) return;
 	
-	KillChildViews();
+	//KillChildViews();
 		
  	if (cx && cy) {
 		CreateChildViews();
@@ -569,7 +569,7 @@ void CEditorView::OnDestroy()
 
 void CEditorView::DeactivateView()
 {
-	KillChildViews();
+	//KillChildViews();
 	m_grwndActive = FALSE;				// Tell system that this view should not function
 }
 

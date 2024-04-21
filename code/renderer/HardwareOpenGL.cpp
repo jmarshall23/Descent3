@@ -102,6 +102,7 @@
 
 int FindArg(char *);
 void rend_SetLightingState(light_state state);
+bool IsEditor();
 
 #define CHANGE_RESOLUTION_IN_FULLSCREEN
 
@@ -145,8 +146,10 @@ extern vector View_position;
 #if defined(WIN32)
 //	Moved from DDGR library
 static HWND hOpenGLWnd = NULL;
+static HWND hOpenGLWndOLD = NULL;
 static HDC hOpenGLDC = NULL;
-HGLRC ResourceContext;
+static HDC hOpenGLDCOLD = NULL;
+HGLRC ResourceContext = NULL;
 static WORD Saved_gamma_values[256 * 3];
 #elif defined(__LINUX__)
 char loadedLibrary[_MAX_PATH];
@@ -208,6 +211,7 @@ ushort *opengl_packed_4444_translate_table = NULL;
 rendering_state OpenGL_state;
 static float Alpha_multiplier = 1.0f;
 
+PIXELFORMATDESCRIPTOR pfd_copy;
 renderer_preferred_state OpenGL_preferred_state = {0, 1, 1.5};
 
 // These structs are for drawing with OpenGL vertex arrays
@@ -414,7 +418,7 @@ void opengl_SetDefaults() {
 // Check for OpenGL support,
 int opengl_Setup(HDC glhdc) {  
   // Finds an acceptable pixel format to render to
-  PIXELFORMATDESCRIPTOR pfd, pfd_copy;
+  PIXELFORMATDESCRIPTOR pfd;
   int pf;
 
   memset(&pfd, 0, sizeof(pfd));
@@ -481,12 +485,14 @@ int opengl_Setup(HDC glhdc) {
   }
 
   // Create an OpenGL context, and make it the current context
-  ResourceContext = wglCreateContext((HDC)glhdc);
   if (ResourceContext == NULL) {
-    DWORD ret = GetLastError();
-    // FreeLibrary(opengl_dll_handle);
-    Int3();
-    return NULL;
+    ResourceContext = wglCreateContext((HDC)glhdc);
+    if (ResourceContext == NULL) {
+      DWORD ret = GetLastError();
+      // FreeLibrary(opengl_dll_handle);
+      Int3();
+      return NULL;
+    }
   }
 
   ASSERT(ResourceContext != NULL);
@@ -498,17 +504,18 @@ int opengl_Setup(HDC glhdc) {
     return NULL;
   }
 
-   IMGUI_CHECKVERSION();
-   ImGui::CreateContext();
-   ImGuiIO &io = ImGui::GetIO();
+  if (!IsEditor()) {
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
 
-   ImGui::StyleColorsDark();
+    ImGui::StyleColorsDark();
 
-   // Setup Platform/Renderer bindings
-   ImGui_ImplWin32_InitForOpenGL(hOpenGLWnd);
-   ImGui_ImplOpenGL3_Init("#version 130"); // GLSL version, change if necessary
-   io.Fonts->AddFontDefault();
-
+    // Setup Platform/Renderer bindings
+    ImGui_ImplWin32_InitForOpenGL(hOpenGLWnd);
+    ImGui_ImplOpenGL3_Init("#version 130"); // GLSL version, change if necessary
+    io.Fonts->AddFontDefault();
+  }
    Already_loaded = 1;
 
   return 1;
@@ -1005,14 +1012,17 @@ void opengl_Close() {
 
   mem_free(delete_list);
 
-  ImGui_ImplOpenGL3_Shutdown();
-  ImGui_ImplWin32_Shutdown();
-  ImGui::DestroyContext();
-  OpenGL_Imgui_FirstRender = false;
+  if (!IsEditor()) {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
+    OpenGL_Imgui_FirstRender = false;
+  }
 
 #if defined(WIN32)
    wglMakeCurrent(NULL, NULL);
    wglDeleteContext(ResourceContext);
+   ResourceContext = nullptr;
 
   // Change our display back
   if (!WindowGL) {
@@ -2173,6 +2183,74 @@ void rend_SetFogState(sbyte state) {
   }
 }
 
+void rend_MakeCurrent(HWND hwnd, HDC hdc) {
+  
+
+   if (hdc == NULL)
+   {
+       RECT rect;
+       POINT topLeft;
+       GetClientRect((HWND)hOpenGLWndOLD, &rect);
+       
+       topLeft.x = rect.left;
+       topLeft.y = rect.top;
+       ClientToScreen((HWND)hOpenGLWndOLD, &topLeft);
+       
+       int width = rect.right - rect.left + 1;
+       int height = rect.bottom - rect.top + 1;
+       int windowX = topLeft.x;
+       int windowY = topLeft.y;
+       
+       OpenGL_state.screen_width = width;
+       OpenGL_state.screen_height = height;
+
+      if (!wglMakeCurrent(hOpenGLDCOLD, ResourceContext)) {
+         OutputDebugStringA("rend_MakeCurrent reset failed!!\n");
+       }
+
+      hOpenGLWnd = hOpenGLWndOLD;
+       hOpenGLDC = hOpenGLDCOLD;
+       return;
+   }
+
+   hOpenGLWndOLD = hOpenGLWnd;
+   hOpenGLDCOLD = hOpenGLDC;
+   hOpenGLDC = hdc;
+   hOpenGLWnd = hwnd;
+
+   RECT rect;
+   POINT topLeft;
+   GetClientRect((HWND)hOpenGLWnd, &rect);
+
+   topLeft.x = rect.left;
+   topLeft.y = rect.top;
+   ClientToScreen((HWND)hOpenGLWnd, &topLeft);
+
+   int width = rect.right - rect.left + 1;
+   int height = rect.bottom - rect.top + 1;
+   int windowX = topLeft.x;
+   int windowY = topLeft.y;
+
+   OpenGL_state.screen_width = width;
+   OpenGL_state.screen_height = height;
+
+   if (!wglMakeCurrent(hOpenGLDC, ResourceContext)) {
+  //   Int3();
+     OutputDebugStringA("rend_MakeCurrent failed!!\n");
+   }
+}
+
+void rend_SetupPixelFormatForTools(HDC hDC) {
+  int pixelFormat = ChoosePixelFormat(hDC, &pfd_copy);
+  if (pixelFormat > 0) {
+    if (SetPixelFormat(hDC, pixelFormat, &pfd_copy) == NULL) {
+      Int3();
+    }
+  } else {
+    Int3();
+  }
+}
+
 // Sets the near and far plane of fog
 void rend_SetFogBorders(float nearz, float farz) {
   // Sets the near and far plane of fog
@@ -2333,18 +2411,19 @@ void rend_Flip(void) {
   OpenGL_uploads = 0;
   OpenGL_polys_drawn = 0;
   OpenGL_verts_processed = 0;  
+  if (!IsEditor()) {
+    if (OpenGL_Imgui_FirstRender) {
+      console.Draw("Descent 3 Developer Console");
 
-  if (OpenGL_Imgui_FirstRender) {
-    console.Draw("Descent 3 Developer Console");
-
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+      ImGui::Render();
+      ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
   }
 
   SwapBuffers((HDC)hOpenGLDC);
 
    glClear(GL_COLOR_BUFFER_BIT);
-
+   if (!IsEditor())
    {
      // Start the Dear ImGui frame
      ImGui_ImplOpenGL3_NewFrame();
@@ -2352,6 +2431,7 @@ void rend_Flip(void) {
      ImGui::NewFrame();
      OpenGL_Imgui_FirstRender = true;
    }
+
 
 #ifdef __PERMIT_GL_LOGGING
   if (__glLog == true) {
