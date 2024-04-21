@@ -43,7 +43,7 @@ void g3_GetProjectionMatrix(float zoom, float *projMat) {
   rend_GetProjectionParameters(&viewportWidth, &viewportHeight);
 
   // Compute aspect ratio for this ViewPort, assuming a 16:9 screen
-  float aspectRatio = 16.0f / 9.0f;
+  float aspectRatio = (float)viewportWidth / (float)viewportHeight;
 
   // Setup the matrix to all zeros
   memset(projMat, 0, sizeof(float) * 16);
