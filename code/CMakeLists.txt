@@ -123,6 +123,7 @@ ADD_SUBDIRECTORY (md5)
 ADD_SUBDIRECTORY (libacm)
 ADD_SUBDIRECTORY (libimgui)
 ADD_SUBDIRECTORY (devcon)
+ADD_SUBDIRECTORY (editor) 
 ADD_SUBDIRECTORY (Descent3)
 
 # For now we don't need to build the scripts under windows, so we'll only include
@@ -139,5 +140,9 @@ SET( CMAKE_BUILD_TYPE "Debug" )
 ENDIF()
 
 set_target_properties(Descent3 PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../../../
+)
+
+set_target_properties(Descent3Editor PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../../../
 )

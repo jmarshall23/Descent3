@@ -979,7 +979,7 @@ void rend_DrawScaledBitmap(int x1, int y1, int x2, int y2, int bm, float u0, flo
     ptr_pnts[2] = &pnts[2];
     ptr_pnts[3] = &pnts[3];
     rend_SetTextureType(TT_LINEAR);
-    rend_DrawPolygon(bm, ptr_pnts, 4);
+    rend_DrawPolygon(bm, ptr_pnts, 4, 0);
     break;
   }
   default:
@@ -1301,7 +1301,7 @@ void rend_DrawFontCharacter(int bm_handle, int x1, int y1, int x2, int y2, float
   pnts[3].p3_sy = y2;
   pnts[3].p3_u = u;
   pnts[3].p3_v = v + h;
-  rend_DrawPolygon(bm_handle, ptr_pnts, 4);
+  rend_DrawPolygon(bm_handle, ptr_pnts, 4, 0);
 }
 // Draws a line
 void rend_DrawLine(int x1, int y1, int x2, int y2) {
@@ -2049,6 +2049,7 @@ void rend_SetOpenGLWindowState(int state, oeApplication *app, renderer_preferred
   }
 #endif
 }
+
 // Sets the hardware bias level for coplanar polygons
 // This helps reduce z buffer artifaces
 void rend_SetCoplanarPolygonOffset(float factor) {
