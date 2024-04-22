@@ -3,6 +3,8 @@
 //      are changed infrequently
 //
 
+#pragma once
+
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 
 #include <afxwin.h>         // MFC core and standard components
@@ -15,3 +17,12 @@
 
 void rend_SetupPixelFormatForTools(HDC hDC);
 void rend_MakeCurrent(HWND hwnd, HDC hdc);
+
+// mouse state
+typedef struct {
+  int x, y;       // current position
+  int oldx, oldy; // last position
+  bool left;      // left button
+  bool right;     // right button
+  bool mid;
+} stMouse;

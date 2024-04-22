@@ -60,6 +60,21 @@
 #include "GrWnd.h"
 #include "vecmat.h"
 
+#define PAN_LEFT 0
+#define PAN_RIGHT 1
+#define PAN_UP 2
+#define PAN_DOWN 3
+#define ROT_LEFT 4
+#define ROT_RIGHT 5
+#define ROT_UP 6
+#define ROT_DOWN 7
+#define BANK_LEFT 8
+#define BANK_RIGHT 9
+#define ZOOM_INWARD 10
+#define ZOOM_OUTWARD 11
+#define MOVE_FORWARD 12
+#define MOVE_BACKWARD 13
+
 /////////////////////////////////////////////////////////////////////////////
 // CTextureGrWnd window
 
@@ -80,7 +95,6 @@ public:
 	void Render();
 	bool SetupPopup(CMenu *popup,char *title);
 
-
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CTextureGrWnd)
@@ -96,8 +110,7 @@ private:
 	int CTextureGrWnd::TGWFindRoomFace(int x,int y,int *roomnum,int *facenum);
 	int CTextureGrWnd::TGWFindLightmapFace(int x,int y,int *roomnum,int *facenum,int *lumel_num);
 	void CTextureGrWnd::TGWRenderMine(vector *pos,matrix *orient,float zoom,int start_roomnum);
-
-
+    void CTextureGrWnd::OnTimer(UINT nIDEvent);
 	// Generated message map functions
 protected:
 	//{{AFX_MSG(CTextureGrWnd)
@@ -110,14 +123,17 @@ protected:
 	afx_msg BOOL OnNcActivate(BOOL bActive);
 	afx_msg void OnNcPaint();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+    afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+    afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
 private:
 	BOOL m_Movable;						// is this floating?
 	BOOL m_StartFlip;					// shall we flip the screen when getting to OnPaint.
+    stMouse m_Mouse;
 
 	vector m_ViewPos;
 	matrix m_ViewMatrix;					// these are used by the object mover.

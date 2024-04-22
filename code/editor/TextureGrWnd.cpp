@@ -562,18 +562,21 @@ CTextureGrWnd::~CTextureGrWnd()
 
 
 BEGIN_MESSAGE_MAP(CTextureGrWnd, CWnd)
-	//{{AFX_MSG_MAP(CTextureGrWnd)
-	ON_WM_SIZE()
-	ON_WM_PAINT()
-	ON_WM_DESTROY()
-	ON_WM_MOVE()
-	ON_WM_CREATE()
-	ON_WM_SYSCOMMAND()
-	ON_WM_NCACTIVATE()
-	ON_WM_NCPAINT()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_MOUSEMOVE()
-	ON_WM_RBUTTONDOWN()
+//{{AFX_MSG_MAP(CTextureGrWnd)
+ON_WM_SIZE()
+ON_WM_PAINT()
+ON_WM_DESTROY()
+ON_WM_MOVE()
+ON_WM_CREATE()
+ON_WM_SYSCOMMAND()
+ON_WM_NCACTIVATE()
+ON_WM_NCPAINT()
+ON_WM_LBUTTONDOWN()
+ON_WM_LBUTTONUP()
+ON_WM_MOUSEMOVE()
+ON_WM_RBUTTONDOWN()
+ON_WM_RBUTTONUP()
+ON_WM_TIMER()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -727,6 +730,12 @@ void CTextureGrWnd::Render()
 	m_StartFlip = TRUE;
 }
 
+void CTextureGrWnd::OnTimer(UINT nIDEvent) {
+  // Save mouse position
+  m_Mouse.oldx = m_Mouse.x;
+  m_Mouse.oldy = m_Mouse.y;
+	CWnd::OnTimer(nIDEvent);
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CTextureGrWnd message handlers
@@ -848,6 +857,8 @@ int CTextureGrWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CGrWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	
+	SetTimer(1001, 10, NULL);
+
 // TODO: Add your specialized creation code here
 	theApp.textured_view = this;
 	TexGrStartOpenGL();
@@ -950,10 +961,14 @@ void CTextureGrWnd::TGWRenderMine(vector *pos,matrix *orient,float zoom,int star
 //Set the current object
 void SelectObject(int objnum);
 
+void CTextureGrWnd::OnLButtonUp(UINT nFlags, CPoint point) {
+	m_Mouse.left = false;
+    CWnd::OnLButtonUp(nFlags, point);
+}
+
 void CTextureGrWnd::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-  return;
-
+     m_Mouse.left = true;
     //rend_MakeCurrent(GetDC()->m_hDC);
 
 //	TexGrStartOpenGL();
@@ -1234,8 +1249,14 @@ void CTextureGrWnd::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CTextureGrWnd::OnMouseMove(UINT nFlags, CPoint point) 
 {
-
+    m_Mouse.x = point.x;
+    m_Mouse.y = point.y;
 	CWnd::OnMouseMove(nFlags, point);
+}
+
+void CTextureGrWnd::OnRButtonUp(UINT nFlags, CPoint point) {
+	m_Mouse.right = false;
+   CWnd::OnRButtonUp(nFlags, point);
 }
 
 void CTextureGrWnd::OnRButtonDown(UINT nFlags, CPoint point) 
@@ -1243,6 +1264,8 @@ void CTextureGrWnd::OnRButtonDown(UINT nFlags, CPoint point)
 	int n=D3EditState.current_megacell;
 	int newobjnum = -1;
 	bool do_popup = false;
+
+	m_Mouse.right = true;
 
 //	TexGrStartOpenGL();
 
