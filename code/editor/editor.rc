@@ -6190,12 +6190,12 @@ END
 
 STRINGTABLE PRELOAD DISCARDABLE 
 BEGIN
-    IDR_MAINFRAME           "Descent III Editor\n\nDescent III level\nD3 level Files(*.d3l)\n.d3l\nD3Levelt\nDescent III level"
+    IDR_MAINFRAME           "Descent III Frostbite Editor\n\nDescent III level\nD3 level Files(*.d3l)\n.d3l\nD3Levelt\nDescent III level"
 END
 
 STRINGTABLE PRELOAD DISCARDABLE 
 BEGIN
-    AFX_IDS_APP_TITLE       "Descent III Editor"
+    AFX_IDS_APP_TITLE       "Descent III Frostbite Editor"
     AFX_IDS_IDLEMESSAGE     "Ready"
 END
 

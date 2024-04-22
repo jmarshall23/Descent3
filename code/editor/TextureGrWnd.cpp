@@ -752,10 +752,72 @@ void CTextureGrWnd::Render()
 }
 
 void CTextureGrWnd::OnTimer(UINT nIDEvent) {
+  if (nIDEvent == 1001) 
+  {
+    const float sensitivity = 0.005f; s
+
+    int dx = m_Mouse.x - m_Mouse.oldx;
+    int dy = m_Mouse.y - m_Mouse.oldy;
+
+    if (m_Mouse.left) {
+      // Tumble (Rotate camera)
+      float angleX = sensitivity * dy; // Rotation angle around X-axis
+      float angleY = sensitivity * dx; // Rotation angle around Y-axis
+
+      // Assuming Euler angles, update the orientation
+      vector &rvec = Viewer_object->orient.rvec;
+      vector &uvec = Viewer_object->orient.uvec;
+      vector &fvec = Viewer_object->orient.fvec;
+
+      // Rotate around up-vector (uvec) for angleY
+      vector new_rvec = {cos(angleY) * rvec.x - sin(angleY) * fvec.x, cos(angleY) * rvec.y - sin(angleY) * fvec.y,
+                         cos(angleY) * rvec.z - sin(angleY) * fvec.z};
+      vector new_fvec = {sin(angleY) * rvec.x + cos(angleY) * fvec.x, sin(angleY) * rvec.y + cos(angleY) * fvec.y,
+                         sin(angleY) * rvec.z + cos(angleY) * fvec.z};
+
+      rvec = new_rvec;
+      fvec = new_fvec;
+
+      // Rotate around right-vector (rvec) for angleX
+      vector new_uvec = {cos(angleX) * uvec.x - sin(angleX) * fvec.x, cos(angleX) * uvec.y - sin(angleX) * fvec.y,
+                         cos(angleX) * uvec.z - sin(angleX) * fvec.z};
+      new_fvec = {(float)(sin(angleX) * uvec.x + cos(angleX) * fvec.x), (float)(sin(angleX) * uvec.y + cos(angleX) * fvec.y),
+                  (float)(sin(angleX) * uvec.z + cos(angleX) * fvec.z)};
+
+      uvec = new_uvec;
+      fvec = new_fvec;
+    } else if (m_Mouse.mid) {
+      // Track (Pan camera)
+      vector &pos = Viewer_object->pos;
+      vector &rvec = Viewer_object->orient.rvec;
+      vector &uvec = Viewer_object->orient.uvec;
+
+      pos.x += -dx * rvec.x * sensitivity + dy * uvec.x * sensitivity;
+      pos.y += -dx * rvec.y * sensitivity + dy * uvec.y * sensitivity;
+      pos.z += -dx * rvec.z * sensitivity + dy * uvec.z * sensitivity;
+    } else if (m_Mouse.right) {
+      // Dolly (Zoom camera)
+      vector &pos = Viewer_object->pos;
+      vector &fvec = Viewer_object->orient.fvec;
+
+      float zoom = dy * sensitivity;
+      pos.x += zoom * fvec.x;
+      pos.y += zoom * fvec.y;
+      pos.z += zoom * fvec.z;
+    }
+
+    // Store the current mouse position as the old position for the next frame
+    m_Mouse.oldx = m_Mouse.x;
+    m_Mouse.oldy = m_Mouse.y;
+
+    // Redraw the view or update the scene
+    Invalidate();
+  }
+
   // Save mouse position
   m_Mouse.oldx = m_Mouse.x;
   m_Mouse.oldy = m_Mouse.y;
-	CWnd::OnTimer(nIDEvent);
+CWnd::OnTimer(nIDEvent);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -877,6 +939,8 @@ int CTextureGrWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CGrWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
+
+	m_Mouse = {};
 	
 	SetTimer(1001, 10, NULL);
 
