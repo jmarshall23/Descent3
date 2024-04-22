@@ -2,7 +2,7 @@
 * Descent 3
 * Copyright (C) 2024 Parallax Software
 *
-* Descent 3: Frostbite Port
+* Descent 3: Apex
 * Copyright (C) 2024 by Justin Marshall
 *
 * This program is free software: you can redistribute it and/or modify

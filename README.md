@@ -1,5 +1,5 @@
-# Descent 3: Frostbite Port
+# Descent 3: Apex
 
 ## Introduction
 
-Welcome to the Descent 3: Frostbite Port project! 
+Welcome to the Descent 3: Apex Enhanced project! 
