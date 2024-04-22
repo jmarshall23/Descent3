@@ -713,15 +713,15 @@ BOOL CEditorApp::OnIdle(LONG lCount)
 	//	note that if a slew key was pressed, the main view is out of keyboard focus, set
 	//	keyboard focus to the main_view.
 		if (main_view && main_view != CWnd::GetFocus()) {
-			mprintf((0,"Restoring focus to main view.\n"));
-			main_view->SetFocus();
+			//mprintf((0,"Restoring focus to main view.\n"));
+			//main_view->SetFocus();
 		}
 	}
 	else if (KEY_STATE(KEY_LCTRL) || KEY_STATE(KEY_RCTRL)) {
 	//	this is done to support CTRL-KEYPAD functions if input focus is not in main view
 		if (main_view && main_view != CWnd::GetFocus()) {
-			mprintf((0,"Restoring focus to main view.\n"));
-			main_view->SetFocus();
+		//	mprintf((0,"Restoring focus to main view.\n"));
+		//	main_view->SetFocus();
 		}
 	}
 	/*else if (ddio_KeyInKey()) {

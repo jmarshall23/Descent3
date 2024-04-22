@@ -352,7 +352,7 @@ protected:
 
 
 private:
-	CWireframeGrWnd m_grwndWireframe;
+	//CWireframeGrWnd m_grwndWireframe;
 	CTextureGrWnd m_grwndTexture;
 
 	BOOL m_grwndCreated;

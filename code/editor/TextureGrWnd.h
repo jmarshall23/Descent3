@@ -132,6 +132,12 @@ private:
 	int CTextureGrWnd::TGWFindLightmapFace(int x,int y,int *roomnum,int *facenum,int *lumel_num);
 	void CTextureGrWnd::TGWRenderMine(vector *pos,matrix *orient,float zoom,int start_roomnum);
     void CTextureGrWnd::OnTimer(UINT nIDEvent);
+    void CTextureGrWnd::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
+    void CTextureGrWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+    void CTextureGrWnd::OnMButtonUp(UINT nFlags, CPoint point);    
+	void CTextureGrWnd::OnMButtonDown(UINT nFlags, CPoint point);
+    void CTextureGrWnd::OnSysKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
+    void CTextureGrWnd::OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	// Generated message map functions
 protected:
 	//{{AFX_MSG(CTextureGrWnd)
@@ -155,6 +161,7 @@ private:
 	BOOL m_Movable;						// is this floating?
 	BOOL m_StartFlip;					// shall we flip the screen when getting to OnPaint.
     stMouse m_Mouse;
+    stKeys m_Keys;
 
 	vector m_ViewPos;
 	matrix m_ViewMatrix;					// these are used by the object mover.

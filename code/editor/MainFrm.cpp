@@ -1093,10 +1093,14 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
-	// TODO: Modify the Window class or styles here by modifying
-	//  the CREATESTRUCT cs
+	// icecoldduke: temp just to make everything work. 
+  if (!CFrameWnd::PreCreateWindow(cs))
+    return FALSE;
 
-	return CFrameWnd::PreCreateWindow(cs);
+  // Modify the window style
+  cs.style &= ~WS_MAXIMIZEBOX;
+
+  return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1304,7 +1308,7 @@ void CMainFrame::RemoveSplashScreen()
 void CMainFrame::ActivateFrame(int nCmdShow) 
 {
 // TODO: Add your specialized code here and/or call the base class
-	nCmdShow = SW_MAXIMIZE;				// Force initial maximization
+	//nCmdShow = SW_MAXIMIZE;				// Force initial maximization
 
 	RemoveSplashScreen();				// shown when CreateClient
 

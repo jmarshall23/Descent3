@@ -608,7 +608,7 @@ void CEditorView::ActivateView()
 void CEditorView::KillChildViews()
 {
 	if (m_grwndCreated) {
-		if (theApp.wireframe_view) m_grwndWireframe.DestroyWindow();
+		//if (theApp.wireframe_view) m_grwndWireframe.DestroyWindow();
 		if (theApp.textured_view) m_grwndTexture.DestroyWindow();
 		m_grwndCreated = FALSE;
 	}
@@ -622,29 +622,11 @@ void CEditorView::CreateChildViews()
 	
 	GetClientRect(&view_rect);
 	SetRect(&texture_rect, 0,0,0,0);
+    SetRect(&texture_rect, view_rect.left, view_rect.top, view_rect.right, view_rect.bottom);
 
-//	if we tile windows, then texture window will be reset to default width, height
-//	wireframe window will be sized depending on the existance of the texture view.
-	if (D3EditState.texscr_visible) {
-		if (D3EditState.tile_views) 
-			SetRect(&texture_rect, view_rect.left, view_rect.top, 
-				view_rect.left + CALC_PIXELS_WITH_ASPECTX(TEXSCREEN_WIDTH),
-				view_rect.top + CALC_PIXELS_WITH_ASPECTY(TEXSCREEN_HEIGHT));
-		else
-			SetRect(&texture_rect, D3EditState.texscr_x, D3EditState.texscr_y, 
-				D3EditState.texscr_x + D3EditState.texscr_w, D3EditState.texscr_y + D3EditState.texscr_h);
-		m_grwndTexture.Create(texture_rect, !D3EditState.tile_views, this);
-	}
-
-	if (D3EditState.wirescr_visible) {
-		if (D3EditState.tile_views) 
-			SetRect(&wire_rect, view_rect.left, view_rect.top + texture_rect.bottom+2, 
-				view_rect.right, view_rect.bottom);
-		else
-			SetRect(&wire_rect, D3EditState.wirescr_x, D3EditState.wirescr_y, 
-				D3EditState.wirescr_x + D3EditState.wirescr_w, D3EditState.wirescr_y + D3EditState.wirescr_h);
-		m_grwndWireframe.Create(wire_rect, !D3EditState.tile_views, this);
-	}
+	D3EditState.texscr_x = view_rect.right;
+    D3EditState.texscr_y = view_rect.bottom;
+    m_grwndTexture.Create(texture_rect, !D3EditState.tile_views, this);
 
 	m_grwndCreated = TRUE;
 }
@@ -727,7 +709,7 @@ void CEditorView::OnViewWireframemine()
 			DeactivateView();
 			ActivateView();
 		}
-		else if (theApp.wireframe_view) m_grwndWireframe.DestroyWindow();
+		//else if (theApp.wireframe_view) m_grwndWireframe.DestroyWindow();
 	}
 	else {
 		if (D3EditState.tile_views) {	// for tiling, reinit the views
@@ -737,7 +719,7 @@ void CEditorView::OnViewWireframemine()
 		else {
 			SetRect(&wire_rect, D3EditState.wirescr_x, D3EditState.wirescr_y, 
 				D3EditState.wirescr_x + D3EditState.wirescr_w, D3EditState.wirescr_y + D3EditState.wirescr_h);
-			m_grwndWireframe.Create(wire_rect, TRUE, this);
+			//m_grwndWireframe.Create(wire_rect, TRUE, this);
 		}
 	}
 }

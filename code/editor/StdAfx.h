@@ -47,3 +47,22 @@ typedef struct {
   bool right;     // right button
   bool mid;
 } stMouse;
+
+typedef struct {
+  bool up;
+  bool down;
+  bool left;
+  bool right;
+  bool subtract;
+  bool add;
+  bool num0;
+  bool num5;
+  bool num1;
+  bool num3;
+  bool num7;
+  bool num9;
+  bool shift;
+  bool ctrl;
+  bool alt;
+  int zoom;
+} stKeys;

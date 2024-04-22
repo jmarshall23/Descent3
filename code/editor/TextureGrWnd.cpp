@@ -575,6 +575,8 @@ CTextureGrWnd::CTextureGrWnd()
 {
 	m_StartFlip = FALSE;
 	m_last_start_room = -1;	
+	memset(&m_Mouse, 0, sizeof(m_Mouse));
+    memset(&m_Keys, 0, sizeof(m_Keys));
 }
 
 CTextureGrWnd::~CTextureGrWnd()
@@ -597,7 +599,13 @@ ON_WM_LBUTTONUP()
 ON_WM_MOUSEMOVE()
 ON_WM_RBUTTONDOWN()
 ON_WM_RBUTTONUP()
+ON_WM_MBUTTONDOWN()
+ON_WM_MBUTTONUP()
 ON_WM_TIMER()
+ON_WM_KEYDOWN()
+ON_WM_SYSKEYDOWN()
+ON_WM_SYSKEYUP()
+ON_WM_KEYUP()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -613,6 +621,46 @@ int Successive_count=0;
 
 HWND save_wnd;
 oeWin32Application *app;
+
+void CTextureGrWnd::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) {
+  switch (nChar) {
+  case VK_CONTROL:
+    m_Keys.ctrl = false;
+    break;
+
+  case VK_SHIFT:
+    m_Keys.shift = false;
+    break;
+  }
+
+  CWnd::OnKeyUp(nChar, nRepCnt, nFlags);
+}
+
+void CTextureGrWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
+  switch (nChar) {
+  case VK_CONTROL:
+    m_Keys.ctrl = true;
+    break;
+
+  case VK_SHIFT:
+    m_Keys.shift = true;
+    break;
+  }
+  CWnd::OnKeyDown(nChar, nRepCnt, nFlags);
+}
+
+void CTextureGrWnd::OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
+  CWnd ::OnSysKeyDown(nChar, nRepCnt, nFlags);
+
+  // Cned_GrWnd::OnSysKeyDown(nChar, nRepCnt, nFlags);
+}
+
+void CTextureGrWnd::OnSysKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) {
+
+  CWnd ::OnSysKeyUp(nChar, nRepCnt, nFlags);
+
+  // Cned_GrWnd::OnSysKeyUp(nChar, nRepCnt, nFlags);
+}
 
 void CTextureGrWnd::TexGrStartOpenGL()
 {
@@ -751,6 +799,20 @@ void CTextureGrWnd::Render()
 	m_StartFlip = TRUE;
 }
 
+void CTextureGrWnd::OnMButtonDown(UINT nFlags, CPoint point) {
+  // TODO: Add your message handler code here and/or call default
+  m_Mouse.mid = true;
+
+  CWnd::OnMButtonDown(nFlags, point);
+}
+
+void CTextureGrWnd::OnMButtonUp(UINT nFlags, CPoint point) {
+  // TODO: Add your message handler code here and/or call default
+  m_Mouse.mid = false;
+
+  CWnd::OnMButtonUp(nFlags, point);
+}
+
 void CTextureGrWnd::OnTimer(UINT nIDEvent) {
   if (nIDEvent == 1001) 
   {
@@ -759,7 +821,7 @@ void CTextureGrWnd::OnTimer(UINT nIDEvent) {
     int dx = m_Mouse.x - m_Mouse.oldx;
     int dy = m_Mouse.y - m_Mouse.oldy;
 
-    if (m_Mouse.left) {
+    if (m_Keys.ctrl && m_Mouse.left) {
       // Tumble (Rotate camera)
       float angleX = sensitivity * dy; // Rotation angle around X-axis
       float angleY = sensitivity * dx; // Rotation angle around Y-axis
@@ -786,7 +848,7 @@ void CTextureGrWnd::OnTimer(UINT nIDEvent) {
 
       uvec = new_uvec;
       fvec = new_fvec;
-    } else if (m_Mouse.mid) {
+    } else if (m_Keys.ctrl && m_Mouse.mid) {
       // Track (Pan camera)
       vector &pos = Viewer_object->pos;
       vector &rvec = Viewer_object->orient.rvec;
@@ -795,7 +857,7 @@ void CTextureGrWnd::OnTimer(UINT nIDEvent) {
       pos.x += -dx * rvec.x * sensitivity + dy * uvec.x * sensitivity;
       pos.y += -dx * rvec.y * sensitivity + dy * uvec.y * sensitivity;
       pos.z += -dx * rvec.z * sensitivity + dy * uvec.z * sensitivity;
-    } else if (m_Mouse.right) {
+    } else if (m_Keys.ctrl && m_Mouse.right) {
       // Dolly (Zoom camera)
       vector &pos = Viewer_object->pos;
       vector &fvec = Viewer_object->orient.fvec;
@@ -832,20 +894,6 @@ BOOL CTextureGrWnd::Create(RECT &rect, BOOL movable, CWnd *pParent)
 
 	::CopyRect(&new_rect, &rect);
 	::AdjustWindowRect(&new_rect, dwstyle, FALSE);
-	
-//	We want this window to start at rect.left, rect.top.
-	if (new_rect.left < rect.left) {
-		int offx;
-		offx = rect.left-new_rect.left;
-		new_rect.left += offx;
-		new_rect.right += offx;
-	}
-	if (new_rect.top < rect.top) {
-		int offy;
-		offy = rect.top-new_rect.top;
-		new_rect.top += offy;
-		new_rect.bottom += offy;
-	}
 
 	::CopyRect(&rect, &new_rect);
 
@@ -909,6 +957,8 @@ void CTextureGrWnd::OnPaint()
 		dc.TextOut(10,10,m_Name,lstrlen(m_Name));
 //		m_grViewport->puts(10,10, m_Name);
 	}
+
+	SetFocus();
 }
 
 
@@ -1459,7 +1509,7 @@ void CTextureGrWnd::OnRButtonDown(UINT nFlags, CPoint point)
 		}
 	}
 	//Code to put up popup menu when right clicking
-	else
+    else if (!m_Keys.ctrl)
 	{
 		int roomnum,facenum;
 
