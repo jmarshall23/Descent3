@@ -754,7 +754,7 @@ void CTextureGrWnd::Render()
 void CTextureGrWnd::OnTimer(UINT nIDEvent) {
   if (nIDEvent == 1001) 
   {
-    const float sensitivity = 0.005f; s
+    const float sensitivity = 0.005f; 
 
     int dx = m_Mouse.x - m_Mouse.oldx;
     int dy = m_Mouse.y - m_Mouse.oldy;
