@@ -816,13 +816,13 @@ void CTextureGrWnd::OnMButtonUp(UINT nFlags, CPoint point) {
 void CTextureGrWnd::OnTimer(UINT nIDEvent) {
   if (nIDEvent == 1001) 
   {
-    const float sensitivity = 0.005f; 
+    float sensitivity = 0.005f; 
 
     int dx = m_Mouse.x - m_Mouse.oldx;
     int dy = m_Mouse.y - m_Mouse.oldy;
 
     if (m_Keys.ctrl && m_Mouse.left) {
-      // Tumble (Rotate camera)
+      // Sensitivity factor and input deltas (dx, dy)
       float angleX = sensitivity * dy; // Rotation angle around X-axis
       float angleY = sensitivity * dx; // Rotation angle around Y-axis
 
@@ -831,7 +831,7 @@ void CTextureGrWnd::OnTimer(UINT nIDEvent) {
       vector &uvec = Viewer_object->orient.uvec;
       vector &fvec = Viewer_object->orient.fvec;
 
-      // Rotate around up-vector (uvec) for angleY
+      // Rotate around up-vector (uvec) for angleY (Yaw)
       vector new_rvec = {cos(angleY) * rvec.x - sin(angleY) * fvec.x, cos(angleY) * rvec.y - sin(angleY) * fvec.y,
                          cos(angleY) * rvec.z - sin(angleY) * fvec.z};
       vector new_fvec = {sin(angleY) * rvec.x + cos(angleY) * fvec.x, sin(angleY) * rvec.y + cos(angleY) * fvec.y,
@@ -840,11 +840,12 @@ void CTextureGrWnd::OnTimer(UINT nIDEvent) {
       rvec = new_rvec;
       fvec = new_fvec;
 
-      // Rotate around right-vector (rvec) for angleX
-      vector new_uvec = {cos(angleX) * uvec.x - sin(angleX) * fvec.x, cos(angleX) * uvec.y - sin(angleX) * fvec.y,
-                         cos(angleX) * uvec.z - sin(angleX) * fvec.z};
-      new_fvec = {(float)(sin(angleX) * uvec.x + cos(angleX) * fvec.x), (float)(sin(angleX) * uvec.y + cos(angleX) * fvec.y),
-                  (float)(sin(angleX) * uvec.z + cos(angleX) * fvec.z)};
+      // Rotate around right-vector (rvec) for angleX (Pitch)
+      vector new_uvec = {cos(angleX) * uvec.x + sin(angleX) * fvec.x, cos(angleX) * uvec.y + sin(angleX) * fvec.y,
+                         cos(angleX) * uvec.z + sin(angleX) * fvec.z};
+      new_fvec = {(float)(-sin(angleX) * uvec.x + cos(angleX) * fvec.x),
+                  (float)(-sin(angleX) * uvec.y + cos(angleX) * fvec.y),
+                  (float)(-sin(angleX) * uvec.z + cos(angleX) * fvec.z)};
 
       uvec = new_uvec;
       fvec = new_fvec;
@@ -854,6 +855,8 @@ void CTextureGrWnd::OnTimer(UINT nIDEvent) {
       vector &rvec = Viewer_object->orient.rvec;
       vector &uvec = Viewer_object->orient.uvec;
 
+	  sensitivity = sensitivity * 8;
+
       pos.x += -dx * rvec.x * sensitivity + dy * uvec.x * sensitivity;
       pos.y += -dx * rvec.y * sensitivity + dy * uvec.y * sensitivity;
       pos.z += -dx * rvec.z * sensitivity + dy * uvec.z * sensitivity;
@@ -862,7 +865,7 @@ void CTextureGrWnd::OnTimer(UINT nIDEvent) {
       vector &pos = Viewer_object->pos;
       vector &fvec = Viewer_object->orient.fvec;
 
-      float zoom = dy * sensitivity;
+      float zoom = dy * (sensitivity * 8);
       pos.x += zoom * fvec.x;
       pos.y += zoom * fvec.y;
       pos.z += zoom * fvec.z;
@@ -957,8 +960,6 @@ void CTextureGrWnd::OnPaint()
 		dc.TextOut(10,10,m_Name,lstrlen(m_Name));
 //		m_grViewport->puts(10,10, m_Name);
 	}
-
-	SetFocus();
 }
 
 
@@ -1105,8 +1106,8 @@ void CTextureGrWnd::OnLButtonDown(UINT nFlags, CPoint point)
 {
      m_Mouse.left = true;
     //rend_MakeCurrent(GetDC()->m_hDC);
-
-//	TexGrStartOpenGL();
+     SetFocus();
+     //	TexGrStartOpenGL();
 
 	ResetPostrenderList();
 
