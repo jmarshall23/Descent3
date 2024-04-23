@@ -85,6 +85,8 @@ void RotateRoomPoints(room *rp, vector4 *world_vecs);
 #include "Macros.h"
 #endif
 
+bool IsEditor();
+
 static int Faces_rendered = 0;
 extern float GetFPS();
 extern ubyte Outline_release_mode;
@@ -1141,26 +1143,24 @@ void BuildRoomList(int start_room_num) {
   wnd.bot = Render_height;
   BuildRoomListSub(start_room_num, &wnd, 0);
 // mprintf((0,"N_render_rooms = %d ",N_render_rooms));
-#ifdef EDITOR
-  // Add all external rooms to render list if that flag set
-  if (Editor_view_mode == VM_MINE && In_editor_mode) {
-    if (Render_all_external_rooms) {
-      int i;
-      room *rp;
-      for (i = 0, rp = Rooms; i <= Highest_room_index; i++, rp++) {
-        if (rp->used && (rp->flags & RF_EXTERNAL)) {
-          for (int t = 0; t < rp->num_faces; t++)
-            rp->faces[t].flags |= FF_VISIBLE;
-          MarkFacingFaces(i, rp->verts);
 
-          if (!Rooms_visited[i])
-            Render_list[N_render_rooms++] = i;
-          Rooms_visited[i] = 1;
-        }
+  // Add all external rooms to render list if that flag set
+  if (IsEditor()) {
+    int i;
+    room *rp;
+    for (i = 0, rp = Rooms; i <= MAX_ROOMS; i++, rp++) {
+      if (rp->used) {
+        for (int t = 0; t < rp->num_faces; t++)
+          rp->faces[t].flags |= FF_VISIBLE;
+        MarkFacingFaces(i, rp->verts);
+
+        if (!Rooms_visited[i])
+          Render_list[N_render_rooms++] = i;
+        Rooms_visited[i] = 1;
       }
     }
   }
-#endif
+
 }
 #ifdef EDITOR
 // Returns 1 if x,y is inside the given polygon, else 0
