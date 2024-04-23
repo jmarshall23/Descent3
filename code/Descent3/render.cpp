@@ -216,6 +216,9 @@ short Mirrored_room_list[MAX_ROOMS];
 ubyte Mirrored_room_checked[MAX_ROOMS];
 short Mirror_rooms[MAX_ROOMS];
 int Num_mirror_rooms = 0;
+room *editor_currentsel(int &Curface, int &Curedge, int &Curvert, int &Curportal);
+bool IsEditor();
+
 //
 //  UTILITY FUNCS
 //
@@ -1971,8 +1974,25 @@ void RenderFace(room *rp, int facenum) {
       goto draw_fog;
     }
   }
+
+  if (IsEditor()) {
+    int Curface;
+    int Curedge;
+    int Curvert;
+    int Curportal;
+    room *editorSelectRoom = editor_currentsel(Curface, Curedge, Curvert, Curportal);
+    if (editorSelectRoom != nullptr) {
+      if (editorSelectRoom == rp && Curface == facenum) {
+        rend_EditorFaceSelected(true);
+      }
+    }
+  }
+  
   // Draw the damn thing
   drawn = g3_DrawPoly(fp->num_verts, pointlist, bm_handle, MAP_TYPE_BITMAP, &face_cc);
+
+  rend_EditorFaceSelected(false);
+
 #ifdef EDITOR
   if (TSearch_on) {
     if (rend_GetPixel(TSearch_x, TSearch_y) != oldcolor) {

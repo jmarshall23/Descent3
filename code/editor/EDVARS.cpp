@@ -207,3 +207,15 @@ char Current_weapon_dir[_MAX_PATH] = "";
 
 // Object ID clipboard
 int Copied_object_id = 0;
+
+room *editor_currentsel(int &Curface, int &Curedge, int &Curvert, int &Curportal) { 
+	if (Curroomp == nullptr)
+		return nullptr;
+
+	Curface = ::Curface;
+	Curedge = ::Curedge;
+	Curvert = ::Curvert;
+	Curportal = ::Curportal;
+
+	return Curroomp;
+}

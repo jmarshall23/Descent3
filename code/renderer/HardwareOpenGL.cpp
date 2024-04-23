@@ -206,7 +206,7 @@ static int OpenGL_last_frame_verts_processed = 0;
 static int OpenGL_last_uploaded = 0;
 static float OpenGL_Alpha_factor = 1.0f;
 static bool OpenGL_Imgui_FirstRender = false;
-
+static bool OpenGL_editor_renderSelected = false;
 int Cur_texture_object_num = 1;
 
 #ifndef RELEASE
@@ -352,6 +352,10 @@ int opengl_InitCache(void) {
 
   OpenGL_cache_initted = 1;
   return 1;
+}
+
+void rend_EditorFaceSelected(bool IsSelected) { 
+    OpenGL_editor_renderSelected = IsSelected; 
 }
 
 void rend_GetScreenDimensions(int *width, int *height) {
@@ -1594,6 +1598,13 @@ void opengl_DrawMultitexturePolygon3D(int handle, g3Point **p, int nv, int map_t
       colorp->a = alpha;
     }
 
+    if (OpenGL_editor_renderSelected) {
+      colorp->r = 1;
+      colorp->g = 0;
+      colorp->b = 0;
+      colorp->a = alpha;
+    }
+
     /*
     // Texture this polygon!
     float texw=1.0/(pnt->p3_z+Z_bias);
@@ -2026,6 +2037,13 @@ void rend_DrawPolygon3D(int handle, g3Point **p, int nv, int map_type) {
       colorp->r = 1;
       colorp->g = 1;
       colorp->b = 1;
+      colorp->a = alpha;
+    }
+
+    if (OpenGL_editor_renderSelected) {
+      colorp->r = 1;
+      colorp->g = 0;
+      colorp->b = 0;
       colorp->a = alpha;
     }
 

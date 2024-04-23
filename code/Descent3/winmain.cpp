@@ -142,9 +142,16 @@ int no_debug_dialog = 0;
 void getcpudata(cpuinfo *info);
 
 #if defined(EDITOR)
-bool IsEditor() { return true; }
+bool IsEditor() { 
+    extern int Game_mode;
+    if (GetFunctionMode() == EDITOR_GAME_MODE) {
+        return false;
+    }
+    return true; 
+}
 #else
 bool IsEditor() { return false; }
+struct room* editor_currentsel(int& Curface, int& Curedge, int& Curvert, int& Curportal) { return nullptr; }
 #endif
 
 //	---------------------------------------------------------------------------

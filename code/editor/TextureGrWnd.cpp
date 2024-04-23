@@ -1109,6 +1109,10 @@ void CTextureGrWnd::OnLButtonDown(UINT nFlags, CPoint point)
      SetFocus();
      //	TexGrStartOpenGL();
 
+	 if (m_Keys.ctrl) {
+       return;
+	 }
+
 	ResetPostrenderList();
 
 	if (Editor_view_mode==VM_ROOM)

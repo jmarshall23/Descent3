@@ -1944,11 +1944,11 @@ extern void RunGameFromEditor();
 void CMainFrame::OnFilePlayin640x480() 
 {
 	// Returns true if there are out of data files
-	int count = AreScriptsOutofDate();
-	if(count>0){
-		if(OutrageMessageBox(MBOX_YESNO,"There were %d scripts that couldn't be compiled, continue?",count)!=IDYES)
-			return;
-	}
+	//int count = AreScriptsOutofDate();
+	//if(count>0){
+	//	if(OutrageMessageBox(MBOX_YESNO,"There were %d scripts that couldn't be compiled, continue?",count)!=IDYES)
+	//		return;
+	//}
 
 
 	renderer_type sr_save;
