@@ -709,29 +709,31 @@ int ReplaceTextureInRoom(room *rp,int old_tmap,int new_tmap)
 void CTextureDialog::OnReplaceTexture() 
 {
 	ASSERT (Curroomp!=NULL);
-	int n_changes;
+	//int n_changes;
 
-	int answer = OutrageMessageBox(MBOX_YESNOCANCEL,"Do you wish to change this texture for the whole mine?\n\n(Answer NO to change only the current room.)");
+	//int answer = OutrageMessageBox(MBOX_YESNOCANCEL,"Do you wish to change this texture for the whole mine?\n\n(Answer NO to change only the current room.)");
+	//
+	//if (answer == IDCANCEL)
+	//	return;
+	//
+	//int selected_texture=Curroomp->faces[Curface].tmap;
+	//
+	//if (answer == IDYES) {
+	//
+	//	n_changes = 0;
+	//
+	//	for (int r=0;r<=Highest_room_index;r++)
+	//		if (Rooms[r].used)
+	//			n_changes += ReplaceTextureInRoom(&Rooms[r],selected_texture,D3EditState.texdlg_texture);
+	//}
+	//else {
+	//
+	//	n_changes = ReplaceTextureInRoom(Curroomp,selected_texture,D3EditState.texdlg_texture);
+	//}
+	//
+	//EditorStatus("Texture %d replaced with texture %d on %d faces.",selected_texture,D3EditState.texdlg_texture,n_changes);
 
-	if (answer == IDCANCEL)
-		return;
-
-	int selected_texture=Curroomp->faces[Curface].tmap;
-
-	if (answer == IDYES) {
-
-		n_changes = 0;
-
-		for (int r=0;r<=Highest_room_index;r++)
-			if (Rooms[r].used)
-				n_changes += ReplaceTextureInRoom(&Rooms[r],selected_texture,D3EditState.texdlg_texture);
-	}
-	else {
-
-		n_changes = ReplaceTextureInRoom(Curroomp,selected_texture,D3EditState.texdlg_texture);
-	}
-
-	EditorStatus("Texture %d replaced with texture %d on %d faces.",selected_texture,D3EditState.texdlg_texture,n_changes);
+	Curroomp->faces[Curface].tmap = D3EditState.texdlg_texture;
 
 	World_changed=1;
 

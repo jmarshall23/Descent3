@@ -925,10 +925,10 @@ void CTextureGrWnd::OnSize(UINT nType, int cx, int cy)
 		D3EditState.texscr_h = cy;
 	}
 
-	GetClientRect(&rect);
-	sprintf(text, "Texture (%dx%d)", rect.right-rect.left, rect.bottom-rect.top);
-	lstrcpy(m_Name, text);	
-	SetWindowText(m_Name);
+	//GetClientRect(&rect);
+	//sprintf(text, "Texture (%dx%d)", rect.right-rect.left, rect.bottom-rect.top);
+	//lstrcpy(m_Name, text);	
+	//SetWindowText(m_Name);
 }
 
 void CTextureGrWnd::OnPaint() 
