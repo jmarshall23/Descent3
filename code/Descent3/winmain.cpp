@@ -157,7 +157,7 @@ class oeD3Win32App : public oeWin32Application {
   HANDLE hAppMutex;
 
 public:
-  oeD3Win32App(unsigned flags, HInstance hinst) : oeWin32Application(PRODUCT_NAME, flags, hinst) {
+  oeD3Win32App(unsigned flags, HInstance hinst) : oeWin32Application("Descent 3 Apex", flags, hinst) {
     Descent = this;
     shutdown = false;
     final_shutdown = false;

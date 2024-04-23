@@ -138,7 +138,7 @@
 #ifdef DEMO
 #define PRODUCT_NAME "Descent 3 Demo"
 #else
-#define PRODUCT_NAME "Descent 3"
+#define PRODUCT_NAME "Descent 3 Apex"
 #endif
 
 // This is the port number assigned to "descent3" by the IANA (Internet Assigned Numbers Authority)
