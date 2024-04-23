@@ -918,7 +918,7 @@ void EditorToGame()
 //	maybe we should CLEAR HERE
 	if (set_size) {
 		((oeWin32Application *)Descent)->set_sizepos(
-		0,0,640,480);	
+		0,0,1280,720);	
 	}
 
 	Just_returned_from_game=1;
