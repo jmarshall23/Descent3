@@ -252,6 +252,7 @@ tex_array GL_tex_coords2[100];
 
 bool OpenGL_multitexture_state = false;
 int Already_loaded = 0;
+int Imgui_Already_loaded = 0;
 bool opengl_Blending_on = 0;
 
 static oeApplication *ParentApplication = NULL;
@@ -525,7 +526,7 @@ int opengl_Setup(HDC glhdc) {
     return NULL;
   }
 
-  if (!IsEditor()) {
+  if (!Imgui_Already_loaded) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
@@ -536,6 +537,7 @@ int opengl_Setup(HDC glhdc) {
     ImGui_ImplWin32_InitForOpenGL(hOpenGLWnd);
     ImGui_ImplOpenGL3_Init("#version 130"); // GLSL version, change if necessary
     io.Fonts->AddFontDefault();
+    Imgui_Already_loaded = 1;
   }
    Already_loaded = 1;
 
@@ -1033,12 +1035,11 @@ void opengl_Close() {
 
   mem_free(delete_list);
 
-  if (!IsEditor()) {
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplWin32_Shutdown();
-    ImGui::DestroyContext();
-    OpenGL_Imgui_FirstRender = false;
-  }
+   ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplWin32_Shutdown();
+  ImGui::DestroyContext();
+  OpenGL_Imgui_FirstRender = false;
+  Imgui_Already_loaded = 0;
 
 #if defined(WIN32)
    wglMakeCurrent(NULL, NULL);
@@ -2432,26 +2433,21 @@ void rend_Flip(void) {
   OpenGL_uploads = 0;
   OpenGL_polys_drawn = 0;
   OpenGL_verts_processed = 0;  
-  if (!IsEditor()) {
-    if (OpenGL_Imgui_FirstRender) {
-      console.Draw("Descent 3 Developer Console");
+  if (OpenGL_Imgui_FirstRender) {
+    console.Draw("Descent 3 Developer Console");
 
-      ImGui::Render();
-      ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    }
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
   }
 
   SwapBuffers((HDC)hOpenGLDC);
 
    glClear(GL_COLOR_BUFFER_BIT);
-   if (!IsEditor())
-   {
-     // Start the Dear ImGui frame
-     ImGui_ImplOpenGL3_NewFrame();
-     ImGui_ImplWin32_NewFrame();
-     ImGui::NewFrame();
-     OpenGL_Imgui_FirstRender = true;
-   }
+  // Start the Dear ImGui frame
+  ImGui_ImplOpenGL3_NewFrame();
+  ImGui_ImplWin32_NewFrame();
+  ImGui::NewFrame();
+  OpenGL_Imgui_FirstRender = true;
 
 
 #ifdef __PERMIT_GL_LOGGING
