@@ -285,6 +285,9 @@ void CTriggerDialog::UpdateDialog()
 	if (Current_trigger >= Num_triggers)
 		Current_trigger--;
 
+	if (Curroomp == nullptr)
+          return;
+
 	//If current room/face/portal change, select current trigger from current room/face/portal
 	if ((ROOMNUM(Curroomp) != last_curroom) || (Curface != last_curface)) {
 			if (Curroomp->faces[Curface].flags & FF_HAS_TRIGGER)

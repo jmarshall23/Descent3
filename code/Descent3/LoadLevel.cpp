@@ -3997,7 +3997,11 @@ int LoadLevel(char *filename, void (*cb_fn)(const char *, int, int)) {
           Editor_viewer_id = cf_ReadInt(ifile);
           if (version < 47)
             cf_ReadInt(ifile); // was Editor_viewer_id[VM_TERRAIN]
+// icecdoldduke - no reason to restore the selected object
+          Cur_object_index = -1;
         }
+// icecdoldduke - no reason to restore the selected face
+        Curface = -1;
 
         if (version >= 55) {
           cf_ReadVector(ifile, &Wireframe_view_mine.target);

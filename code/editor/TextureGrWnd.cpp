@@ -787,7 +787,7 @@ void CTextureGrWnd::Render()
 		TGWRenderMine(&Viewer_object->pos,&Viewer_object->orient,D3_DEFAULT_ZOOM,Viewer_object->roomnum);
 	}
 
-	PostRender(Viewer_object->roomnum);
+	PostRender(Viewer_object->roomnum, Cur_object_index);
 
 	// Draws all User Defined Paths 
 	DrawAllPaths(m_grViewport,&Viewer_object->pos,&Viewer_object->orient,D3_DEFAULT_ZOOM);
@@ -1085,7 +1085,7 @@ void CTextureGrWnd::TGWRenderMine(vector *pos,matrix *orient,float zoom,int star
 	FrameCount++;
 
 	RenderMine(start_roomnum,0,0);
-	PostRender(Viewer_object->roomnum);
+    PostRender(Viewer_object->roomnum, Cur_object_index);
 
 	//	we need to save these for object movement.
 	g3_GetViewPosition(&m_ViewPos);
@@ -1145,7 +1145,7 @@ void CTextureGrWnd::OnLButtonDown(UINT nFlags, CPoint point)
 		
 		StartEditorFrame(m_grViewport,&Viewer_object->pos,&Viewer_object->orient,D3_DEFAULT_ZOOM);
 		RenderTerrain(0);
-		PostRender(Viewer_object->roomnum);
+        PostRender(Viewer_object->roomnum, Cur_object_index);
 		EndEditorFrame();
 		TSearch_on=0;
 		if (TSearch_found_type!=-1)
@@ -1264,7 +1264,11 @@ void CTextureGrWnd::OnLButtonDown(UINT nFlags, CPoint point)
 			m_StartFlip = FALSE;			// unsignal flip.
 			SelectObject(TSearch_seg);
 			// start object moving if mouse down in an object.
-			ObjMoveManager.Start(this, m_grViewport->width(), m_grViewport->height(), &m_ViewPos, &m_ViewMatrix, point.x, point.y);							
+			//ObjMoveManager.Start(this, m_grViewport->width(), m_grViewport->height(), &m_ViewPos, &m_ViewMatrix, point.x, point.y);					
+            Curroomp = nullptr;
+			Curface = -1;
+            Curedge = Curvert = 0;
+            Curportal = -1;
 		}
 		else if (TSearch_found_type==TSEARCH_FOUND_MINE)
 		{
@@ -1373,6 +1377,7 @@ void CTextureGrWnd::OnLButtonDown(UINT nFlags, CPoint point)
 			}
 
 			//All clicks on face change the current face
+			Cur_object_index = -1;
 			Curroomp = &Rooms[roomnum];
 			Curface = facenum;
 			Curedge = Curvert = 0;
@@ -1419,7 +1424,7 @@ void CTextureGrWnd::OnRButtonDown(UINT nFlags, CPoint point)
 		
 		StartEditorFrame(m_grViewport,&Viewer_object->pos,&Viewer_object->orient,D3_DEFAULT_ZOOM);
 		RenderTerrain(0);
-		PostRender(Viewer_object->roomnum);
+        PostRender(Viewer_object->roomnum, Cur_object_index);
 		EndEditorFrame();
 		TSearch_on=0;
 		if (TSearch_found_type==TSEARCH_FOUND_TERRAIN)

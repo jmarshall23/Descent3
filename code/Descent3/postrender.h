@@ -46,7 +46,7 @@ extern postrender_struct Postrender_list[];
 void ResetPostrenderList();
 
 // Renders all the objects/viseffects/walls we have in our postrender list
-void PostRender(int);
+void PostRender(int, int);
 
 void DrawPostrenderFace(int roomnum, int facenum, bool change_z = true);
 

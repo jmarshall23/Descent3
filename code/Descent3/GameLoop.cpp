@@ -2553,7 +2553,7 @@ void GameRenderWorld(object *viewer, vector *viewer_eye, int viewer_roomnum, mat
   }
 
   // Done with 3D
-  PostRender(viewer_roomnum);
+  PostRender(viewer_roomnum, -1);
   g3_EndFrame();
 
   // Restore viewer orientation

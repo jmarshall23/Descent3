@@ -562,6 +562,11 @@ void CRoomKeypadDialog::UpdateDialog()
 {
 	int i;
 
+	if (Curroomp == nullptr) {
+		PrintToDlgItem(this, IDC_ROOM_NAME, "Name:\t NO ROOM");
+        return;
+	}
+
 	//Show the number of verts, faces, & portals in the current room
 	PrintToDlgItem(this,IDC_ROOM_NAME,"Name:\t%s",Curroomp->name?Curroomp->name:"<none>");
 	PrintToDlgItem(this,IDC_VERTEX_COUNT,"Vertices:\t%d",Curroomp->num_verts);

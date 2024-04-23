@@ -233,7 +233,7 @@ void DrawPostrenderFace(int roomnum, int facenum, bool change_z) {
 }
 
 // Renders all the objects/viseffects/walls we have in our postrender list
-void PostRender(int roomnum) {
+void PostRender(int roomnum, int selectedObject) {
   g3_GetViewPosition(&Viewer_eye);
   g3_GetUnscaledMatrix(&Viewer_orient);
 
@@ -255,6 +255,11 @@ void PostRender(int roomnum) {
 
       if (!OBJECT_OUTSIDE(&Objects[Postrender_list[i].objnum]))
         SetupPostrenderRoom(&Rooms[Objects[Postrender_list[i].objnum].roomnum]);
+
+      if (selectedObject != -1 && Postrender_list[i].objnum == selectedObject) {
+            rend_EditorFaceSelected(true);
+      }
+
       RenderObject(objp);
     } else {
       // Do room face

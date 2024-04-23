@@ -563,7 +563,7 @@ void CLightingDialog::UpdateDialog()
 	char str[100];
 
 	// Do volumetrics
-	if (Curroomp && Curroomp->used)
+    if (Curroomp && Curroomp->used && Curface != -1)
 	{
 		aval=Ubyte_to_float[Curroomp->faces[Curface].face_uvls[Curvert].alpha];
 
@@ -704,7 +704,12 @@ void CLightingDialog::UpdateDialog()
 	ebox->SetWindowText (str);
 	
 	ebox=(CEdit *) GetDlgItem (IDC_LIGHT_MULTIPLY_EDIT);
-	sprintf (str,"%.2f",(Curroomp->faces[Curface].light_multiple)/4.0);
+	if (Curroomp != nullptr){
+        sprintf(str, "%.2f", (Curroomp->faces[Curface].light_multiple) / 4.0);
+	} else {
+	    sprintf(str, "No Room");
+	}
+       
 	ebox->SetWindowText (str);
 	
 }

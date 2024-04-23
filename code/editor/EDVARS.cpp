@@ -131,7 +131,7 @@
 
 //Current room, face, edge, & vert.
 room *Curroomp=NULL;
-int Curface=0,Curedge=0,Curvert=0,Curportal=-1;
+int Curface = -1, Curedge = -1, Curvert = -1, Curportal = -1;
 
 //Marked room & face
 room *Markedroomp=NULL;
@@ -179,7 +179,7 @@ int Selected_rooms[MAX_ROOMS];
 int Mine_changed;
 
 //Current object 
-int Cur_object_index=0;
+int Cur_object_index=-1;
 
 //How does object movement work?
 int Object_move_mode=REL_OBJECT;
