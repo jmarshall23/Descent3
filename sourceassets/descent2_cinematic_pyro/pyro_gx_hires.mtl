@@ -1,0 +1,137 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 18.11.2020 08:16:52
+
+newmtl BSHIP01
+	Ns 26.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0627 0.0627 0.0627
+	Kd 0.3529 0.3529 0.3529
+	Ks 0.1200 0.1200 0.1200
+	Ke 0.0353 0.0353 0.0353
+	map_Ka E:\Descent_archives\Descent_2\Pyro GX model\textures\BSHIP01.GIF
+	map_Kd E:\Descent_archives\Descent_2\Pyro GX model\textures\BSHIP01.GIF
+
+newmtl BSHIP02
+	Ns 26.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0627 0.0627 0.0627
+	Kd 0.3529 0.3529 0.3529
+	Ks 0.0480 0.0480 0.0480
+	Ke 0.0353 0.0353 0.0353
+	map_Ka E:\Descent_archives\Descent_2\Pyro GX model\textures\BSHIP02.GIF
+	map_Kd E:\Descent_archives\Descent_2\Pyro GX model\textures\BSHIP02.GIF
+
+newmtl BSHIP03
+	Ns 26.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0627 0.0627 0.0627
+	Kd 0.3529 0.3529 0.3529
+	Ks 0.3600 0.3600 0.3600
+	Ke 0.0353 0.0353 0.0353
+	map_Ka E:\Descent_archives\Descent_2\Pyro GX model\textures\BSHIP03.GIF
+	map_Kd E:\Descent_archives\Descent_2\Pyro GX model\textures\BSHIP03.GIF
+
+newmtl BLACK_MATTE
+	Ns 5.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0039 0.0039 0.0039
+	Kd 0.0039 0.0039 0.0039
+	Ks 0.2400 0.2400 0.2400
+	Ke 0.0000 0.0000 0.0000
+
+newmtl COPPER
+	Ns 70.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.5686 0.2627 0.1412
+	Ks 0.7700 0.1298 0.0483
+	Ke 0.0000 0.0000 0.0000
+	map_refl E:\Descent_archives\Descent_2\Pyro GX model\textures\REFMAP.GIF
+
+newmtl STEEL1
+	Ns 26.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0627 0.0627 0.0627
+	Kd 0.3529 0.3529 0.3529
+	Ks 0.3600 0.3600 0.3600
+	Ke 0.0353 0.0353 0.0353
+	map_Ka E:\Descent_archives\Descent_2\Pyro GX model\textures\STEEL1.GIF
+	map_Kd E:\Descent_archives\Descent_2\Pyro GX model\textures\STEEL1.GIF
+
+newmtl BLACK_GLASS
+	Ns 53.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.0000 0.0000 0.0000
+	Ks 0.9400 0.9400 0.9400
+	Ke 0.0000 0.0000 0.0000
+	map_refl E:\Descent_archives\Descent_2\Pyro GX model\textures\REFMAP.GIF
+
+newmtl WHITESPEC
+	Ns 30.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0824 0.0824 0.0824
+	Kd 0.3725 0.3725 0.3725
+	Ks 0.4094 0.4094 0.4094
+	Ke 0.0373 0.0373 0.0373
+	map_Ka E:\Descent_archives\Descent_2\Pyro GX model\textures\WHITESPC.TGA
+	map_Kd E:\Descent_archives\Descent_2\Pyro GX model\textures\WHITESPC.TGA
+	map_d E:\Descent_archives\Descent_2\Pyro GX model\textures\SCUFF01.GIF
+
+newmtl STEEL2
+	Ns 26.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0627 0.0627 0.0627
+	Kd 0.3529 0.3529 0.3529
+	Ks 0.3647 0.3647 0.3647
+	Ke 0.0353 0.0353 0.0353
+	map_Ka E:\Descent_archives\Descent_2\Pyro GX model\textures\STEEL2.GIF
+	map_Kd E:\Descent_archives\Descent_2\Pyro GX model\textures\STEEL2.GIF
+
+newmtl WHITE_PAINT
+	Ns 0.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5922 0.5922 0.4941
+	Kd 0.5922 0.5922 0.4941
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
