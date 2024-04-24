@@ -511,29 +511,24 @@ void con_mputc(int n, char c) {
 
 void copy_row(int nwords, short *src, short *dest1, short *dest2) {
 
-  __asm {
-		mov ecx,nwords
-		mov esi,src
-		mov ebx,dest1
-		mov edx,dest2
- 		shr		ecx, 1
-		jnc		even_num		
-		mov		ax, [esi]		
-		add		esi, 2			
-		mov		[ebx], ax		
-		add		ebx, 2			
-		mov		[edx], ax		
-		add		edx, 2			
-		even_num:	cmp		ecx, 0				
-		je			done
-		rowloop:	mov		eax, [esi]			
-		add		esi, 4				
-		mov		[edx], eax			
-		add		edx, 4				
-		mov		[ebx], eax			
-		add		ebx, 4				
-		loop		rowloop				
-		done:
+   // Handle the case where the number of words is odd
+  if (nwords % 2 != 0) {
+    *dest1++ = *src;
+    *dest2++ = *src++;
+    nwords--; // Decrease nwords after handling the odd word
+  }
+
+  // Now nwords is guaranteed to be even
+  for (int i = 0; i < nwords; i += 2) {
+    // Copy two shorts at a time
+    int32_t data = *((int32_t *)src); // Read two shorts as one int
+    *((int32_t *)dest1) = data;
+    *((int32_t *)dest2) = data;
+
+    // Move the pointers two shorts forward
+    src += 2;
+    dest1 += 2;
+    dest2 += 2;
   }
 }
 

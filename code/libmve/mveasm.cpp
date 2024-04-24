@@ -40,6 +40,7 @@
 #include "mvelibl.h"
 #include "mvelibi.h"
 #include <string.h>
+#include <windows.h>
 
 extern unsigned char *nf_buf_cur;
 extern unsigned char *nf_buf_prv;
@@ -2081,9 +2082,7 @@ void MVE_gfxSetSplit(unsigned line);
 #define int3
 #endif
 #else
-#define int3                                                                                                           \
-  __asm { int 3}                                                                                                        \
-  ;
+#define int3 DebugBreak();
 #endif
 
 void DECOMP_BODY(bool HI_COLOR_FLAG, const unsigned char *&comp, unsigned int _x, unsigned int _y, unsigned int _w,

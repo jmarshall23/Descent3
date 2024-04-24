@@ -1096,6 +1096,7 @@ int CheckTransparentPoint(const vector *pnt, const room *rp, const int facenum) 
 float ComputeRoomBoundingSphere(vector *center, room *rp) {
   // This algorithm is from Graphics Gems I.  There's a better algorithm in Graphics Gems III that
   // we should probably implement sometime.
+  #undef rad2
 
   vector *min_x, *max_x, *min_y, *max_y, *min_z, *max_z, *vp;
   float dx, dy, dz;

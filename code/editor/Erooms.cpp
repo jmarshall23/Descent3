@@ -1721,8 +1721,9 @@ void DeleteRoomVert(room *rp,int vertnum)
 	//Remap vertices in faces
 	for (f=0,fp=rp->faces;f<rp->num_faces;f++,fp++)
 		for (v=0;v<fp->num_verts;v++)
-			if (fp->face_verts[v] == vertnum)
-				Int3();		//THIS IS VERY BAD!  DELETING A VERTEX STILL IN USE!
+            if (fp->face_verts[v] == vertnum) {
+              Int3(); // THIS IS VERY BAD!  DELETING A VERTEX STILL IN USE!
+            }
 			else if (fp->face_verts[v] > vertnum)
 				fp->face_verts[v]--;
 

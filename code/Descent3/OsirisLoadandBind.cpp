@@ -3172,9 +3172,9 @@ int Osiris_ExtractScriptsFromHog(int library_handle, bool is_mission_hog) {
   if (cf_LibraryFindFirst(library_handle, script_extension, filename)) {
 
     mprintf((0, "	Found: %s...", filename));
-    if (!ddio_GetTempFileName(tempdir, "d3s", temp_filename))
+    if (!ddio_GetTempFileName(tempdir, "d3s", temp_filename)) {
       Int3();
-    else {
+    } else {
       ddio_SplitPath(temp_filename, NULL, temp_file, temp_fileext);
       strcat(temp_file, temp_fileext);
 
@@ -3206,9 +3206,9 @@ int Osiris_ExtractScriptsFromHog(int library_handle, bool is_mission_hog) {
         }
 
         // generate temp filename
-        if (!ddio_GetTempFileName(tempdir, "d3s", temp_filename))
+        if (!ddio_GetTempFileName(tempdir, "d3s", temp_filename)) {
           Int3();
-        else {
+        } else {
           ddio_SplitPath(temp_filename, NULL, temp_file, temp_fileext);
           strcat(temp_file, temp_fileext);
 

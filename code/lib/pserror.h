@@ -151,6 +151,8 @@
 #ifndef PSERROR_H
 #define PSERROR_H
 #include <assert.h>
+#include <windows.h>
+
 #include "debug.h"
 #include "mono.h"
 //	initializes error handler.
@@ -216,28 +218,12 @@ inline void SetDebugBreakHandlers(void (*stop)(), void (*resume)()) {
     if (DebugBreak_callback_resume)                                                                                    \
       (*DebugBreak_callback_resume)();                                                                                 \
   } while (0)
-#define ASSERT(x)                                                                                                      \
-  do {                                                                                                                 \
-    if (!(unsigned)(x)) {                                                                                              \
-      mprintf((0, "Assertion failed (%s) in %s line %d.\n", #x, __FILE__, __LINE__));                                  \
-      if (Debug_break)                                                                                                 \
-        DEBUG_BREAK();                                                                                                 \
-      else                                                                                                             \
-        AssertionFailed(#x, __FILE__, __LINE__);                                                                       \
-    }                                                                                                                  \
-  } while (0)
-#define Int3()                                                                                                         \
-  do {                                                                                                                 \
-    mprintf((0, "Int3 at %s line %d.\n", __FILE__, __LINE__));                                                         \
-    if (Debug_break)                                                                                                   \
-      DEBUG_BREAK();                                                                                                   \
-    else                                                                                                               \
-      Int3MessageBox(__FILE__, __LINE__);                                                                              \
-  } while (0)
+#define ASSERT(x) assert(x)
+#define Int3() DebugBreak();
 #define HEAPCHECK()                                                                                                    \
   do {                                                                                                                 \
     if (_heapchk() != _HEAPOK)                                                                                         \
-      Int3();                                                                                                          \
+      DebugBreak();                                                                                                          \
   } while (0)
 #elif defined(LINUX)
 // For some reason Linux doesn't like the \ continuation character, so I have to uglify this

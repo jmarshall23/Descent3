@@ -884,7 +884,7 @@ void vm_MakeRandomVector(vector *vec) {
 float vm_ComputeBoundingSphere(vector *center, vector *vecs, int num_verts) {
   // This algorithm is from Graphics Gems I.  There's a better algorithm in Graphics Gems III that
   // we should probably implement sometime.
-
+#undef rad2
   vector *min_x, *max_x, *min_y, *max_y, *min_z, *max_z, *vp;
   float dx, dy, dz;
   float rad, rad2;

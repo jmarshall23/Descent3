@@ -406,23 +406,7 @@ inline void MessageBoxStr(int id) {
 }
 
 // Returns true if this machine can support the CPUID instruction
-bool SupportsCPUID() {
-  bool enabled = true;
-
-  __try {
-
-    _asm {
-			pushad
-			__emit 0x0f // CPUID
-			__emit 0xa2 // CPUID
-			popad
-    }
-  } __except (1) {
-    enabled = false;
-  }
-
-  return enabled;
-}
+bool SupportsCPUID() { return true; }
 
 // Returns true if this machine can support katmai instructions
 bool SupportsKatmai() {
@@ -531,77 +515,7 @@ end_win32_check:
 }
 
 void getcpudata(cpuinfo *info) {
-  unsigned char family, model, mask;
-  int level;
-  unsigned int capability;
-  unsigned int a, b, c;
 
-  if (SupportsCPUID()) {
-    _asm {
-			pushad;
-
-			xor eax,eax; // call CPUID with 0 -> return vendor ID
-
-			__emit 0x0f; // CPUID
-			__emit 0xa2; // CPUID
-
-			mov level,eax; // save CPUID level
-			mov a,ebx; // lo 4 chars
-			mov b,edx; // next 4 chars
-			mov c,ecx; // last 4 chars
-
-			or eax,eax; // do we have processor info as well?
-			je noinfo;
-
-			mov eax,1; // Use the CPUID instruction to get CPU type
-			__emit 0x0f; // CPUID
-			__emit 0xa2; // CPUID
-
-			mov cl,al; // save reg for future use
-			and ah,15; // mask processor family
-			mov family,ah;
-			and al,240; // mask model
-			shr al,4;
-			mov model,al;
-			and cl,15; // mask mask revision
-			mov mask,cl;
-			mov capability,edx;
-
-		noinfo:
-			popad;
-    }
-
-    // fill in the struct
-    memset(info->vendor_id, 0, 16);
-    memcpy(&info->vendor_id[0], &a, 4);
-    memcpy(&info->vendor_id[4], &b, 4);
-    memcpy(&info->vendor_id[8], &c, 4);
-    info->vendor_id[15] = '\0';
-
-    info->capability = capability;
-    info->CPUid_level = level;
-    info->family = family;
-    info->mask = mask;
-    info->model = model;
-
-    if (!strcmp(info->vendor_id, "GenuineIntel"))
-      info->vendor = VENDOR_INTEL;
-    else if (!strcmp(info->vendor_id, "AuthenticAMD"))
-      info->vendor = VENDOR_AMD;
-    else if (!strcmp(info->vendor_id, "CyrixInstead"))
-      info->vendor = VENDOR_CYRIX;
-    else if (!strcmp(info->vendor_id, "UMC UMC UMC "))
-      info->vendor = VENDOR_UMC;
-    else if (!strcmp(info->vendor_id, "CentaurHauls"))
-      info->vendor = VENDOR_CENTAUR;
-    else if (!strcmp(info->vendor_id, "NexGenDriven"))
-      info->vendor = VENDOR_NEXGEN;
-    else {
-      info->vendor = VENDOR_UNKNOWN;
-      info->vendor_id[0] = '\0';
-    }
-
-  } else {
     info->capability = 0;
     info->CPUid_level = 0;
     info->family = 0;
@@ -609,7 +523,6 @@ void getcpudata(cpuinfo *info) {
     info->model = 0;
     info->vendor_id[0] = '\0';
     info->vendor = VENDOR_UNKNOWN;
-  }
 }
 
 //	---------------------------------------------------------------------------

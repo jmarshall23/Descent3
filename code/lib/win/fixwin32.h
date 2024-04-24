@@ -43,45 +43,14 @@
 #ifndef _FIXWIN32_H
 #define _FIXWIN32_H
 
+#include <stdint.h>
+
 // what does this do?  Why didn't Jason put a comment here?
 // Jason replies: This pragma disables the "no return value" warning that
 // is generated when converting doubles to floats
 // A thousand pardons for the confusion
 
 #pragma warning(disable : 4035)
-
-inline fix FixDiv(fix a, fix b) {
-  __asm
-  {
-		mov eax,a
-		mov ebx,b
-		cdq
-		shld edx, eax, 16
-		sal eax,16
-		idiv ebx
-  }
-}
-
-inline fix FixMul(fix a, fix b) {
-  __asm
-  {
-		mov eax,a
-		mov ebx,b	
-	    imul ebx
-        shrd eax,edx,16
-  }
-}
-
-inline fix FixMulDiv(fix a, fix b, fix c) {
-  __asm
-  {
-		mov eax, a
-		mov edx, b
-		mov ebx, c
-		imul edx
-		idiv ebx
-  }
-}
 
 #pragma warning(default : 4035)
 
