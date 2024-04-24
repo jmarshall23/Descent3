@@ -1444,6 +1444,9 @@ void CEditorView::OnRoomSetCenterFromViewer()
 
 void CEditorView::OnUpdateRoomClearCenterPoint(CCmdUI* pCmdUI) 
 {
+	if (Curroomp == nullptr)
+	  return;
+
 	pCmdUI->Enable((Editor_view_mode == VM_MINE) && ((Curroomp->flags & RF_MANUAL_PATH_PNT) != 0));
 }
 

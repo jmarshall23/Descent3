@@ -698,6 +698,9 @@ void DrawObjectSelectionBrackets(object *obj, bool front_flag) {
   }
 }
 #endif
+
+bool IsEditor();
+
 #ifdef _DEBUG
 static float ArrayX[10][20] = {{-1, 1, 1, -1, -1},
                                {-.25, 0.0, 0.0, 0.0, -1.0, 1.0},
@@ -1234,7 +1237,7 @@ void RenderObject(object *obj) {
     render_it = SetupMineObject(obj);
   if (!render_it)
     return;
-  if (!(obj->flags & OF_SAFE_TO_RENDER))
+  if (!(obj->flags & OF_SAFE_TO_RENDER) && !IsEditor())
     return;
   // Mark this a rendered this frame
   obj->flags |= OF_RENDERED;
