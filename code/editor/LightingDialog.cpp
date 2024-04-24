@@ -613,7 +613,7 @@ void CLightingDialog::UpdateDialog()
 	CheckDlgButton (IDC_USE_BSP_CHECK,UseBSP);
 	CheckDlgButton (IDC_VOLUME_LIGHTS,UseVolumeLights);
 
-	if (Curroomp==NULL)
+	if (Curroomp == NULL || Curface == -1)
 	{
 		CheckDlgButton (IDC_CORONA_CHECK,0);
 		CheckDlgButton (IDC_FOG_CHECK,0);
@@ -704,7 +704,7 @@ void CLightingDialog::UpdateDialog()
 	ebox->SetWindowText (str);
 	
 	ebox=(CEdit *) GetDlgItem (IDC_LIGHT_MULTIPLY_EDIT);
-	if (Curroomp != nullptr){
+	if (Curroomp != nullptr && Curface != -1) {
         sprintf(str, "%.2f", (Curroomp->faces[Curface].light_multiple) / 4.0);
 	} else {
 	    sprintf(str, "No Room");

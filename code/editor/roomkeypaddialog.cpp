@@ -604,8 +604,13 @@ void CRoomKeypadDialog::UpdateDialog()
 
 	// set forcefield check
 	//@@((CButton *) GetDlgItem(IDC_FORCEFIELD_CHECK))->SetCheck(Curroomp->faces[Curface].flags & FF_FORCEFIELD);
-	((CButton *) GetDlgItem(IDC_GOALFACE_CHECK))->SetCheck(Curroomp->faces[Curface].flags & FF_GOALFACE);
-	PrintToDlgItem(this,IDC_CURRENT_FACE,"Current face: %d",Curface);
+	if (Curface != -1) {
+          ((CButton *)GetDlgItem(IDC_GOALFACE_CHECK))->SetCheck(Curroomp->faces[Curface].flags & FF_GOALFACE);
+          PrintToDlgItem(this, IDC_CURRENT_FACE, "Current face: %d", Curface);
+	} else {
+          PrintToDlgItem(this, IDC_CURRENT_FACE, "No Face Selected", Curface);
+	}
+	
 
 	//Enable/disable the next portal button
 	((CButton *)GetDlgItem(IDC_ROOMPAD_NEXT_PORTAL))->EnableWindow(((Curportal == -1) && (Curroomp->num_portals > 0)) || (Curroomp->num_portals > 1));
