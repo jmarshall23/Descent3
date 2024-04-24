@@ -212,6 +212,9 @@ room *editor_currentsel(int &Curface, int &Curedge, int &Curvert, int &Curportal
 	if (Curroomp == nullptr)
 		return nullptr;
 
+	if (Curface == -1)
+		return nullptr;
+
 	Curface = ::Curface;
 	Curedge = ::Curedge;
 	Curvert = ::Curvert;

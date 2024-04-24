@@ -628,6 +628,10 @@ void CTextureGrWnd::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) {
     m_Keys.ctrl = false;
     break;
 
+case VK_MENU:
+    m_Keys.alt = false;
+  break;
+
   case VK_SHIFT:
     m_Keys.shift = false;
     break;
@@ -642,6 +646,10 @@ void CTextureGrWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
     m_Keys.ctrl = true;
     break;
 
+	case VK_MENU:
+    m_Keys.alt = true;
+    break;
+
   case VK_SHIFT:
     m_Keys.shift = true;
     break;
@@ -652,14 +660,26 @@ void CTextureGrWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 void CTextureGrWnd::OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
   CWnd ::OnSysKeyDown(nChar, nRepCnt, nFlags);
 
-  // Cned_GrWnd::OnSysKeyDown(nChar, nRepCnt, nFlags);
+    switch (nChar) {
+
+  case VK_MENU:
+    m_Keys.alt = true;
+    break;
+
+  }
 }
 
 void CTextureGrWnd::OnSysKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) {
 
   CWnd ::OnSysKeyUp(nChar, nRepCnt, nFlags);
 
-  // Cned_GrWnd::OnSysKeyUp(nChar, nRepCnt, nFlags);
+  switch (nChar) {
+
+  case VK_MENU:
+    m_Keys.alt = false;
+    break;
+
+  }
 }
 
 void CTextureGrWnd::TexGrStartOpenGL()
@@ -820,6 +840,20 @@ void CTextureGrWnd::OnTimer(UINT nIDEvent) {
 
     int dx = m_Mouse.x - m_Mouse.oldx;
     int dy = m_Mouse.y - m_Mouse.oldy;
+
+	if (m_Keys.alt && Cur_object_index != -1) {
+       //ObjMoveManager.Start(this, m_grViewport->width(), m_grViewport->height(), &m_ViewPos, &m_ViewMatrix, m_Mouse.x, m_Mouse.y);	
+
+		if (m_Mouse.left) {
+          Objects[Cur_object_index].pos.y += -dy * 0.5f;
+        }
+		if (m_Mouse.mid) {
+          Objects[Cur_object_index].pos.x += -dx * 0.5f;
+        }
+		if (m_Mouse.right) {
+          Objects[Cur_object_index].pos.z += -dy * 0.5f;
+        }
+	}
 
     if (m_Keys.ctrl && m_Mouse.left) {
       // Sensitivity factor and input deltas (dx, dy)
@@ -1109,7 +1143,7 @@ void CTextureGrWnd::OnLButtonDown(UINT nFlags, CPoint point)
      SetFocus();
      //	TexGrStartOpenGL();
 
-	 if (m_Keys.ctrl) {
+	 if (m_Keys.ctrl || m_Keys.alt) {
        return;
 	 }
 
@@ -1262,9 +1296,7 @@ void CTextureGrWnd::OnLButtonDown(UINT nFlags, CPoint point)
 		{	
 			//Found a face or object
 			m_StartFlip = FALSE;			// unsignal flip.
-			SelectObject(TSearch_seg);
-			// start object moving if mouse down in an object.
-			//ObjMoveManager.Start(this, m_grViewport->width(), m_grViewport->height(), &m_ViewPos, &m_ViewMatrix, point.x, point.y);					
+			SelectObject(TSearch_seg);			
             Curroomp = nullptr;
 			Curface = -1;
             Curedge = Curvert = 0;
