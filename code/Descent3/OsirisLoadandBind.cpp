@@ -423,6 +423,8 @@
 #include "gamecinematics.h"
 #include "demofile.h"
 
+#include <string>
+
 #ifdef _DEBUG
 #define OSIRISDEBUG
 #endif
@@ -947,6 +949,20 @@ int _get_full_path_to_module(char *module_name, char *fullpath, char *basename) 
   return -2;
 }
 
+std::string Osiris_RemoveFileExtension(const std::string &filename) {
+  size_t lastDot = filename.rfind('.');
+  if (lastDot == std::string::npos) {
+    // No dot or extension found
+    return filename;
+  }
+  size_t lastSlash = filename.find_last_of("/\\");
+  if (lastSlash != std::string::npos && lastDot < lastSlash) {
+    // Dot is part of a directory path, not an extension
+    return filename;
+  }
+  return filename.substr(0, lastDot);
+}
+
 //	Osiris_LoadLevelModule
 //	Purpose:
 //		Given a module name, it will attempt to load the module as a level module.  If it succeeds
@@ -995,7 +1011,11 @@ int Osiris_LoadLevelModule(char *module_name) {
 
   OSIRIS_loaded_modules[loaded_id].flags = 0; // set this to 0 as we fill in the data
 
-  char fullpath[_MAX_PATH], basename[_MAX_PATH];
+  char fullpath[_MAX_PATH];
+  sprintf(fullpath, "scripts\\%s", module_name);
+  std::string basename = Osiris_RemoveFileExtension(module_name);
+
+#if 0
   int ret_val = _get_full_path_to_module(module_name, fullpath, basename);
   switch (ret_val) {
   case -2:
@@ -1013,7 +1033,7 @@ int Osiris_LoadLevelModule(char *module_name) {
     OSIRIS_loaded_modules[loaded_id].extracted_id = ret_val;
     break;
   }
-
+#endif
   // the module exists, now attempt to load it
   if (!mod_LoadModule(&OSIRIS_loaded_modules[loaded_id].mod, fullpath)) {
     // there was an error trying to load the module
@@ -1048,7 +1068,7 @@ int Osiris_LoadLevelModule(char *module_name) {
   osm->SaveRestoreState = (SaveRestoreState_fp)mod_GetSymbol(mod, "SaveRestoreState", 8);
 
   osm->flags |= OSIMF_INUSE | OSIMF_LEVEL;
-  osm->module_name = mem_strdup(basename);
+  osm->module_name = mem_strdup(basename.c_str());
   osm->reference_count = 1;
 
 #ifdef OSIRISDEBUG
@@ -1073,7 +1093,7 @@ int Osiris_LoadLevelModule(char *module_name) {
 
   // check to see if there is a corresponding string table to load
   char stringtablename[_MAX_PATH];
-  strcpy(stringtablename, basename);
+  strcpy(stringtablename, basename.c_str());
   strcat(stringtablename, ".str");
 
   if (cfexist(stringtablename)) {

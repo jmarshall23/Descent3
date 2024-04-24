@@ -123,6 +123,7 @@ ADD_SUBDIRECTORY (md5)
 ADD_SUBDIRECTORY (libacm)
 ADD_SUBDIRECTORY (libimgui)
 ADD_SUBDIRECTORY (devcon)
+ADD_SUBDIRECTORY (scripts)
 ADD_SUBDIRECTORY (editor) 
 ADD_SUBDIRECTORY (Descent3)
 
@@ -146,3 +147,4 @@ set_target_properties(Descent3 PROPERTIES
 set_target_properties(Descent3Editor PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../../../
 )
+

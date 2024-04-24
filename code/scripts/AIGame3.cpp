@@ -49,6 +49,8 @@ void STDCALLPTR CreateInstance(int id);
 void STDCALL DestroyInstance(int id, void *ptr);
 short STDCALL CallInstanceEvent(int id, void *ptr, int event, tOSIRISEventInfo *data);
 int STDCALL SaveRestoreState(void *file_ptr, ubyte saving_state);
+int STDCALL GetCOScriptList(int **list, int **id_list) { return 0; }
+int STDCALL GetTriggerScriptID(int trigger_room, int trigger_face) { return -1; }
 #ifdef __cplusplus
 }
 #endif
@@ -7146,7 +7148,7 @@ void SecurityCamera::DoFrame(int me) {
         curr_frame = SC_MAX_FRAME - curr_frame;
 
       // Prevent wobbling between two frames
-      if (abs(dest_frame - curr_frame) <= SC_FRAME_DELTA_ERROR) {
+      if (fabs(dest_frame - curr_frame) <= SC_FRAME_DELTA_ERROR) {
         dest_frame = curr_frame;
       }
 
