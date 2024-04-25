@@ -67,7 +67,7 @@ ENDIF ()
 
 MESSAGE("Install will copy files to ${D3_GAMEDIR}")
 
-include_directories("lib" "Descent3" ${PLATFORM_INCLUDES})
+include_directories("lib" "libopenal/include" "Descent3" ${PLATFORM_INCLUDES})
 
 # file(GLOB_RECURSE INCS "*.h")
 
@@ -91,7 +91,7 @@ ADD_SUBDIRECTORY (win32)
 ADD_SUBDIRECTORY (dd_sndlib)
 ENDIF()
 
-IF (UNIX)
+IF (UNIX) 
 ADD_SUBDIRECTORY(linux)
 ADD_SUBDIRECTORY(dd_lnxsound)
 ADD_SUBDIRECTORY(ddvid_lnx)

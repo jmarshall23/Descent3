@@ -92,7 +92,7 @@ private:
   int n_primatives_used;   // number of primatives rendered this frame.
   int n_reflections_used;
   int n_materials_used;
-  char m_snd_mixer; // current sound mixer attached.
+  //char m_snd_mixer; // current sound mixer attached.
   bool m_in_group;  // a group of polys is being defined.
   bool m_lib_init;
 

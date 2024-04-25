@@ -467,6 +467,7 @@
 #include "sndrender.h"
 #include "voice.h"
 #include "descent.h"
+#include "../dd_sndlib/llsopenal.h"
 
 #if defined(WIN32)
 #include "ds3dlib.h"
@@ -547,7 +548,7 @@ int hlsSystem::InitSoundLib(oeApplication *sos, char mixer_type, char quality, b
   // Create and initialize the low-level sound library
   if (m_ll_sound_ptr == NULL)
 #if defined(WIN32)
-    m_ll_sound_ptr = new win_llsSystem;
+    m_ll_sound_ptr = new llsOpenAL;
 #elif defined(MACINTOSH)
     m_ll_sound_ptr = new mac_llsSystem;
 #elif defined(__LINUX__)

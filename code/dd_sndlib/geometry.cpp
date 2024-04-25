@@ -52,12 +52,7 @@
  *
  */
 
-#ifndef MACINTOSH
-#include "ds3dlib_internal.h"
-#include "auddev.h"
-#else
 #include "ddsndgeometry.h"
-#endif
 #include "pserror.h"
 
 //////////////////////////////////////////////////////////////////////////////
@@ -66,7 +61,7 @@
 llsGeometry::llsGeometry() {
 #ifndef MACINTOSH
   m_snd_system = NULL;
-  m_snd_mixer = SOUND_MIXER_NONE;
+  //m_snd_mixer = SOUND_MIXER_NONE;
   m_lib_init = false;
 #endif
 }
@@ -99,7 +94,7 @@ bool llsGeometry::Init(llsSystem *snd_sys) {
     return false;
   }
 
-  m_snd_mixer = snd_sys->GetSoundMixer();
+ // m_snd_mixer = snd_sys->GetSoundMixer();
 #endif
 
   m_snd_system = snd_sys;
@@ -144,7 +139,7 @@ void llsGeometry::Shutdown() {
   }
 #endif
 
-  m_snd_mixer = SOUND_MIXER_NONE;
+  //m_snd_mixer = SOUND_MIXER_NONE;
   m_snd_system = NULL;
   m_lib_init = false;
 
@@ -298,34 +293,7 @@ void llsGeometry::AddPoly(int nv, vector **verts, unsigned tag, tSoundMaterial m
     AddQuad(tag, verts);
     break;
   default:
-    // split up into tris and or quads
-    if (m_snd_mixer == SOUND_MIXER_AUREAL) {
-      vector *polyvec[4];
-      int nexus_vert = 0;
-
-      for (i = 0; i < nv - 3; i += 3) {
-        nexus_vert = i;
-        polyvec[0] = verts[i];
-        polyvec[1] = verts[i + 1];
-        polyvec[2] = verts[i + 2];
-        polyvec[3] = verts[i + 3];
-        AddQuad(tag | i, polyvec);
-      }
-
-      // fan from nexus to (i through nv)
-      polyvec[0] = verts[nexus_vert];
-      polyvec[2] = verts[i];
-      for (; i < nv; i++) {
-        polyvec[1] = polyvec[2];
-        polyvec[2] = ((i + 1) < nv) ? verts[i + 1] : verts[0];
-        if (polyvec[0] == polyvec[2]) {
-          break;
-        }
-        AddTriangle(tag | i, polyvec);
-      }
-    } else {
-      Int3();
-    }
+    break;
   }
 
   if (matp) {
