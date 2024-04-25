@@ -671,15 +671,11 @@
 #include "args.h"
 #include "cinematics.h"
 
-#ifdef _WIN32
-#define USE_DIRECTPLAY
-#endif
+//#ifdef _WIN32
+//#define USE_DIRECTPLAY
+//#endif
 
-#ifdef USE_DIRECTPLAY
-#include "directplay.h"
-#else
 bool Directplay_lobby_launched_game = false;
-#endif
 #include "multi_dll_mgr.h"
 #include "d3music.h"
 #include "newui_core.h"

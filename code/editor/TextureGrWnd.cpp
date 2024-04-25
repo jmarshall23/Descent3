@@ -689,7 +689,7 @@ void CTextureGrWnd::TexGrStartOpenGL()
 		app=(oeWin32Application *)Descent;
 		StateLimited=1;
 		save_wnd=(HWND)app->m_hWnd;
-		app->m_hWnd=(HWnd)m_hWnd;
+		app->m_hWnd=(HWND)m_hWnd;
 	;	rend_SetOpenGLWindowState (1,Descent,NULL);
 		rend_ClearScreen(0);
 		StateLimited=1;
@@ -703,7 +703,7 @@ void CTextureGrWnd::TexGrStopOpenGL ()
 	if (DoOpenGL)
 	{
 		rend_SetOpenGLWindowState (0,Descent,NULL);
-		app->m_hWnd=(HWnd)save_wnd;
+		app->m_hWnd=(HWND)save_wnd;
 	}
 }
 
@@ -978,14 +978,14 @@ void CTextureGrWnd::OnPaint()
     app = (oeWin32Application *)Descent;
 
     save_wnd = (HWND)app->m_hWnd;
-    app->m_hWnd = (HWnd)m_hWnd;
+    app->m_hWnd = (HWND)m_hWnd;
     // rend_SetOpenGLWindowState (1,Descent,NULL);
     rend_MakeCurrent(m_hWnd, dc.m_hDC);
     Render();
     rend_Flip();
     rend_MakeCurrent(NULL, NULL);
     // rend_SetOpenGLWindowState (0,Descent,NULL);
-    app->m_hWnd = (HWnd)save_wnd;
+    app->m_hWnd = (HWND)save_wnd;
 
 // Do not call CWnd::OnPaint() for painting messages
    	if (!m_Movable) {					// print out window title, since there is no caption

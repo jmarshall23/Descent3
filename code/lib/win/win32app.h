@@ -85,15 +85,14 @@
 
 #define MAX_MSG_FUNCTIONS 64
 
-/*	Basic Application Win32 data types */
-typedef unsigned int HWnd;
-typedef unsigned int HInstance;
+#include <windows.h>
+#include <stdint.h>
 
 //	This structure is used to retrieve and set
 typedef struct tWin32AppInfo {
   unsigned flags;                 // Application Flags
-  HWnd hwnd;                      // Window Handle
-  HInstance hinst;                // Window Instance
+  HWND hwnd;                      // Window Handle
+  HINSTANCE hinst;                // Window Instance
   int wnd_x, wnd_y, wnd_w, wnd_h; // Window dimensions
 } tWin32AppInfo;
 
@@ -132,7 +131,7 @@ tOEWin32MsgCallback:
                         endif
 */
 
-typedef int (*tOEWin32MsgCallback)(HWnd, unsigned, unsigned, long);
+typedef int (*tOEWin32MsgCallback)(HWND, unsigned, unsigned, long);
 
 class oeWin32Application : public oeApplication {
 #if defined(OEAPP_INTERNAL_MODULE)
@@ -163,7 +162,7 @@ private:
 
 public:
   //	Creates the window handle
-  oeWin32Application(const char *name, unsigned flags, HInstance hinst);
+  oeWin32Application(const char *name, unsigned flags, HINSTANCE hinst);
 
   //	Create object with a premade window handle/instance
   //	we just give it the window handle, instance handle and flags
@@ -192,7 +191,7 @@ public:
   void set_sizepos(int x, int y, int w, int h);
 
   //	returns -1 if we pass to default window handler.
-  virtual int WndProc(HWnd hwnd, unsigned msg, unsigned wParam, long lParam);
+  virtual int WndProc(HWND hwnd, unsigned int msg, WPARAM wParam, LPARAM lParam);
 
   //	These functions allow you to add message handlers.
   bool add_handler(unsigned msg, tOEWin32MsgCallback fn);
@@ -201,7 +200,7 @@ public:
   bool remove_handler(unsigned msg, tOEWin32MsgCallback fn);
 
   // Run handler for message (added by add_handler)
-  bool run_handler(HWnd wnd, unsigned msg, unsigned wParam, long lParam);
+  bool run_handler(HWND wnd, unsigned msg, unsigned wParam, long lParam);
 
   //	clears handler list
   void clear_handlers();
@@ -217,8 +216,8 @@ public:
 
 //	These variables are only accessable to modules that have DD_ACCESS.
 public:
-  HWnd m_hWnd; // handles created by the system
-  HInstance m_hInstance;
+  HWND m_hWnd; // handles created by the system
+  HINSTANCE m_hInstance;
   unsigned m_Flags;
   int m_X, m_Y, m_W, m_H; // window dimensions.
 

@@ -55,7 +55,7 @@ typedef struct tLnxAppInfo {
 
 /*	Callbacks return a 0 if we don't want to call the default action for the message, otherwise return 1
  */
-// typedef int (*tOELnxMsgCallback)(HWnd,unsigned,unsigned,unsigned);
+// typedef int (*tOELnxMsgCallback)(HWND,unsigned,unsigned,unsigned);
 
 class oeLnxApplication : public oeApplication {
   bool m_WasCreated;              // Tells us if this app set graphics or not.

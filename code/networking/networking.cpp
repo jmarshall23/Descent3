@@ -337,7 +337,7 @@ typedef int socklen_t;
 #include "byteswap.h"
 
 #ifdef WIN32
-#include "directplay.h"
+//#include "directplay.h"
 #endif
 
 #include "pstring.h"
@@ -553,7 +553,7 @@ void CloseNetworking() {
 #ifdef WIN32
   WSACancelBlockingCall();
 
-  dp_ShutdownDirectPlay();
+//  dp_ShutdownDirectPlay();
 #endif
 
   if (IPX_socket != INVALID_SOCKET) {
@@ -644,39 +644,6 @@ void nw_InitNetworking(int iReadBufSizeOverride) {
       Net_fixed_ip = INADDR_NONE;
     }
   }
-#ifdef WIN32
-  if (!dp_DidLobbyLaunchGame()) {
-    // Tell direct play about this game
-    char *p = GetCommandLine();
-    mprintf((0, "Command line: %s\n", p));
-    parmlen = strlen(p);
-
-    int a;
-    for (a = 0; a < parmlen; ++a) {
-      if (p[a] == ' ') {
-        break;
-      }
-    }
-    if (a < parmlen) {
-      strcpy(ourargs, p + a + 1);
-    } else {
-      strcpy(ourargs, "");
-    }
-    strncpy(exewithpath, p, a);
-    exewithpath[a] = NULL;
-    ddio_SplitPath(exewithpath, exedir, exefile, exeext);
-    if (exedir[0] == '\"') {
-      fixdir = exedir + 1;
-    } else {
-      fixdir = exedir;
-    }
-    if (exeext[strlen(exeext) - 1] == '\"') {
-      exeext[strlen(exeext) - 1] = NULL;
-    }
-    strcat(exefile, exeext);
-    // dp_RegisterLobbyApplication("Descent 3",exefile,fixdir,ourargs,Base_directory,"Descent 3");
-  }
-#endif
 
 #ifdef WIN32
   int error = WSAStartup(ver, &ws_data);
@@ -1001,11 +968,11 @@ void nw_GetNumbersFromHostAddress(network_address *address, char *str) {
 #endif
 
 #ifdef WIN32
-  else if (Use_DirectPlay && (address->connection_type == NP_DIRECTPLAY)) {
-    DPID id;
-    memcpy(&id, address->address, sizeof(DPID));
-    sprintf(str, "DirectPlay: 0x%x", id);
-  }
+//  else if (Use_DirectPlay && (address->connection_type == NP_DIRECTPLAY)) {
+//    DPID id;
+//    memcpy(&id, address->address, sizeof(DPID));
+//    sprintf(str, "DirectPlay: 0x%x", id);
+//  }
 #endif
 }
 
@@ -1095,14 +1062,7 @@ void nw_FreePacket(int id) {
 int nw_Receive(void *data, network_address *from_addr) {
   // call the routine to read data out of the socket (which stuffs it into the packet buffers)
 
-  if (Use_DirectPlay) {
-#ifdef WIN32
-    dp_DirectPlayDispatch();
-#endif
-  } else {
-    //	nw_ReceiveFromSocket();
-    nw_DoReceiveCallbacks();
-  }
+nw_DoReceiveCallbacks();
 
   int buffer_size;
 
@@ -1124,17 +1084,17 @@ int ExtraBufferTempHack = 0;
 int nw_ReceiveReliable(SOCKET socketid, ubyte *buffer, int max_len) {
 
   int i;
-  if (Use_DirectPlay) {
-#ifdef WIN32
-    dp_DirectPlayDispatch();
-
-    // try and get a free buffer and return its size
-    if (nw_psnet_buffer_get_next_by_dpid((ubyte *)buffer, &max_len, socketid)) {
-      return max_len;
-    }
-    return 0;
-#endif
-  }
+//  if (Use_DirectPlay) {
+//#ifdef WIN32
+//    //dp_DirectPlayDispatch();
+//
+//    // try and get a free buffer and return its size
+//    if (nw_psnet_buffer_get_next_by_dpid((ubyte *)buffer, &max_len, socketid)) {
+//      return max_len;
+//    }
+//    return 0;
+//#endif
+//  }
   reliable_socket *rsocket = NULL;
   // nw_WorkReliable();
   nw_DoReceiveCallbacks();
@@ -1181,23 +1141,23 @@ int nw_CheckListenSocket(network_address *from_addr) {
   DPID id;
 #endif
 
-  if (Use_DirectPlay) {
-#ifdef WIN32
-    // look for a pending connection
-    for (int i = 0; i < MAX_PENDING_NEW_CONNECTIONS; i++) {
-      if (Pending_dp_conn[i] != DPID_UNKNOWN) {
-        memset(from_addr, 0, sizeof(network_address));
-        memcpy(from_addr->address, &Pending_dp_conn[i], sizeof(DPID));
-        from_addr->connection_type = NP_DIRECTPLAY;
-        id = Pending_dp_conn[i];
-        Pending_dp_conn[i] = DPID_UNKNOWN;
-        mprintf((0, "New DirectPlay connection in nw_CheckListenSocket().\n"));
-        return id;
-      }
-    }
-    return -1;
-#endif
-  }
+//  if (Use_DirectPlay) {
+//#ifdef WIN32
+//    // look for a pending connection
+//    for (int i = 0; i < MAX_PENDING_NEW_CONNECTIONS; i++) {
+//      if (Pending_dp_conn[i] != DPID_UNKNOWN) {
+//        memset(from_addr, 0, sizeof(network_address));
+//        memcpy(from_addr->address, &Pending_dp_conn[i], sizeof(DPID));
+//        from_addr->connection_type = NP_DIRECTPLAY;
+//        id = Pending_dp_conn[i];
+//        Pending_dp_conn[i] = DPID_UNKNOWN;
+//        mprintf((0, "New DirectPlay connection in nw_CheckListenSocket().\n"));
+//        return id;
+//      }
+//    }
+//    return -1;
+//#endif
+//  }
 
   // nw_WorkReliable();
   nw_DoReceiveCallbacks();
@@ -1270,14 +1230,14 @@ int nw_SendReliable(unsigned int socketid, ubyte *data, int length, bool urgent)
     cfprintf(NetDebugFile, "nw_SendReliable packet of type %d at %f seconds.\n", data[0], timer_GetTime());
   }
 
-  if (Use_DirectPlay) {
-#ifdef WIN32
-    network_address who_to;
-    who_to.connection_type = NP_DIRECTPLAY;
-    memcpy(&who_to.address, &socketid, sizeof(DPID));
-    return dp_DirectPlaySend(&who_to, data, length, true);
-#endif
-  }
+//  if (Use_DirectPlay) {
+//#ifdef WIN32
+//    network_address who_to;
+//    who_to.connection_type = NP_DIRECTPLAY;
+//    memcpy(&who_to.address, &socketid, sizeof(DPID));
+//    return dp_DirectPlaySend(&who_to, data, length, true);
+//#endif
+//  }
 
   ASSERT(length < sizeof(reliable_header));
   // nw_WorkReliable();
@@ -1446,10 +1406,10 @@ void nw_SendReliableAck(SOCKADDR *raddr, unsigned int sig, network_protocol link
 }
 
 void nw_DoNetworkIdle(void) {
-  if (!Use_DirectPlay) {
+  //if (!Use_DirectPlay) {
     nw_DoReceiveCallbacks();
     nw_ReliableResend();
-  }
+ // }
 }
 
 #define CONNECTSEQ 0x142 // Magic number for starting a connection, just so it isn't 0
@@ -1859,10 +1819,10 @@ void nw_ConnectToServer(SOCKET *socket, network_address *server_addr) {
   struct timeval timeout;
   *socket = INVALID_SOCKET;
 
-  if (Use_DirectPlay) {
-    // We need a session description to do this, so we don't use this function
-    return;
-  }
+  //if (Use_DirectPlay) {
+  //  // We need a session description to do this, so we don't use this function
+  //  return;
+  //}
 
   conn_header.type = RNT_REQ_CONN;
   conn_header.seq = INTEL_SHORT((short)CONNECTSEQ);
@@ -1925,7 +1885,7 @@ void nw_CloseSocket(SOCKET *sockp) {
   reliable_header diss_conn_header;
 #ifdef WIN32
   if (DP_active) {
-    dp_DirectPlayDestroyPlayer(*sockp);
+//    dp_DirectPlayDestroyPlayer(*sockp);
     return;
   }
 #endif
@@ -1992,9 +1952,9 @@ void nw_CloseSocket(SOCKET *sockp) {
 
 int nw_CheckReliableSocket(int socknum) {
   // Checks to see if a socket is connected or not.
-  if (Use_DirectPlay) {
-    return true;
-  }
+  //if (Use_DirectPlay) {
+  //  return true;
+  //}
   if (socknum >= MAXRELIABLESOCKETS) {
     mprintf((0, "Invalid socket id passed to nw_CheckReliableSocket() -- %d\n", socknum));
     return 0;
@@ -2602,8 +2562,8 @@ int nw_SendWithID(ubyte id, ubyte *data, int len, network_address *who_to) {
 
 // mprintf((0,"Sending packet for id %d.\n",id));
 #ifdef WIN32
-  if (Use_DirectPlay)
-    return dp_DirectPlaySend(who_to, (ubyte *)data, len, false);
+ // if (Use_DirectPlay)
+ //   return dp_DirectPlaySend(who_to, (ubyte *)data, len, false);
 #endif
 
   // mprintf((1, "network: type %d\n", who_to->connection_type));

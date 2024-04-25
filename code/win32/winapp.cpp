@@ -208,10 +208,10 @@ bool oeWin32Application::os_initialized = false;
 bool oeWin32Application::first_time = true;
 
 //	this is the app's window proc.
-LRESULT WINAPI MyWndProc(HWND hWnd, UINT msg, UINT wParam, LPARAM lParam);
+LRESULT WINAPI MyWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 //	Creates the window handle and instance
-oeWin32Application::oeWin32Application(const char *name, unsigned flags, HInstance hinst) : oeApplication() {
+oeWin32Application::oeWin32Application(const char *name, unsigned flags, HINSTANCE hinst) : oeApplication() {
   WNDCLASS wc;
   RECT rect;
 
@@ -358,7 +358,7 @@ void oeWin32Application::init() {
     }
   }
 
-  m_hWnd = (HWnd)CreateWindowEx(style, (LPCSTR)m_WndName, (LPCSTR)m_WndName, winstyle, m_X, m_Y, m_W, m_H, NULL, NULL,
+  m_hWnd = (HWND)CreateWindowEx(style, (LPCSTR)m_WndName, (LPCSTR)m_WndName, winstyle, m_X, m_Y, m_W, m_H, NULL, NULL,
                                 (HINSTANCE)m_hInstance, (LPVOID)this);
 
   if (m_hWnd == NULL) {
@@ -540,11 +540,11 @@ tWin32OS oeWin32Application::version(int *major, int *minor, int *build, char *s
   return os;
 }
 
-int ddio_KeyHandler(HWnd wnd, unsigned msg, unsigned wParam, long lParam);
-int RawInputHandler(HWND hWnd, unsigned int msg, unsigned int wParam, long lParam);
+int ddio_KeyHandler(HWND wnd, unsigned msg, WPARAM wParam, LPARAM lParam);
+int RawInputHandler(HWND hWnd, unsigned int msg, WPARAM wParam, LPARAM lParam);
 
 //	This Window Procedure is called from the global WindowProc.
-int oeWin32Application::WndProc(HWnd hwnd, unsigned msg, unsigned wParam, long lParam) {
+int oeWin32Application::WndProc(HWND hwnd, unsigned msg, WPARAM wParam, LPARAM lParam) {
     // We trap the console key first. 
     if (msg == WM_KEYDOWN && wParam == VK_OEM_3) {
       if (console.IsVisible()) {
@@ -586,7 +586,7 @@ switch (msg) {
 
   }
 
-  return DefWindowProc((HWND)hwnd, (UINT)msg, (UINT)wParam, (LPARAM)lParam);
+  return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
 //	These functions allow you to add message handlers.
@@ -630,7 +630,7 @@ bool oeWin32Application::remove_handler(unsigned msg, tOEWin32MsgCallback fn) {
 }
 
 // Run handler for message (added by add_handler)
-bool oeWin32Application::run_handler(HWnd wnd, unsigned msg, unsigned wParam, long lParam) {
+bool oeWin32Application::run_handler(HWND wnd, unsigned msg, unsigned wParam, long lParam) {
   int j;
   //	run user-defined message handlers
   // the guess here is that any callback that returns a 0, will not want to handle the window's WndProc function.
@@ -669,7 +669,7 @@ void oeWin32Application::delay(float secs) {
   } while (result == DEFER_PROCESS_ACTIVE || result == DEFER_PROCESS_INPUT_IDLE);
 }
 
-LRESULT WINAPI MyWndProc(HWND hWnd, UINT msg, UINT wParam, LPARAM lParam) {
+LRESULT WINAPI MyWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
   int i = -1;
   bool force_default = false;
 
@@ -755,11 +755,11 @@ LRESULT WINAPI MyWndProc(HWND hWnd, UINT msg, UINT wParam, LPARAM lParam) {
   if (i == -1 || winapp == NULL || force_default)
     return DefWindowProc(hWnd, msg, wParam, lParam);
 
-  if (!winapp->run_handler((HWnd)hWnd, (unsigned)msg, (unsigned)wParam, (long)lParam))
+  if (!winapp->run_handler(hWnd, msg, wParam, lParam))
     return 0;
 
   // run user defined window procedure.
-  return (LRESULT)winapp->WndProc((HWnd)hWnd, (unsigned)msg, (unsigned)wParam, (long)lParam);
+  return (LRESULT)winapp->WndProc(hWnd, msg, wParam, lParam);
 }
 
 // detect if application can handle what we want of it.

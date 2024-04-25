@@ -576,7 +576,7 @@ set(SOURCE
 
 # Set platform-specific sources and libraries
 if (WIN32)
-    set(PLATFORM_LIBS dd_sndlib misc libimgui devcon dd_grwin32 dd_vidwin32 ddio_win win32 wsock32.lib winmm.lib Glu32.lib ${DINPUT_LIBRARY} ${DXGUID_LIBRARY} ${DDRAW_LIBRARY})
+    set(PLATFORM_LIBS dd_sndlib misc libimgui devcon dd_grwin32 dd_vidwin32 ddio_win win32 wsock32.lib winmm.lib Glu32.lib)
     set(PLATFORM_SOURCES ../descent3/winmain.cpp)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SAFESEH:NO /SUBSYSTEM:WINDOWS /NODEFAULTLIB:LIBC")
 elseif (UNIX AND NOT APPLE)

@@ -926,6 +926,9 @@ bool hlsSystem::ComputePlayInfo(int sound_obj_index, vector *virtual_pos, vector
     sound_seg = m_sound_objects[sound_obj_index].m_link_info.pos_info.segnum;
   }
 
+  if (sound_seg == -1)
+    return false;
+
   sound_seg = BOA_INDEX(sound_seg);
   ear_seg = BOA_INDEX(Viewer_object->roomnum);
   if (!BOA_IsSoundAudible(sound_seg, ear_seg))
@@ -1082,6 +1085,8 @@ int hlsSystem::Play3dSound(int sound_index, pos_state *cur_pos, object *cur_obj,
   if (sound_index < 0)
     return -1;
   if (sound_index >= MAX_SOUNDS || Sounds[sound_index].used == 0)
+    return -1;
+  if (cur_pos->roomnum == -1)
     return -1;
   // initialize sound.
   Sound_system.CheckAndForceSoundDataAlloc(sound_index);

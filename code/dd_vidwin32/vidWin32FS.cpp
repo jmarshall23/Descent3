@@ -58,12 +58,41 @@
 
 //	DirectDraw Display mode enumeration callback
 HRESULT WINAPI DDEnumModesCallback(LPDDSURFACEDESC lpDDSurfaceDesc, LPVOID lpContext);
+typedef HRESULT(WINAPI *LPDIRECTDRAWCREATE)(GUID *, LPDIRECTDRAW *, IUnknown *);
+LPDIRECTDRAWCREATE pDirectDrawCreate = nullptr;
+
 
 // inits fullscreen system
 bool ddvidfs_Init() {
   HRESULT hres;
 
-  hres = DirectDrawCreate(NULL, &DDVideo_info.lpDD, NULL);
+  if (pDirectDrawCreate == nullptr) {
+    HMODULE hDll;
+
+    hDll = LoadLibrary("ddraw.dll");
+    if (hDll == NULL) {
+      // Handle the error, DLL could not be loaded
+      return E_FAIL;
+    }
+
+    // Get the address of the DirectDrawCreate function
+    pDirectDrawCreate = (LPDIRECTDRAWCREATE)GetProcAddress(hDll, "DirectDrawCreate");
+    if (pDirectDrawCreate == NULL) {
+      // Handle the error, function address not found
+      FreeLibrary(hDll);
+      return E_FAIL;
+    }
+
+    // Now you can call the function
+    hres = pDirectDrawCreate(NULL, &DDVideo_info.lpDD, NULL);
+    if (FAILED(hres)) {
+      // Handle the failure case
+      FreeLibrary(hDll);
+      return hres;
+    }
+  }
+
+  hres = pDirectDrawCreate(NULL, &DDVideo_info.lpDD, NULL);
 
   if (hres != DD_OK) {
     Error("Failure to initialize DirectDraw driver. (%d)", LOWORD(hres));

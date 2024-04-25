@@ -9,4 +9,4 @@ SET (CPPS
 		ssl_lib.cpp)
 
 ADD_LIBRARY(dd_sndlib STATIC ${HEADERS} ${CPPS})
-target_link_libraries(dd_sndlib ${CMAKE_SOURCE_DIR}/libopenal/libs/Win32/OpenAL32.lib)
+target_link_libraries(dd_sndlib ${CMAKE_SOURCE_DIR}/libopenal/libs/Win64/OpenAL32.lib)

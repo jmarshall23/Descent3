@@ -221,7 +221,7 @@ void MouseError() { MessageBoxA(nullptr, "Failed to init raw input for mouse", "
 #define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
 #define GET_Y_LPARAM(lp) ((int)(short)HIWORD(lp))
 
-int RawInputHandler(HWND hWnd, unsigned int msg, unsigned int wParam, long lParam) {
+int RawInputHandler(HWND hWnd, unsigned int msg, WPARAM wParam, LPARAM lParam) {
   t_mse_event ev;
   switch (msg) {
   case WM_MOUSEMOVE: {

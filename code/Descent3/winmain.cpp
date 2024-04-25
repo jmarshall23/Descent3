@@ -164,7 +164,7 @@ class oeD3Win32App : public oeWin32Application {
   HANDLE hAppMutex;
 
 public:
-  oeD3Win32App(unsigned flags, HInstance hinst) : oeWin32Application("Descent 3 Apex", flags, hinst) {
+  oeD3Win32App(unsigned flags, HINSTANCE hinst) : oeWin32Application("Descent 3 Apex", flags, hinst) {
     Descent = this;
     shutdown = false;
     final_shutdown = false;
@@ -188,7 +188,7 @@ public:
   void run() { Descent3(); };
 
   //	returns 0 if we pass to default window handler.
-  virtual int WndProc(HWnd hwnd, unsigned msg, unsigned wParam, long lParam) {
+  virtual int WndProc(HWND hwnd, unsigned msg, WPARAM wParam, LPARAM lParam) {
     if (final_shutdown) {
       return oeWin32Application::WndProc(hwnd, msg, wParam, lParam);
     }
@@ -354,8 +354,8 @@ bool Win32JoystickCalibrate() {
 void WinMainInitEditor(unsigned hwnd, unsigned hinst) {
   tWin32AppInfo appinfo;
 
-  appinfo.hwnd = (HWnd)hwnd;
-  appinfo.hinst = (HInstance)hinst;
+  appinfo.hwnd = (HWND)hwnd;
+  appinfo.hinst = (HINSTANCE)hinst;
   appinfo.flags = OEAPP_WINDOWED;
 
   Descent = new oeWin32Application(&appinfo);
@@ -561,11 +561,11 @@ int PASCAL HandledWinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR szCmdLine,
 #endif
 
   if (Dedicated_server) {
-    d3 = new oeD3Win32App(OEAPP_CONSOLE, (HInstance)hInst);
+    d3 = new oeD3Win32App(OEAPP_CONSOLE, (HINSTANCE)hInst);
   } else {
     unsigned int flags = OEAPP_WINDOWED;
 
-    d3 = new oeD3Win32App(flags, (HInstance)hInst);
+    d3 = new oeD3Win32App(flags, (HINSTANCE)hInst);
   }
   atexit(D3End);
 

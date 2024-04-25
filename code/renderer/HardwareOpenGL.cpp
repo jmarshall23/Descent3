@@ -754,9 +754,9 @@ int opengl_Init(oeApplication *app, renderer_preferred_state *pref_state) {
    *               WINDOWS OPENGL
    ***********************************************************
    */
-  static HWnd hwnd = NULL;
+  static HWND hwnd = NULL;
   if (ParentApplication != NULL) {
-    hwnd = static_cast<HWnd>(reinterpret_cast<oeWin32Application *>(ParentApplication)->m_hWnd);
+    hwnd = static_cast<HWND>(reinterpret_cast<oeWin32Application *>(ParentApplication)->m_hWnd);
   }
 
   if (!WindowGL) {

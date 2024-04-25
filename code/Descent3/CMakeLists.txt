@@ -277,8 +277,7 @@ SET (CPPS
 
 
 IF (WIN32)
-SET (PLATFORM_LIBS dd_sndlib libimgui devcon dd_grwin32 dd_vidwin32 ddio_win win32 wsock32.lib winmm.lib Glu32.lib
-	${DINPUT_LIBRARY} ${DXGUID_LIBRARY} ${DDRAW_LIBRARY})
+SET (PLATFORM_LIBS dd_sndlib libimgui devcon dd_grwin32 dd_vidwin32 ddio_win win32 wsock32.lib winmm.lib Glu32.lib)
 SET (PLATFORM_CPPS winmain.cpp )
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SAFESEH:NO /SUBSYSTEM:WINDOWS /NODEFAULTLIB:LIBC")
 

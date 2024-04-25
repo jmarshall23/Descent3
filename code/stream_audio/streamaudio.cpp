@@ -1,23 +1,23 @@
 /*
-* Descent 3
-* Copyright (C) 2024 Parallax Software
-*
-* Descent 3: Apex
-* Copyright (C) 2024 by Justin Marshall
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Descent 3
+ * Copyright (C) 2024 Parallax Software
+ *
+ * Descent 3: Apex
+ * Copyright (C) 2024 by Justin Marshall
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 /*
  * $Logfile: /DescentIII/Main/streamaudio/streamaudio.cpp $
@@ -169,7 +169,7 @@
  */
 #include "streamaudio.h"
 #include "pserror.h"
-#include "CFILE.H"
+#include "cfile.h"
 #include "mem.h"
 #include "Macros.h"
 #include "ddio.h"
@@ -389,7 +389,6 @@ bool AudioStream::Open(const char *filename, int open_flags) {
     if (!AudioStream::ReopenDigitalStream(0, nbufs)) {
       return false;
     }
-    m_loopmutex.Create();
     AudioStream::SetLoopCount(1);
     m_laststate = m_state;
     m_state = STRM_STOPPED;
@@ -404,7 +403,6 @@ void AudioStream::Close() {
     // stop the stream, close the archive, close the decoder.
     AudioStream::Stop();
     m_archive.Close();
-    m_loopmutex.Destroy();
     m_curid = -1;
     // free streaming buffers and decoder if we need to.
     for (i = 0; i < STRM_BUFCOUNT; i++) {

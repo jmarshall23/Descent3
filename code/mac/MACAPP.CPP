@@ -365,11 +365,11 @@ LRESULT MacAPI MyWndProc(HWND hWnd, UINT msg, UINT wParam, LPARAM lParam) {
   //	if this window not on list, then run default window proc.
   if (i == -1 || Macapp == NULL || force_default)
     return DefwindowProc(hWnd, msg, wParam, lParam);
-  if (!Macapp->run_handler((HWnd)hWnd, (unsigned)msg, (unsigned)wParam, (long)lParam))
+  if (!Macapp->run_handler((HWND)hWnd, (unsigned)msg, (unsigned)wParam, (long)lParam))
     return 0;
 
   // run user defined window procedure.
-  return (LRESULT)Macapp->WndProc((HWnd)hWnd, (unsigned)msg, (unsigned)wParam, (long)lParam);
+  return (LRESULT)Macapp->WndProc((HWND)hWnd, (unsigned)msg, (unsigned)wParam, (long)lParam);
 }
 // detect if application can handle what we want of it.
 bool oeMacApplication::GetSystemSpecs(const char *fname) {

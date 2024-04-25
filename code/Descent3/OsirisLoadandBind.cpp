@@ -1209,8 +1209,11 @@ int Osiris_LoadGameModule(char *module_name) {
 
   OSIRIS_loaded_modules[loaded_id].flags = 0; // set this to 0 as we fill in the data
 
-  char fullpath[_MAX_PATH], basename[_MAX_PATH];
-  int ret_val = _get_full_path_to_module(module_name, fullpath, basename);
+    char fullpath[_MAX_PATH];
+  sprintf(fullpath, "scripts\\%s", module_name);
+  std::string _basename = Osiris_RemoveFileExtension(module_name);
+  const char *basename = _basename.c_str();
+#if 0
   switch (ret_val) {
   case -2:
     // the module does not exist
@@ -1227,12 +1230,12 @@ int Osiris_LoadGameModule(char *module_name) {
     OSIRIS_loaded_modules[loaded_id].extracted_id = ret_val;
     break;
   }
-
+#endif
   // the module exists, now attempt to load it
   if (!mod_LoadModule(&OSIRIS_loaded_modules[loaded_id].mod, fullpath)) {
     // there was an error trying to load the module
     mprintf((0, "OSIRIS: Osiris_LoadGameModule(%s): Unable to load module\n", module_name));
-    Int3();
+  //  Int3();
     return -3;
   }
 
