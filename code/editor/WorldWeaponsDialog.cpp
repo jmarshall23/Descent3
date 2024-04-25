@@ -1487,7 +1487,7 @@ BOOL CWorldWeaponsDialog::OnInitDialog()
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CWorldWeaponsDialog::OnTimer(UINT nIDEvent) 
+void CWorldWeaponsDialog::OnTimer(UINT_PTR nIDEvent) 
 {
 	// TODO: Add your message handler code here and/or call default
 	

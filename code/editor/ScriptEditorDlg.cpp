@@ -196,7 +196,7 @@ void CScriptEditorDlg::InitFindReplace(BOOL bFind)
 
 //This is the message handler of sorts for the Find/Replace dialog, it interprets the message and passes the control
 //to the appropriate function
-LONG CScriptEditorDlg::OnFindReplace(WPARAM wParam, LPARAM lParam)
+LRESULT CScriptEditorDlg::OnFindReplace(WPARAM wParam, LPARAM lParam)
 {
    // Get a pointer to the calling dialog
    CFindReplaceDialog* pDlg = 

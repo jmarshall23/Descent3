@@ -123,7 +123,7 @@ protected:
 	afx_msg void OnOsirisUseExternal();
 	afx_msg void OnUpdateOsirisPaste(CCmdUI* pCmdUI);
 	//}}AFX_MSG
-	afx_msg LONG OnFindReplace(WPARAM wParam, LPARAM lParam);
+    afx_msg LRESULT OnFindReplace(WPARAM wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 
 private:

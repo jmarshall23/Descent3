@@ -1141,7 +1141,7 @@ void SetScreenMode(int sm, bool force_res_change) {
   //	mark res change as false.
 
 #ifdef EDITOR
-  extern unsigned hGameWnd;
+  extern HWND hGameWnd;
   //	HACK!!! In editor, to get things working fine, reassert window handle attached to game screen
   //	is the topmost window, since in the editor, if we're fullscreen the parent window is still
   //	the editor window, the screen would belong to the editor window.

@@ -540,7 +540,7 @@
 static oeApplication *Saved_editor_app=NULL;	// the editor's app object
 static char Editor_dir[_MAX_PATH];		// old editor directory
 static RECT Editor_wndrect;				// editor window rect.
-unsigned hGameWnd;							// used for hack. window handle to draw to.
+HWND hGameWnd;							// used for hack. window handle to draw to.
 static HMENU hEditorMenu;
 static DWORD EditorWndStyle;		
 static DWORD EditorBackBrush;
@@ -885,7 +885,7 @@ void EditorToGame()
 	{
 		CMenu *menu = theApp.main_frame->GetMenu();
 
-		hGameWnd = (unsigned)theApp.main_frame->m_hWnd;
+		hGameWnd = theApp.main_frame->m_hWnd;
 		hEditorMenu = menu->m_hMenu;
 		theApp.main_frame->SetMenu(NULL);
 		EditorWndStyle = GetWindowLong(theApp.main_frame->m_hWnd, GWL_STYLE);

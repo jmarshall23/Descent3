@@ -236,7 +236,7 @@ void CWaterProceduralDialog::UpdateProcView ()
 
 
 
-void CWaterProceduralDialog::OnTimer(UINT nIDEvent) 
+void CWaterProceduralDialog::OnTimer(UINT_PTR nIDEvent) 
 {
 	// TODO: Add your message handler code here and/or call default
 	UpdateProcView();

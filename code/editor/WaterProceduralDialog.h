@@ -66,7 +66,7 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(CWaterProceduralDialog)
 	afx_msg void OnSelendokProceduralPulldown();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnClearProcedurals();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);

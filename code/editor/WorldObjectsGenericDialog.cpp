@@ -1293,7 +1293,7 @@ void CWorldObjectsGenericDialog::UpdateObjectView(void)
 	m_ObjectSurf.free();
 }
 
-void CWorldObjectsGenericDialog::OnTimer(UINT nIDEvent) 
+void CWorldObjectsGenericDialog::OnTimer(UINT_PTR nIDEvent) 
 {
 	UpdateObjectView();
 	

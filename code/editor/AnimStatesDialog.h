@@ -100,7 +100,7 @@ protected:
 	afx_msg void OnSelendokCurrentAnimationPulldown();
 	afx_msg void OnSelendokCurrentStatePulldown();
 	virtual BOOL OnInitDialog();
-	afx_msg void OnTimer(UINT nIDEvent);
+        afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnKillfocusAlertFromEdit();
 	afx_msg void OnKillfocusAlertToEdit();
 	afx_msg void OnKillfocusDeathFromEdit();

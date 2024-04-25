@@ -505,7 +505,7 @@ BOOL CAnimStatesDialog::OnInitDialog()
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CAnimStatesDialog::OnTimer(UINT nIDEvent) 
+void CAnimStatesDialog::OnTimer(UINT_PTR nIDEvent) 
 {
 	UpdateAnimStateView();
 	

@@ -771,7 +771,7 @@ BOOL CWorldObjectsPlayerDialog::OnInitDialog()
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CWorldObjectsPlayerDialog::OnTimer(UINT nIDEvent) 
+void CWorldObjectsPlayerDialog::OnTimer(UINT_PTR nIDEvent) 
 {
 	
 	UpdateShipView();

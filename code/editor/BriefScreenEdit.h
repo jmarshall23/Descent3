@@ -65,7 +65,7 @@ protected:
 	//{{AFX_MSG(CBriefScreenEdit)
 	virtual void OnOK();
 	virtual BOOL OnInitDialog();
-	afx_msg void OnTimer(UINT nIDEvent);
+        afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnSelchangeBriefAddsLayoutList();
 	afx_msg void OnMissionflags();
 	//}}AFX_MSG

@@ -1574,7 +1574,7 @@ BOOL CWorldTexturesDialog::OnInitDialog()
 }
 
 
-void CWorldTexturesDialog::OnTimer(UINT nIDEvent) 
+void CWorldTexturesDialog::OnTimer(UINT_PTR nIDEvent) 
 {
 
 	int n=D3EditState.texdlg_texture;

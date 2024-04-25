@@ -190,7 +190,7 @@ bool ddvid_SetVideoMode(int w, int h, int color_depth, bool paged) {
 }
 
 //	sets screen handle
-void ddvid_SetVideoHandle(unsigned handle) { DDVideo_info.hVidWnd = (HWND)handle; }
+void ddvid_SetVideoHandle(HWND handle) { DDVideo_info.hVidWnd = (HWND)handle; }
 
 //	retrieves screen information
 void ddvid_GetVideoProperties(int *w, int *h, int *color_depth) {

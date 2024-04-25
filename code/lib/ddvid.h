@@ -47,6 +47,8 @@
 #ifndef DDVID_H
 #define DDVID_H
 
+#include <windows.h>
+
 #include "pstypes.h"
 #include "grdefs.h"
 
@@ -60,7 +62,7 @@ void ddvid_Close();
 bool ddvid_SetVideoMode(int w, int h, int color_depth, bool paged);
 
 //	sets screen handle
-void ddvid_SetVideoHandle(unsigned handle);
+void ddvid_SetVideoHandle(HWND handle);
 
 //	retrieves screen information
 void ddvid_GetVideoProperties(int *w, int *h, int *color_depth);

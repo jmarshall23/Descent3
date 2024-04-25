@@ -131,7 +131,7 @@ private:
 	int CTextureGrWnd::TGWFindRoomFace(int x,int y,int *roomnum,int *facenum);
 	int CTextureGrWnd::TGWFindLightmapFace(int x,int y,int *roomnum,int *facenum,int *lumel_num);
 	void CTextureGrWnd::TGWRenderMine(vector *pos,matrix *orient,float zoom,int start_roomnum);
-    void CTextureGrWnd::OnTimer(UINT nIDEvent);
+    void CTextureGrWnd::OnTimer(UINT_PTR nIDEvent);
     void CTextureGrWnd::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
     void CTextureGrWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
     void CTextureGrWnd::OnMButtonUp(UINT nFlags, CPoint point);    

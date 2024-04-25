@@ -65,7 +65,7 @@ protected:
 	afx_msg void OnPshipsOut();
 	afx_msg void OnSelendokPshipPulldown();
 	virtual BOOL OnInitDialog();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 	afx_msg void OnPshipEditPhysics();
 	afx_msg void OnPshipDyingModel();

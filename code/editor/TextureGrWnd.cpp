@@ -833,7 +833,7 @@ void CTextureGrWnd::OnMButtonUp(UINT nFlags, CPoint point) {
   CWnd::OnMButtonUp(nFlags, point);
 }
 
-void CTextureGrWnd::OnTimer(UINT nIDEvent) {
+void CTextureGrWnd::OnTimer(UINT_PTR nIDEvent) {
   if (nIDEvent == 1001) 
   {
     float sensitivity = 0.005f; 

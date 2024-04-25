@@ -166,7 +166,7 @@ void CQuickCompile::OnDestroy()
 	quick_compile_string = "";	
 }
 
-int CQuickCompile::DoModal() 
+intptr_t CQuickCompile::DoModal() 
 {
 
 	return CDialog::DoModal();

@@ -750,7 +750,7 @@ BOOL CWorldObjectsRobotDialog::OnInitDialog()
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CWorldObjectsRobotDialog::OnTimer(UINT nIDEvent) 
+void CWorldObjectsRobotDialog::OnTimer(UINT_PTR nIDEvent) 
 {
 	UpdateRobotView();
 	

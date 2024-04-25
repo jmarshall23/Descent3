@@ -2231,8 +2231,7 @@ void CBriefEdit::UpdateView(void)
 		first_call = false;
 }
 
-void CBriefEdit::OnTimer(UINT nIDEvent) 
-{
+void CBriefEdit::OnTimer(UINT_PTR nIDEvent) {
 	UpdateView();	
 	CDialog::OnTimer(nIDEvent);
 }

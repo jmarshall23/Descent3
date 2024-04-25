@@ -707,7 +707,7 @@ BOOL CWorldObjectsPowerupDialog::OnInitDialog()
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CWorldObjectsPowerupDialog::OnTimer(UINT nIDEvent) 
+void CWorldObjectsPowerupDialog::OnTimer(UINT_PTR nIDEvent) 
 {
 	UpdatePowerupView ();
 	

@@ -533,7 +533,7 @@ void CScriptSyncDialog::OnPaint()
 	}
 }
 
-void CScriptSyncDialog::OnTimer(UINT nIDEvent) 
+void CScriptSyncDialog::OnTimer(UINT_PTR nIDEvent) 
 {
 	defer();
 	if(m_Done)

@@ -160,8 +160,7 @@ void CBriefScreenEdit::UpdateView(void)
 		first_call = false;
 }
 
-void CBriefScreenEdit::OnTimer(UINT nIDEvent) 
-{
+void CBriefScreenEdit::OnTimer(UINT_PTR nIDEvent) {
 	UpdateView();	
 	CDialog::OnTimer(nIDEvent);
 }

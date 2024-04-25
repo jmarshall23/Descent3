@@ -64,7 +64,7 @@ protected:
 	afx_msg void OnSelendokWeaponPulldown();
 	afx_msg void OnWeaponsOut();
 	virtual BOOL OnInitDialog();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnLoadWeaponDischarge();
 	afx_msg void OnSelendokFireSoundPulldown();
 	afx_msg void OnSelendokWeaponWallSoundPulldown();

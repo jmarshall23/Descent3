@@ -75,7 +75,7 @@ protected:
 	afx_msg void OnLoadDoorModel();
 	afx_msg void OnLockDoor();
 	virtual BOOL OnInitDialog();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnSelendokDoorPulldown();
 	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 	afx_msg void OnDoorChangeName();

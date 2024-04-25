@@ -961,7 +961,7 @@ BOOL CWorldObjectsDoorDialog::OnInitDialog()
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CWorldObjectsDoorDialog::OnTimer(UINT nIDEvent) 
+void CWorldObjectsDoorDialog::OnTimer(UINT_PTR nIDEvent) 
 {
 	UpdateDoorView();
 	

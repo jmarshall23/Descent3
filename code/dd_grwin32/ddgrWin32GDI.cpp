@@ -91,6 +91,11 @@ tDDGRGDIInternalData DDGR_GDI_lib_data;
 /*	Primary Interface Functions
  */
 
+//	DirectDraw Display mode enumeration callback
+HRESULT WINAPI DDEnumModesCallback(LPDDSURFACEDESC lpDDSurfaceDesc, LPVOID lpContext);
+typedef HRESULT(WINAPI *LPDIRECTDRAWCREATE)(GUID *, LPDIRECTDRAW *, IUnknown *);
+static LPDIRECTDRAWCREATE pDirectDrawCreate = nullptr;
+
 //	---------------------------------------------------------------------------
 //	initializes the objects needed to use GDI
 
@@ -101,8 +106,28 @@ bool ddgr_gdi_Init(oeApplication *app, bool fullscreen, bool ddraw) {
   GDI_DATA(hPrimaryWnd) = (HWND)((oeWin32Application *)app)->m_hWnd;
 
   GDI_DATA(lpDD) = NULL;
+
+  if (pDirectDrawCreate == nullptr) {
+    HMODULE hDll;
+
+    hDll = LoadLibrary("ddraw.dll");
+    if (hDll == NULL) {
+      // Handle the error, DLL could not be loaded
+      return E_FAIL;
+    }
+
+    // Get the address of the DirectDrawCreate function
+    pDirectDrawCreate = (LPDIRECTDRAWCREATE)GetProcAddress(hDll, "DirectDrawCreate");
+    if (pDirectDrawCreate == NULL) {
+      // Handle the error, function address not found
+      FreeLibrary(hDll);
+      return E_FAIL;
+    }
+  }
+
+
   if (ddraw) {
-    hres = DirectDrawCreate(NULL, &GDI_DATA(lpDD), NULL);
+    hres = pDirectDrawCreate(NULL, &GDI_DATA(lpDD), NULL);
     if (hres != DD_OK) {
       ddgr_PushError("Failure to initialize DirectDraw driver (%d)", LOWORD(hres));
       return false;

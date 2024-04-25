@@ -73,7 +73,7 @@ protected:
 	afx_msg void OnKillfocusRobotNameEdit();
 	afx_msg void OnSelendokRobotPulldown();
 	virtual BOOL OnInitDialog();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnKillfocusRobotSizeEdit();
 	afx_msg void OnRobotsOut();
 	afx_msg void OnDefineAnimstates();

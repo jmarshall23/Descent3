@@ -436,8 +436,7 @@ void CScriptStudio::OnUpdateOsirisPaste(CCmdUI* pCmdUI)
 
 //This is the message handler of sorts for the Find/Replace dialog, it interprets the message and passes the control
 //to the appropriate function
-LONG CScriptStudio::OnFindReplace(WPARAM wParam, LPARAM lParam)
-{
+LRESULT CScriptStudio::OnFindReplace(WPARAM wParam, LPARAM lParam) {
    // Get a pointer to the calling dialog
    CFindReplaceDialog* pDlg = 
       CFindReplaceDialog::GetNotifier(lParam);

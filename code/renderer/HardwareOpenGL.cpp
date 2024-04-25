@@ -59,66 +59,6 @@
 #include "../libimgui/imgui_impl_opengl3.h"
 #include "../devcon/DevConsole.h"
 
-/*
-3D Rendering Functions
-    opengl_DrawMultitexturePolygon3D
-    opengl_DrawFlatPolygon3D
-    rend_DrawPolygon3D
-    rend_DrawMultitexturePolygon3D
-    rend_SetZBias
-    rend_DrawSimpleBitmap
-    rend_DrawScaledBitmap
-    opengl_DrawSimpleBitmap
-    opengl_DrawScaledBitmap
-    opengl_DrawChunkedBitmap
-    opengl_DrawScaledChunkedBitmap
-    opengl_MakeBitmapCurrent
-    opengl_TranslateBitmapToOpenGL
-2. 2D Rendering Functions
-    rend_DrawFontCharacter
-    rend_DrawPolygon2D
-    rend_SetCharacterParameters
-3. State Machine Changes
-    rend_SetRendererType
-    rend_SetLighting
-    rend_SetColorModel
-    rend_SetTextureType
-    rend_SetAlphaType
-    rend_SetAlphaValue
-    rend_SetAlphaFactor
-    rend_GetAlphaFactor
-    rend_SetZBufferState
-    rend_SetZValues
-    rend_SetFogState
-    rend_SetFogBorders
-    rend_SetFogColor
-    rend_SetWrapType
-    rend_SetGammaValue
-    rend_SetPreferredState
-    rend_SetFiltering
-    rend_SetOverlayMap
-    rend_SetOverlayType
-    rend_SetZBufferWriteMask
-    rend_SetFrameBufferCopyState
-    rend_SetResolution
-4. Texture and Bitmap Management
-    opengl_InitCache
-    opengl_ResetCache
-    rend_PreUploadTextureToCard
-    rend_FreePreUploadedTexture
-    opengl_MakeTextureObject
-5. Utility and Helper Functions
-    rend_GetErrorMessage
-    rend_SetErrorMessage
-    rend_GetStatistics
-    rend_Screenshot
-6. Viewport and Transformation Management
-    rend_TransformSetProjection
-    rend_TransformSetModelView
-    rend_TransformSetToPassthru
-    rend_TransformSetViewport
-*/
-
 #define _USE_OGL_ACTIVE_TEXTURES
 
 int FindArg(char *);

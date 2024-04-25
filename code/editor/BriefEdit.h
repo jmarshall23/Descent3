@@ -206,7 +206,7 @@ protected:
 	afx_msg void OnSelchangeBriefScreenList();
 	afx_msg void OnBriefSave();
 	afx_msg void OnLoad();
-	afx_msg void OnTimer(UINT nIDEvent);
+        afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnManage();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()

@@ -86,8 +86,7 @@ BOOL CLightingStatus::OnInitDialog()
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CLightingStatus::OnTimer(UINT nIDEvent) 
-{
+void CLightingStatus::OnTimer(UINT_PTR nIDEvent) {
 	char str[100];
 
 	sprintf (str,"Percentage complete: %.2f %%",(1.0-rad_Convergence)*100.0);

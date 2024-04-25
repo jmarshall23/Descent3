@@ -98,7 +98,7 @@ protected:
 	afx_msg void OnGenericPrev();
 	afx_msg void OnGenericChangeModel();
 	afx_msg void OnGenericChangeName();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnSelendokGenericNamePulldown();
 	afx_msg void OnKillfocusGenericSizeEdit();
 	afx_msg void OnGenericCopy();

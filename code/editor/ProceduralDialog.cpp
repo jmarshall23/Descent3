@@ -289,8 +289,7 @@ void CProceduralDialog::UpdateProcView ()
 }
 
 
-void CProceduralDialog::OnTimer(UINT nIDEvent) 
-{
+void CProceduralDialog::OnTimer(UINT_PTR nIDEvent) {
 	UpdateProcView ();
 	CDialog::OnTimer(nIDEvent);
 }
