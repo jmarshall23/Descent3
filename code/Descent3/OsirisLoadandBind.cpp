@@ -607,9 +607,10 @@ void Osiris_InitModuleLoader(void) {
 #endif
   }
 
+  #define CHECKSUM 2273873307UL
   Osiris_CreateModuleInitStruct(&Osiris_module_init);
-  Osiris_game_checksum = Osiris_CreateGameChecksum();
-  Osiris_module_init.game_checksum = Osiris_game_checksum;
+  Osiris_game_checksum = CHECKSUM;
+  Osiris_module_init.game_checksum = CHECKSUM;
 
   tOSIRISCurrentLevel.level_loaded = false;
   tOSIRISCurrentLevel.num_customs = 0;
