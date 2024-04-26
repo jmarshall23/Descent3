@@ -297,6 +297,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#include <windows.h>
 #include "pstypes.h"
 #include "grdefs.h"
 
@@ -693,7 +694,126 @@ void *rend_RetrieveDirectDrawObj(void **frontsurf, void **backsurf);
 
 void rend_GetScreenDimensions(int *width, int *height);
 
-///////////////////////////////////////////////////////////////
-#include "../renderer/RendererConfig.h"
+// Initialization and management
+int opengl_Init(oeApplication *app, renderer_preferred_state *pref_state);
+void opengl_Close();
+
+// OpenGL setup and information retrieval
+int opengl_Setup(HDC glhdc);
+void opengl_GetInformation();
+
+// Texture object and cache management
+int opengl_MakeTextureObject(int tn);
+int opengl_InitCache(void);
+
+// Editor utilities
+void rend_EditorFaceSelected(bool IsSelected);
+
+// Screen dimensions retrieval
+void rend_GetScreenDimensions(int *width, int *height);
+
+// OpenGL defaults
+void opengl_SetDefaults();
+
+// OpenGL drawing and rendering
+void rend_DrawPolygon2D(int handle, g3Point **p, int nv, int map_type);
+void rend_DrawPolygon3D(int handle, g3Point **p, int nv, int map_type);
+void rend_Flip(void);
+void rend_StartFrame(int x1, int y1, int x2, int y2, int clear_flags);
+void rend_EndFrame(void);
+
+// OpenGL extensions management
+void opengl_GetDLLFunctions();
+
+// Pixel format setup
+void rend_SetupPixelFormatForTools(HDC hDC);
+
+// Fog management
+void rend_SetFogBorders(float nearz, float farz);
+void rend_SetFogColor(ddgr_color color);
+
+// Rendering type configuration
+void rend_SetRendererType(renderer_type state);
+
+// Lighting and color model configuration
+void rend_SetLightingState(light_state state);
+void rend_SetLighting(light_state state);
+void rend_SetColorModel(color_model state);
+
+// Texture management
+void rend_SetTextureType(texture_type state);
+void rend_SetFiltering(sbyte state);
+
+// Bitmap drawing
+void rend_DrawScaledBitmap(int x1, int y1, int x2, int y2, int bm, float u0, float v0, float u1, float v1, int color,
+                           float *alphas);
+void rend_DrawSimpleBitmap(int bm_handle, int x, int y);
+void rend_DrawFontCharacter(int bm_handle, int x1, int y1, int x2, int y2, float u, float v, float w, float h);
+
+// Framebuffer operations
+void rend_ClearScreen(ddgr_color color);
+void rend_ClearZBuffer(void);
+void rend_SetOverlayMap(int handle);
+void rend_SetOverlayType(ubyte type);
+
+// Line drawing
+void rend_DrawLine(int x1, int y1, int x2, int y2);
+
+// Alpha type and value configuration
+void rend_SetAlphaType(sbyte atype);
+void rend_SetAlphaValue(ubyte val);
+
+// Alpha factor management
+void rend_SetAlphaFactor(float val);
+float rend_GetAlphaFactor(void);
+
+// Texture wrapping configuration
+void rend_SetWrapType(wrap_type val);
+
+// Error handling
+void rend_SetErrorMessage(char *str);
+char *rend_GetErrorMessage();
+
+// Z-buffer management
+void rend_SetZBufferState(sbyte state);
+void rend_SetZValues(float nearz, float farz);
+void rend_SetZBias(float z_bias);
+
+// Screen utilities
+void rend_GetProjectionParameters(int *width, int *height);
+void rend_GetProjectionScreenParameters(int &screenLX, int &screenTY, int &screenW, int &screenH);
+float rend_GetAspectRatio(void);
+
+// Software renderer configuration
+void rend_SetSoftwareParameters(float aspect, int width, int height, int pitch, ubyte *framebuffer);
+
+// Font characteristics
+void rend_SetCharacterParameters(ddgr_color color1, ddgr_color color2, ddgr_color color3, ddgr_color color4);
+
+// OpenGL window management
+int rend_InitOpenGLWindow(oeApplication *app, renderer_preferred_state *pref_state);
+void rend_CloseOpenGLWindow(void);
+
+// Coplanar polygon management
+void rend_SetCoplanarPolygonOffset(float factor);
+
+// Texture preloading and freeing
+void rend_PreUploadTextureToCard(int handle, int map_type);
+void rend_FreePreUploadedTexture(int handle, int map_type);
+
+// Framebuffer copy state configuration
+void rend_SetFrameBufferCopyState(bool state);
+
+// Resolution configuration
+void rend_SetResolution(int width, int height);
+
+// Rendering statistics retrieval
+void rend_GetStatistics(tRendererStats *stats);
+
+// OpenGL transformations
+void rend_TransformSetToPassthru(void);
+void rend_TransformSetViewport(int lx, int ty, int width, int height);
+void rend_TransformSetProjection(float trans[4][4]);
+void rend_TransformSetModelView(float trans[4][4]);
 
 #endif

@@ -19,9 +19,8 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "RendererConfig.h"
 #include "3d.h"
-#include "HardwareInternal.h"
+#include "tr_local.h"
 #include <string.h>
 
 struct InstanceContext {

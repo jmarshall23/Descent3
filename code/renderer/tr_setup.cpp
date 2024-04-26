@@ -19,12 +19,12 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "RendererConfig.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include "3d.h"
 #include "pserror.h"
-#include "HardwareInternal.h"
+#include "tr_local.h"
 #include "renderer.h"
 
 // User-specified aspect ratio, stored as w/h

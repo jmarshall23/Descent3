@@ -570,7 +570,7 @@ set(SOURCE
     WorldSoundsDialog.cpp
     WorldTexturesDialog.cpp
     WorldWeaponsDialog.cpp
-    ../renderer/renderer.cpp
+    "../renderer/tr_main.cpp"
     editor.rc
 )
 

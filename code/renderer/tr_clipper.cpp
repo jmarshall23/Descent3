@@ -19,10 +19,9 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "RendererConfig.h"
 #include "pserror.h"
 #include "3d.h"
-#include "HardwareInternal.h"
+#include "tr_local.h"
 
 static int free_point_num = -1;
 static g3Point temp_points[MAX_POINTS_IN_POLY];
