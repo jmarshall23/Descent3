@@ -153,12 +153,10 @@ void opengl_DrawMultitexturePolygon3D(int handle, g3Point **p, int nv, int map_t
   // make sure our bitmap is ready to be drawn
   opengl_MakeBitmapCurrent(handle, map_type, 0);
   opengl_MakeWrapTypeCurrent(handle, map_type, 0);
-  opengl_MakeFilterTypeCurrent(handle, map_type, 0);
 
   // make sure our bitmap is ready to be drawn
   opengl_MakeBitmapCurrent(Overlay_map, MAP_TYPE_LIGHTMAP, 1);
   opengl_MakeWrapTypeCurrent(Overlay_map, MAP_TYPE_LIGHTMAP, 1);
-  opengl_MakeFilterTypeCurrent(Overlay_map, MAP_TYPE_LIGHTMAP, 1);
 
   opengl_SetMultitextureBlendMode(true);
 
@@ -261,7 +259,6 @@ void rend_DrawPolygon3D(int handle, g3Point **p, int nv, int map_type) {
   // make sure our bitmap is ready to be drawn
   opengl_MakeBitmapCurrent(handle, map_type, 0);
   opengl_MakeWrapTypeCurrent(handle, map_type, 0);
-  opengl_MakeFilterTypeCurrent(handle, map_type, 0);
 
   alpha = Alpha_multiplier * OpenGL_Alpha_factor;
 
@@ -430,7 +427,6 @@ void rend_DrawPolygon2D(int handle, g3Point **p, int nv) {
   // make sure our bitmap is ready to be drawn
   opengl_MakeBitmapCurrent(handle, MAP_TYPE_BITMAP, 0);
   opengl_MakeWrapTypeCurrent(handle, MAP_TYPE_BITMAP, 0);
-  opengl_MakeFilterTypeCurrent(handle, MAP_TYPE_BITMAP, 0);
 
   float alpha = Alpha_multiplier * OpenGL_Alpha_factor;
 

@@ -703,7 +703,6 @@ int opengl_Setup(HDC glhdc);
 void opengl_GetInformation();
 
 // Texture object and cache management
-int opengl_MakeTextureObject(int tn);
 int opengl_InitCache(void);
 
 // Editor utilities
@@ -815,5 +814,37 @@ void rend_TransformSetToPassthru(void);
 void rend_TransformSetViewport(int lx, int ty, int width, int height);
 void rend_TransformSetProjection(float trans[4][4]);
 void rend_TransformSetModelView(float trans[4][4]);
+
+// Define a platform-agnostic format enum
+enum class ImageFormat {
+  DXT1,
+  DXT5,
+  RGB,
+  RGBA,
+  // Add more formats as necessary
+};
+
+class d3Image {
+public:
+  d3Image(bool pixelpack, bool linear, bool repeat);
+  ~d3Image();
+
+  void Init(const void *data, int w, int h, ImageFormat format, bool useMipmaps = false, bool isMSAA = false);
+  void TranslateBitmapToOpenGL(int bm_handle, int map_type, int replace, int tn);
+
+  int GetWidth() const;
+  int GetHeight() const;
+  unsigned int GetHandle() const;
+
+  void Bind(int tn);
+
+private:
+  unsigned int deviceHandle;
+  int width;
+  int height;
+  bool msaaEnabled;
+  unsigned int convertFormat(ImageFormat format);
+};
+
 
 #endif

@@ -283,9 +283,6 @@ int opengl_Init(oeApplication *app, renderer_preferred_state *pref_state) {
     UseMultitexture = false;
   }
 
-  // Do we have packed pixel formats?
-  OpenGL_packed_pixels = true;
-
   opengl_InitCache();
 
   if (UseMultitexture) {
@@ -294,119 +291,8 @@ int opengl_Init(oeApplication *app, renderer_preferred_state *pref_state) {
     mprintf((0, "Not using multitexture."));
   }
 
-  if (OpenGL_packed_pixels) {
-    opengl_packed_Upload_data = (ushort *)mem_malloc(2048 * 2048 * 2);
-    opengl_packed_Translate_table = (ushort *)mem_malloc(65536 * 2);
-    opengl_packed_4444_translate_table = (ushort *)mem_malloc(65536 * 2);
-
-    ASSERT(opengl_packed_Upload_data);
-    ASSERT(opengl_packed_Translate_table);
-    ASSERT(opengl_packed_4444_translate_table);
-
-    mprintf((0, "Building packed OpenGL translate table...\n"));
-
-    for (i = 0; i < 65536; i++) {
-      int r = (i >> 10) & 0x1f;
-      int g = (i >> 5) & 0x1f;
-      int b = i & 0x1f;
-
-#ifdef BRIGHTNESS_HACK
-      r *= BRIGHTNESS_HACK;
-      g *= BRIGHTNESS_HACK;
-      b *= BRIGHTNESS_HACK;
-      if (r > 0x1F)
-        r = 0x1F;
-      if (g > 0x1F)
-        g = 0x1F;
-      if (b > 0x1F)
-        b = 0x1F;
-#endif
-
-      ushort pix;
-
-      if (!(i & OPAQUE_FLAG)) {
-        pix = 0;
-      } else {
-        pix = (r << 11) | (g << 6) | (b << 1) | 1;
-      }
-
-      opengl_packed_Translate_table[i] = INTEL_INT(pix);
-
-      // 4444 table
-      int a = (i >> 12) & 0xf;
-      r = (i >> 8) & 0xf;
-      g = (i >> 4) & 0xf;
-      b = i & 0xf;
-
-      pix = (r << 12) | (g << 8) | (b << 4) | a;
-      opengl_packed_4444_translate_table[i] = INTEL_INT(pix);
-    }
-  } else {
-    opengl_Upload_data = (uint *)mem_malloc(2048 * 2048 * 4);
-    opengl_Translate_table = (uint *)mem_malloc(65536 * 4);
-    opengl_4444_translate_table = (uint *)mem_malloc(65536 * 4);
-
-    ASSERT(opengl_Upload_data);
-    ASSERT(opengl_Translate_table);
-    ASSERT(opengl_4444_translate_table);
-
-    mprintf((0, "Building OpenGL translate table...\n"));
-
-    for (i = 0; i < 65536; i++) {
-      uint pix;
-      int r = (i >> 10) & 0x1f;
-      int g = (i >> 5) & 0x1f;
-      int b = i & 0x1f;
-
-#ifdef BRIGHTNESS_HACK
-      r *= BRIGHTNESS_HACK;
-      g *= BRIGHTNESS_HACK;
-      b *= BRIGHTNESS_HACK;
-      if (r > 0x1F)
-        r = 0x1F;
-      if (g > 0x1F)
-        g = 0x1F;
-      if (b > 0x1F)
-        b = 0x1F;
-#endif
-
-      float fr = (float)r / 31.0f;
-      float fg = (float)g / 31.0f;
-      float fb = (float)b / 31.0f;
-
-      r = 255 * fr;
-      g = 255 * fg;
-      b = 255 * fb;
-
-      if (!(i & OPAQUE_FLAG)) {
-        pix = 0;
-      } else {
-        pix = (255 << 24) | (b << 16) | (g << 8) | (r);
-      }
-
-      opengl_Translate_table[i] = INTEL_INT(pix);
-
-      // Do 4444
-      int a = (i >> 12) & 0xf;
-      r = (i >> 8) & 0xf;
-      g = (i >> 4) & 0xf;
-      b = i & 0xf;
-
-      float fa = (float)a / 15.0f;
-      fr = (float)r / 15.0f;
-      fg = (float)g / 15.0f;
-      fb = (float)b / 15.0f;
-
-      a = 255 * fa;
-      r = 255 * fr;
-      g = 255 * fg;
-      b = 255 * fb;
-
-      pix = (a << 24) | (b << 16) | (g << 8) | (r);
-
-      opengl_4444_translate_table[i] = INTEL_INT(pix);
-    }
-  }
+  opengl_Upload_data = (uint *)mem_malloc(2048 * 2048 * 4);
+  ASSERT(opengl_Upload_data);
 
   opengl_SetDefaults();
 
@@ -424,16 +310,6 @@ int opengl_Init(oeApplication *app, renderer_preferred_state *pref_state) {
 // Releases the rendering context
 void opengl_Close() {
   CHECK_ERROR(5)
-
-  uint *delete_list = (uint *)mem_malloc(Cur_texture_object_num * sizeof(int));
-  ASSERT(delete_list);
-  for (int i = 1; i < Cur_texture_object_num; i++)
-    delete_list[i] = i;
-
-  if (Cur_texture_object_num > 1)
-    glDeleteTextures(Cur_texture_object_num, (const uint *)delete_list);
-
-  mem_free(delete_list);
 
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplWin32_Shutdown();
@@ -458,34 +334,21 @@ void opengl_Close() {
 
 #endif
 
-  if (OpenGL_packed_pixels) {
-    if (opengl_packed_Upload_data) {
-      mem_free(opengl_packed_Upload_data);
-    }
-    if (opengl_packed_Translate_table) {
-      mem_free(opengl_packed_Translate_table);
-    }
-    if (opengl_packed_4444_translate_table) {
-      mem_free(opengl_packed_4444_translate_table);
-    }
-    opengl_packed_Upload_data = NULL;
-    opengl_packed_Translate_table = NULL;
-    opengl_packed_4444_translate_table = NULL;
-  } else {
-    if (opengl_Upload_data)
-      mem_free(opengl_Upload_data);
-    if (opengl_Translate_table)
-      mem_free(opengl_Translate_table);
-    if (opengl_4444_translate_table)
-      mem_free(opengl_4444_translate_table);
-    opengl_Upload_data = NULL;
-    opengl_Translate_table = NULL;
-    opengl_4444_translate_table = NULL;
-  }
-
   if (OpenGL_cache_initted) {
-    mem_free(OpenGL_lightmap_remap);
-    mem_free(OpenGL_bitmap_remap);
+    for (int i = 0; i < MAX_LIGHTMAPS * 2; i++) {
+      if (OpenGL_lightmap_remap[i] != nullptr) {
+        delete OpenGL_lightmap_remap[i];
+        OpenGL_lightmap_remap[i] = nullptr;
+      }
+    }
+
+    for (int i = 0; i < MAX_BITMAPS * 2; i++) {
+      if (OpenGL_bitmap_remap[i] != nullptr) {
+        delete OpenGL_bitmap_remap[i];
+        OpenGL_bitmap_remap[i] = nullptr;
+      }
+    }
+
     mem_free(OpenGL_lightmap_states);
     mem_free(OpenGL_bitmap_states);
     OpenGL_cache_initted = 0;

@@ -23,6 +23,239 @@
 
 extern bool Force_one_texture;
 
+d3Image *OpenGL_bitmap_remap[MAX_BITMAPS * 2];
+d3Image *OpenGL_lightmap_remap[MAX_LIGHTMAPS * 2];
+
+ubyte *OpenGL_bitmap_states = NULL;
+ubyte *OpenGL_lightmap_states = NULL;
+
+uint *opengl_Upload_data = NULL;
+
+d3Image::d3Image(bool pixelpack, bool linear, bool repeat) { 
+  deviceHandle = Cur_texture_object_num++;
+
+  glBindTexture(GL_TEXTURE_2D, deviceHandle);
+  if (pixelpack) {
+   // glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
+  }  
+
+  if (repeat) {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  } else {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+  }
+  
+  if (linear) {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  } else {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  }  
+}
+
+void d3Image::Init(const void* data, int w, int h, ImageFormat format, bool useMipmaps, bool isMSAA) {
+  GLenum glFormat = convertFormat(format);
+
+  if (msaaEnabled) {
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, deviceHandle);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, glFormat, width, height,
+                            GL_TRUE); // Using 4 samples per pixel.
+  } else {
+    glBindTexture(GL_TEXTURE_2D, deviceHandle);
+    glTexImage2D(GL_TEXTURE_2D, 0, glFormat, width, height, 0, glFormat, GL_UNSIGNED_BYTE, data);
+
+    if (useMipmaps) {
+      glGenerateMipmap(GL_TEXTURE_2D);
+    }
+  }
+
+  glBindTexture(GL_TEXTURE_2D, 0); // Unbind the texture.
+}
+
+d3Image::~d3Image() { 
+    glDeleteTextures(1, &deviceHandle); 
+}
+
+int d3Image::GetWidth() const { return width; }
+int d3Image::GetHeight() const { return height; }
+unsigned int d3Image::GetHandle() const { return deviceHandle; }
+
+unsigned int d3Image::convertFormat(ImageFormat format) {
+  switch (format) {
+  case ImageFormat::DXT1:
+    return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+  case ImageFormat::DXT5:
+    return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+  case ImageFormat::RGB:
+    return GL_RGB;
+  case ImageFormat::RGBA:
+    return GL_RGBA;
+  default:
+    Int3();
+    return GL_RGBA; // Fallback format
+  }
+}
+
+// Converts a 1555 RGB format to RGBA
+uint32_t convert555ToRGBA(uint16_t pixel) {
+  int r = (pixel >> 10) & 0x1F;
+  int g = (pixel >> 5) & 0x1F;
+  int b = pixel & 0x1F;
+
+  // Calculate RGB
+  uint32_t rgba = ((b * 255 / 31) << 16) | ((g * 255 / 31) << 8) | (r * 255 / 31);
+
+  // Set alpha based on OPAQUE_FLAG
+  if (pixel & OPAQUE_FLAG) {
+    rgba |= (255 << 24); // Full opacity
+  } else {
+    rgba = 0; // Fully transparent
+  }
+
+  return INTEL_INT(rgba);
+}
+
+// Converts a 4444 ARGB format to RGBA
+uint32_t convert4444ToRGBA(uint16_t pixel) {
+  int a = (pixel >> 12) & 0xF;
+  int r = (pixel >> 8) & 0xF;
+  int g = (pixel >> 4) & 0xF;
+  int b = pixel & 0xF;
+
+  uint32_t rgba = ((a * 255 / 15) << 24) | ((b * 255 / 15) << 16) | ((g * 255 / 15) << 8) | (r * 255 / 15);
+  return INTEL_INT(rgba);
+}
+
+// Takes our 16bit format and converts it into the memory scheme that OpenGL wants
+void d3Image::TranslateBitmapToOpenGL(int bm_handle, int map_type, int replace, int tn) {
+  ushort *bm_ptr;
+  int texnum = deviceHandle;
+
+  int w, h;
+  int size;
+
+  if (UseMultitexture && Last_texel_unit_set != tn) {
+#if (defined(_USE_OGL_ACTIVE_TEXTURES))
+    glActiveTextureARB(GL_TEXTURE0_ARB + tn);
+    Last_texel_unit_set = tn;
+#endif
+  }
+
+  if (map_type == MAP_TYPE_LIGHTMAP) {
+    if (GameLightmaps[bm_handle].flags & LF_BRAND_NEW)
+      replace = 0;
+
+    bm_ptr = lm_data(bm_handle);
+    GameLightmaps[bm_handle].flags &= ~(LF_CHANGED | LF_BRAND_NEW);
+
+    w = lm_w(bm_handle);
+    h = lm_h(bm_handle);
+    size = GameLightmaps[bm_handle].square_res;
+  } else {
+    if (GameBitmaps[bm_handle].flags & BF_BRAND_NEW)
+      replace = 0;
+
+    bm_ptr = bm_data(bm_handle, 0);
+    GameBitmaps[bm_handle].flags &= ~(BF_CHANGED | BF_BRAND_NEW);
+    w = bm_w(bm_handle, 0);
+    h = bm_h(bm_handle, 0);
+    size = w;
+  }
+
+  if (OpenGL_last_bound[tn] != this) {
+    glBindTexture(GL_TEXTURE_2D, texnum);
+    OpenGL_sets_this_frame[0]++;
+    OpenGL_last_bound[tn] = this;
+  }
+
+  int i;
+
+   if (map_type == MAP_TYPE_LIGHTMAP) {
+    uint *left_data = (uint *)opengl_Upload_data;
+    int bm_left = 0;
+
+    for (int i = 0; i < h; i++, left_data += size, bm_left += w) {
+      uint *dest_data = left_data;
+      for (int t = 0; t < w; t++) {
+        *dest_data++ = convert555ToRGBA(bm_ptr[bm_left + t]);
+      }
+    }
+    if (size > 0) {
+      if (replace) {
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, size, size, GL_RGBA, GL_UNSIGNED_BYTE, opengl_Upload_data);
+      } else {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size, size, 0, GL_RGBA, GL_UNSIGNED_BYTE, opengl_Upload_data);
+      }
+    }
+  } else {
+    int limit = 0;
+
+    if (bm_mipped(bm_handle)) {
+      limit = NUM_MIP_LEVELS + 3; // ryan added +3.
+    } else {
+      limit = 1;
+    }
+
+    for (int m = 0; m < limit; m++) {
+      bm_ptr = bm_data(bm_handle, m);
+      w = bm_w(bm_handle, m);
+      h = bm_h(bm_handle, m);
+
+      if (bm_format(bm_handle) == BITMAP_FORMAT_4444) {
+        // Do 4444
+
+        if (bm_mipped(bm_handle)) {
+          for (i = 0; i < w * h; i++)
+            opengl_Upload_data[i] = INTEL_INT((255 << 24)) | convert4444ToRGBA(bm_ptr[i]);
+        } else {
+          for (i = 0; i < w * h; i++)
+            opengl_Upload_data[i] = convert4444ToRGBA(bm_ptr[i]);
+        }
+      } else {
+        // Do 1555
+
+        for (i = 0; i < w * h; i++)
+          opengl_Upload_data[i] = convert555ToRGBA(bm_ptr[i]);
+      }
+
+      // rcg06262000 my if wrapper.
+      if ((w > 0) && (h > 0)) {
+        if (replace) {
+          glTexSubImage2D(GL_TEXTURE_2D, m, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, opengl_Upload_data);
+        } else {
+          glTexImage2D(GL_TEXTURE_2D, m, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, opengl_Upload_data);
+        }
+      }
+    }
+  }
+
+  // mprintf ((1,"Doing slow upload to opengl!\n"));
+
+  if (map_type == MAP_TYPE_LIGHTMAP) {
+    GameLightmaps[bm_handle].flags &= ~LF_LIMITS;
+  }
+
+  CHECK_ERROR(6)
+  OpenGL_uploads++;
+}
+
+void d3Image::Bind(int tn) {
+  if (OpenGL_last_bound[tn] != this) {
+    if (UseMultitexture && Last_texel_unit_set != tn) {
+#if (defined(_USE_OGL_ACTIVE_TEXTURES))
+      glActiveTextureARB(GL_TEXTURE0_ARB + tn);
+      Last_texel_unit_set = tn;
+#endif
+    }
+
+    glBindTexture(GL_TEXTURE_2D, deviceHandle);
+    OpenGL_last_bound[tn] = this;
+    OpenGL_sets_this_frame[0]++;
+  }
+}
 
 // Sets up an appropriate wrap type for the current bound texture
 void opengl_MakeWrapTypeCurrent(int handle, int map_type, int tn) {
@@ -72,60 +305,6 @@ void opengl_MakeWrapTypeCurrent(int handle, int map_type, int tn) {
   CHECK_ERROR(8)
 }
 
-// Chooses the correct filter type for the currently bound texture
-void opengl_MakeFilterTypeCurrent(int handle, int map_type, int tn) {
-  int magf;
-  sbyte dest_state;
-
-  if (map_type == MAP_TYPE_LIGHTMAP) {
-    magf = GET_FILTER_STATE(OpenGL_lightmap_states[handle]);
-    dest_state = 1;
-  } else {
-    magf = GET_FILTER_STATE(OpenGL_bitmap_states[handle]);
-    dest_state = OpenGL_preferred_state.filtering;
-    if (!OpenGL_state.cur_bilinear_state)
-      dest_state = 0;
-  }
-
-  if (magf == dest_state)
-    return;
-#if (defined(_USE_OGL_ACTIVE_TEXTURES))
-  if (UseMultitexture && Last_texel_unit_set != tn) {
-    glActiveTextureARB(GL_TEXTURE0_ARB + tn);
-    Last_texel_unit_set = tn;
-  }
-#endif
-
-  OpenGL_sets_this_frame[2]++;
-
-  if (dest_state) {
-    if (map_type == MAP_TYPE_BITMAP && bm_mipped(handle)) {
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-    } else {
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    }
-  } else {
-    if (map_type == MAP_TYPE_BITMAP && bm_mipped(handle)) {
-      // glTexParameteri (GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST_MIPMAP_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-    } else {
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    }
-  }
-
-  if (map_type == MAP_TYPE_LIGHTMAP) {
-    SET_FILTER_STATE(OpenGL_lightmap_states[handle], dest_state);
-  } else {
-    SET_FILTER_STATE(OpenGL_bitmap_states[handle], dest_state);
-  }
-
-  CHECK_ERROR(9)
-}
-
 // returns the alpha that we should use
 float opengl_GetAlphaMultiplier(void) {
   switch (OpenGL_state.cur_alpha_type) {
@@ -163,42 +342,7 @@ float opengl_GetAlphaMultiplier(void) {
   }
 }
 
-int opengl_MakeTextureObject(int tn) {
-  int num = Cur_texture_object_num;
-
-  Cur_texture_object_num++;
-
-  if (UseMultitexture && Last_texel_unit_set != tn) {
-#if (defined(_USE_OGL_ACTIVE_TEXTURES))
-    glActiveTextureARB(GL_TEXTURE0_ARB + tn);
-    Last_texel_unit_set = tn;
-#endif
-  }
-
-  glBindTexture(GL_TEXTURE_2D, num);
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
-
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-  // glTexEnvf (GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-
-  CHECK_ERROR(2)
-
-  return num;
-}
-
-
 int opengl_InitCache(void) {
-
-  OpenGL_bitmap_remap = (ushort *)mem_malloc(MAX_BITMAPS * 2);
-  ASSERT(OpenGL_bitmap_remap);
-  OpenGL_lightmap_remap = (ushort *)mem_malloc(MAX_LIGHTMAPS * 2);
-  ASSERT(OpenGL_lightmap_remap);
-
   OpenGL_bitmap_states = (ubyte *)mem_malloc(MAX_BITMAPS);
   ASSERT(OpenGL_bitmap_states);
   OpenGL_lightmap_states = (ubyte *)mem_malloc(MAX_LIGHTMAPS);
@@ -209,13 +353,13 @@ int opengl_InitCache(void) {
   // Setup textures and cacheing
   int i;
   for (i = 0; i < MAX_BITMAPS; i++) {
-    OpenGL_bitmap_remap[i] = 65535;
+    OpenGL_bitmap_remap[i] = nullptr;
     OpenGL_bitmap_states[i] = 255;
     GameBitmaps[i].flags |= BF_CHANGED | BF_BRAND_NEW;
   }
 
   for (i = 0; i < MAX_LIGHTMAPS; i++) {
-    OpenGL_lightmap_remap[i] = 65535;
+    OpenGL_lightmap_remap[i] = nullptr;
     OpenGL_lightmap_states[i] = 255;
     GameLightmaps[i].flags |= LF_CHANGED | LF_BRAND_NEW;
   }
@@ -321,7 +465,7 @@ void rend_FreePreUploadedTexture(int handle, int map_type) {}
 // Utilizes a LRU cacheing scheme to select/upload textures the opengl driver
 int opengl_MakeBitmapCurrent(int handle, int map_type, int tn) {
   int w, h;
-  int texnum;
+  d3Image *texnum;
 
   if (map_type == MAP_TYPE_LIGHTMAP) {
     w = GameLightmaps[handle].square_res;
@@ -335,248 +479,40 @@ int opengl_MakeBitmapCurrent(int handle, int map_type, int tn) {
     h = bm_h(handle, 0);
   }
 
-  if (w != h) {
-    mprintf((0, "Can't use non-square textures with OpenGL!\n"));
-    return 0;
-  }
-
   // See if the bitmaps is already in the cache
   if (map_type == MAP_TYPE_LIGHTMAP) {
-    if (OpenGL_lightmap_remap[handle] == 65535) {
-      texnum = opengl_MakeTextureObject(tn);
+    if (OpenGL_lightmap_remap[handle] == nullptr) {
+      texnum = new d3Image(true, true, false);
       SET_WRAP_STATE(OpenGL_lightmap_states[handle], 1);
       SET_FILTER_STATE(OpenGL_lightmap_states[handle], 0);
       OpenGL_lightmap_remap[handle] = texnum;
-      opengl_TranslateBitmapToOpenGL(texnum, handle, map_type, 0, tn);
+      texnum->TranslateBitmapToOpenGL(handle, map_type, 0, tn);
     } else {
       texnum = OpenGL_lightmap_remap[handle];
       if (GameLightmaps[handle].flags & LF_CHANGED)
-        opengl_TranslateBitmapToOpenGL(texnum, handle, map_type, 1, tn);
+        texnum->TranslateBitmapToOpenGL(handle, map_type, 1, tn);
     }
   } else {
-    if (OpenGL_bitmap_remap[handle] == 65535) {
-      texnum = opengl_MakeTextureObject(tn);
+    if (OpenGL_bitmap_remap[handle] == nullptr) {
+      texnum = new d3Image(true, false, true);
       SET_WRAP_STATE(OpenGL_bitmap_states[handle], 1);
       SET_FILTER_STATE(OpenGL_bitmap_states[handle], 0);
       OpenGL_bitmap_remap[handle] = texnum;
-      opengl_TranslateBitmapToOpenGL(texnum, handle, map_type, 0, tn);
+      texnum->TranslateBitmapToOpenGL(handle, map_type, 0, tn);
     } else {
       texnum = OpenGL_bitmap_remap[handle];
       if (GameBitmaps[handle].flags & BF_CHANGED) {
-        opengl_TranslateBitmapToOpenGL(texnum, handle, map_type, 1, tn);
+        texnum->TranslateBitmapToOpenGL(handle, map_type, 1, tn);
       }
     }
   }
 
-  if (OpenGL_last_bound[tn] != texnum) {
-    if (UseMultitexture && Last_texel_unit_set != tn) {
-#if (defined(_USE_OGL_ACTIVE_TEXTURES))
-      glActiveTextureARB(GL_TEXTURE0_ARB + tn);
-      Last_texel_unit_set = tn;
-#endif
-    }
-
-    glBindTexture(GL_TEXTURE_2D, texnum);
-    OpenGL_last_bound[tn] = texnum;
-    OpenGL_sets_this_frame[0]++;
-  }
+  texnum->Bind(tn);
 
   CHECK_ERROR(7)
   return 1;
 }
 
-
-// Takes our 16bit format and converts it into the memory scheme that OpenGL wants
-void opengl_TranslateBitmapToOpenGL(int texnum, int bm_handle, int map_type, int replace, int tn) {
-  ushort *bm_ptr;
-
-  int w, h;
-  int size;
-
-  if (UseMultitexture && Last_texel_unit_set != tn) {
-#if (defined(_USE_OGL_ACTIVE_TEXTURES))
-    glActiveTextureARB(GL_TEXTURE0_ARB + tn);
-    Last_texel_unit_set = tn;
-#endif
-  }
-
-  if (map_type == MAP_TYPE_LIGHTMAP) {
-    if (GameLightmaps[bm_handle].flags & LF_BRAND_NEW)
-      replace = 0;
-
-    bm_ptr = lm_data(bm_handle);
-    GameLightmaps[bm_handle].flags &= ~(LF_CHANGED | LF_BRAND_NEW);
-
-    w = lm_w(bm_handle);
-    h = lm_h(bm_handle);
-    size = GameLightmaps[bm_handle].square_res;
-  } else {
-    if (GameBitmaps[bm_handle].flags & BF_BRAND_NEW)
-      replace = 0;
-
-    bm_ptr = bm_data(bm_handle, 0);
-    GameBitmaps[bm_handle].flags &= ~(BF_CHANGED | BF_BRAND_NEW);
-    w = bm_w(bm_handle, 0);
-    h = bm_h(bm_handle, 0);
-    size = w;
-  }
-
-  if (OpenGL_last_bound[tn] != texnum) {
-    glBindTexture(GL_TEXTURE_2D, texnum);
-    OpenGL_sets_this_frame[0]++;
-    OpenGL_last_bound[tn] = texnum;
-  }
-
-  int i;
-
-  if (OpenGL_packed_pixels) {
-    if (map_type == MAP_TYPE_LIGHTMAP) {
-      ushort *left_data = (ushort *)opengl_packed_Upload_data;
-      int bm_left = 0;
-
-      for (int i = 0; i < h; i++, left_data += size, bm_left += w) {
-        ushort *dest_data = left_data;
-        for (int t = 0; t < w; t++) {
-          *dest_data++ = opengl_packed_Translate_table[bm_ptr[bm_left + t]];
-        }
-      }
-
-      if (replace) {
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, size, size, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1,
-                        opengl_packed_Upload_data);
-      } else {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB5_A1, size, size, 0, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1,
-                     opengl_packed_Upload_data);
-      }
-    } else {
-      int limit = 0;
-
-      if (bm_mipped(bm_handle)) {
-        limit = NUM_MIP_LEVELS + 3;
-      } else {
-        limit = 1;
-      }
-
-      for (int m = 0; m < limit; m++) {
-        if (m < NUM_MIP_LEVELS) {
-          bm_ptr = bm_data(bm_handle, m);
-          w = bm_w(bm_handle, m);
-          h = bm_h(bm_handle, m);
-        } else {
-          bm_ptr = bm_data(bm_handle, NUM_MIP_LEVELS - 1);
-          w = bm_w(bm_handle, NUM_MIP_LEVELS - 1);
-          h = bm_h(bm_handle, NUM_MIP_LEVELS - 1);
-
-          w >>= m - (NUM_MIP_LEVELS - 1);
-          h >>= m - (NUM_MIP_LEVELS - 1);
-
-          if ((w < 1) || (h < 1))
-            continue;
-        }
-
-        if (bm_format(bm_handle) == BITMAP_FORMAT_4444) {
-          // Do 4444
-          if (bm_mipped(bm_handle)) {
-            for (i = 0; i < w * h; i++)
-              opengl_packed_Upload_data[i] = 0xf | (opengl_packed_4444_translate_table[bm_ptr[i]]);
-          } else {
-            for (i = 0; i < w * h; i++)
-              opengl_packed_Upload_data[i] = opengl_packed_4444_translate_table[bm_ptr[i]];
-          }
-
-          if (replace) {
-            glTexSubImage2D(GL_TEXTURE_2D, m, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4,
-                            opengl_packed_Upload_data);
-          } else {
-            glTexImage2D(GL_TEXTURE_2D, m, GL_RGBA4, w, h, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4,
-                         opengl_packed_Upload_data);
-          }
-        } else {
-          // Do 1555
-          for (i = 0; i < w * h; i++) {
-            opengl_packed_Upload_data[i] = opengl_packed_Translate_table[bm_ptr[i]];
-          }
-
-          if (replace) {
-            glTexSubImage2D(GL_TEXTURE_2D, m, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1,
-                            opengl_packed_Upload_data);
-          } else {
-            glTexImage2D(GL_TEXTURE_2D, m, GL_RGB5_A1, w, h, 0, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1,
-                         opengl_packed_Upload_data);
-          }
-        }
-      }
-    }
-  } else {
-    if (map_type == MAP_TYPE_LIGHTMAP) {
-      uint *left_data = (uint *)opengl_Upload_data;
-      int bm_left = 0;
-
-      for (int i = 0; i < h; i++, left_data += size, bm_left += w) {
-        uint *dest_data = left_data;
-        for (int t = 0; t < w; t++) {
-          *dest_data++ = opengl_Translate_table[bm_ptr[bm_left + t]];
-        }
-      }
-      if (size > 0) {
-        if (replace) {
-          glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, size, size, GL_RGBA, GL_UNSIGNED_BYTE, opengl_Upload_data);
-        } else {
-          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size, size, 0, GL_RGBA, GL_UNSIGNED_BYTE, opengl_Upload_data);
-        }
-      }
-    } else {
-      int limit = 0;
-
-      if (bm_mipped(bm_handle)) {
-        limit = NUM_MIP_LEVELS + 3; // ryan added +3.
-      } else {
-        limit = 1;
-      }
-
-      for (int m = 0; m < limit; m++) {
-        bm_ptr = bm_data(bm_handle, m);
-        w = bm_w(bm_handle, m);
-        h = bm_h(bm_handle, m);
-
-        if (bm_format(bm_handle) == BITMAP_FORMAT_4444) {
-          // Do 4444
-
-          if (bm_mipped(bm_handle)) {
-            for (i = 0; i < w * h; i++)
-              opengl_Upload_data[i] = INTEL_INT((255 << 24)) | opengl_4444_translate_table[bm_ptr[i]];
-          } else {
-            for (i = 0; i < w * h; i++)
-              opengl_Upload_data[i] = opengl_4444_translate_table[bm_ptr[i]];
-          }
-        } else {
-          // Do 1555
-
-          for (i = 0; i < w * h; i++)
-            opengl_Upload_data[i] = opengl_Translate_table[bm_ptr[i]];
-        }
-
-        // rcg06262000 my if wrapper.
-        if ((w > 0) && (h > 0)) {
-          if (replace) {
-            glTexSubImage2D(GL_TEXTURE_2D, m, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, opengl_Upload_data);
-          } else {
-            glTexImage2D(GL_TEXTURE_2D, m, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, opengl_Upload_data);
-          }
-        }
-      }
-    }
-  }
-
-  // mprintf ((1,"Doing slow upload to opengl!\n"));
-
-  if (map_type == MAP_TYPE_LIGHTMAP) {
-    GameLightmaps[bm_handle].flags &= ~LF_LIMITS;
-  }
-
-  CHECK_ERROR(6)
-  OpenGL_uploads++;
-}
 
 
 void rend_SetTextureType(texture_type state) {

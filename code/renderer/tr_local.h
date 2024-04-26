@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include <vector>
 #include "pserror.h"
 #include "byteswap.h"
 #include "DDAccess.h"
@@ -47,6 +48,9 @@
 #include "../libimgui/imgui_impl_win32.h"
 #include "../libimgui/imgui_impl_opengl3.h"
 #include "../devcon/DevConsole.h"
+
+class d3image;
+#include "gl_rendertexture.h"
 
 #define MAX_POINTS_IN_POLY 100
 
@@ -103,16 +107,11 @@ extern ubyte opengl_Framebuffer_ready;
 extern chunked_bitmap opengl_Chunked_bitmap;
 
 
-extern ushort *OpenGL_bitmap_remap;
-extern ushort *OpenGL_lightmap_remap;
+extern d3Image *OpenGL_bitmap_remap[MAX_BITMAPS * 2];
+extern d3Image *OpenGL_lightmap_remap[MAX_LIGHTMAPS * 2];
 extern ubyte *OpenGL_bitmap_states;
 extern ubyte *OpenGL_lightmap_states;
 extern uint *opengl_Upload_data;
-extern uint *opengl_Translate_table;
-extern uint *opengl_4444_translate_table;
-extern ushort *opengl_packed_Upload_data;
-extern ushort *opengl_packed_Translate_table;
-extern ushort *opengl_packed_4444_translate_table;
 extern rendering_state OpenGL_state;
 extern float Alpha_multiplier;
 extern PIXELFORMATDESCRIPTOR pfd_copy;
@@ -141,9 +140,8 @@ extern int OpenGL_polys_drawn;
 extern int OpenGL_verts_processed;
 extern int OpenGL_uploads;
 extern int OpenGL_sets_this_frame[10];
-extern int OpenGL_packed_pixels;
 extern int OpenGL_cache_initted;
-extern int OpenGL_last_bound[2];
+extern d3Image *OpenGL_last_bound[2];
 extern int Last_texel_unit_set;
 extern int OpenGL_last_frame_polys_drawn;
 extern int OpenGL_last_frame_verts_processed;
@@ -193,9 +191,6 @@ float opengl_GetAlphaMultiplier(void);
 
 // Function to make a bitmap current in the OpenGL context
 int opengl_MakeBitmapCurrent(int handle, int map_type, int tn);
-
-// Function to set the current filtering type for a texture
-void opengl_MakeFilterTypeCurrent(int textureId, int mapType, int textureUnit);
 
 // Function to set the wrapping type for a texture
 void opengl_MakeWrapTypeCurrent(int textureId, int mapType, int textureUnit);

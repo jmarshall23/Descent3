@@ -77,7 +77,7 @@ int OpenGL_uploads = 0;
 int OpenGL_sets_this_frame[10];
 int OpenGL_packed_pixels = 0;
 int OpenGL_cache_initted = 0;
-int OpenGL_last_bound[2];
+d3Image *OpenGL_last_bound[2];
 int Last_texel_unit_set = -1;
 int OpenGL_last_frame_polys_drawn = 0;
 int OpenGL_last_frame_verts_processed = 0;
@@ -93,19 +93,6 @@ int Cur_texture_object_num = 1;
 // framerates to discern driver problems
 ubyte Fast_test_render = 0;
 #endif
-
-ushort *OpenGL_bitmap_remap = NULL;
-ushort *OpenGL_lightmap_remap = NULL;
-ubyte *OpenGL_bitmap_states = NULL;
-ubyte *OpenGL_lightmap_states = NULL;
-
-uint *opengl_Upload_data = NULL;
-uint *opengl_Translate_table = NULL;
-uint *opengl_4444_translate_table = NULL;
-
-ushort *opengl_packed_Upload_data = NULL;
-ushort *opengl_packed_Translate_table = NULL;
-ushort *opengl_packed_4444_translate_table = NULL;
 
 rendering_state OpenGL_state;
 float Alpha_multiplier = 1.0f;
@@ -183,8 +170,8 @@ void opengl_SetDefaults() {
   rend_SetZBufferState(1);
   rend_SetZValues(0, 3000);
   opengl_SetGammaValue(OpenGL_preferred_state.gamma);
-  OpenGL_last_bound[0] = 9999999;
-  OpenGL_last_bound[1] = 9999999;
+  OpenGL_last_bound[0] = nullptr;
+  OpenGL_last_bound[1] = nullptr;
   Last_texel_unit_set = -1;
   OpenGL_multitexture_state = false;
 
