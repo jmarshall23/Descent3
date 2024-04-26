@@ -1175,8 +1175,8 @@ float ComputeDefaultSizeFunc(int handle, float *size_ptr, vector *offset_ptr, bo
   }
 
   if (offset_ptr) {
-    vector min_xyz;
-    vector max_xyz;
+    vector min_xyz = {};
+    vector max_xyz = {};
 
     for (n = start_frame; n <= end_frame; n++) {
       // Because size changes with animation, we need the worst case point -- so, check every keyframe
