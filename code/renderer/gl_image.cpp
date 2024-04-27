@@ -266,40 +266,46 @@ void d3Image::TranslateBitmapToOpenGL(int bm_handle, int map_type, int replace, 
 
     if (bm_mipped(bm_handle)) {
       limit = NUM_MIP_LEVELS + 3; // ryan added +3.
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR); // Trilinear filtering
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     } else {
       limit = 1;
     }
 
-    for (int m = 0; m < limit; m++) {
-      bm_ptr = bm_data(bm_handle, m);
-      w = bm_w(bm_handle, m);
-      h = bm_h(bm_handle, m);
+    int m = 0;
+    bm_ptr = bm_data(bm_handle, m);
+    w = bm_w(bm_handle, m);
+    h = bm_h(bm_handle, m);
 
-      if (bm_format(bm_handle) == BITMAP_FORMAT_4444) {
-        // Do 4444
+    if (bm_format(bm_handle) == BITMAP_FORMAT_4444) {
+      // Do 4444
 
-        if (bm_mipped(bm_handle)) {
-          for (i = 0; i < w * h; i++)
-            opengl_Upload_data[i] = INTEL_INT((255 << 24)) | convert4444ToRGBA(bm_ptr[i]);
-        } else {
-          for (i = 0; i < w * h; i++)
-            opengl_Upload_data[i] = convert4444ToRGBA(bm_ptr[i]);
-        }
-      } else {
-        // Do 1555
-
+      if (bm_mipped(bm_handle)) {
         for (i = 0; i < w * h; i++)
-          opengl_Upload_data[i] = convert555ToRGBA(bm_ptr[i]);
+          opengl_Upload_data[i] = INTEL_INT((255 << 24)) | convert4444ToRGBA(bm_ptr[i]);
+      } else {
+        for (i = 0; i < w * h; i++)
+          opengl_Upload_data[i] = convert4444ToRGBA(bm_ptr[i]);
       }
+    } else {
+      // Do 1555
 
-      // rcg06262000 my if wrapper.
-      if ((w > 0) && (h > 0)) {
-        if (replace) {
-          glTexSubImage2D(GL_TEXTURE_2D, m, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, opengl_Upload_data);
-        } else {
-          glTexImage2D(GL_TEXTURE_2D, m, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, opengl_Upload_data);
-        }
+      for (i = 0; i < w * h; i++)
+        opengl_Upload_data[i] = convert555ToRGBA(bm_ptr[i]);
+    }
+
+    // rcg06262000 my if wrapper.
+    if ((w > 0) && (h > 0)) {
+      if (replace) {
+        glTexSubImage2D(GL_TEXTURE_2D, m, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, opengl_Upload_data);
+      } else {
+        glTexImage2D(GL_TEXTURE_2D, m, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, opengl_Upload_data);
       }
+    }
+
+    // The stored mips dont look that great, just let the driver generate it. 
+    if (bm_mipped(bm_handle)) {
+      glGenerateMipmap(GL_TEXTURE_2D); // Automatically generate remaining mip levels
     }
   }
 
