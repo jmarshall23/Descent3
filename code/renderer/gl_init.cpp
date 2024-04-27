@@ -121,8 +121,8 @@ int opengl_Setup(HDC glhdc) {
 
     frameAlbedoTextureMSAA = new d3Image();
     frameDepthTextureMSAA = new d3Image();
-    frameAlbedoTextureMSAA->Init(nullptr, OpenGL_state.screen_width, OpenGL_state.screen_height, ImageFormat::RGBA, 4);
-    frameDepthTextureMSAA->Init(nullptr, OpenGL_state.screen_width, OpenGL_state.screen_height, ImageFormat::Depth, 4);
+    frameAlbedoTextureMSAA->Init(nullptr, OpenGL_state.screen_width, OpenGL_state.screen_height, ImageFormat::RGBA, 8);
+    frameDepthTextureMSAA->Init(nullptr, OpenGL_state.screen_width, OpenGL_state.screen_height, ImageFormat::Depth, 8);
     
     frameRenderTextureMSAA = new d3RenderTexture(frameAlbedoTextureMSAA, frameDepthTextureMSAA);
     frameRenderTextureMSAA->InitRenderTexture();

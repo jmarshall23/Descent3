@@ -2530,6 +2530,8 @@ void GameRenderWorld(object *viewer, vector *viewer_eye, int viewer_roomnum, mat
   // Start the 3D
   g3_StartFrame(viewer_eye, viewer_orient, zoom);
 
+  rend_BeginMineRender();
+
   // Reset fog,zbuffer
   Num_fogged_rooms_this_frame = 0;
   rend_SetZBufferState(1);
@@ -2554,6 +2556,9 @@ void GameRenderWorld(object *viewer, vector *viewer_eye, int viewer_roomnum, mat
 
   // Done with 3D
   PostRender(viewer_roomnum, -1);
+
+  rend_EndMineRender();
+
   g3_EndFrame();
 
   // Restore viewer orientation

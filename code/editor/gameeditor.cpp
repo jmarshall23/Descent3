@@ -1011,6 +1011,8 @@ void StartEditorFrame(grViewport *vp, vector *viewer_eye, matrix *viewer_orient,
 	if (!surf) 
 		Int3();													// This surface should be locked.  bad?
 	
+	rend_BeginMineRender();
+
 	rend_StartFrame(0,0,surf->width(),surf->height());
 	g3_StartFrame(viewer_eye,viewer_orient,zoom);
 }
@@ -1022,6 +1024,7 @@ void EndEditorFrame()
 	Editor_g3_vp = NULL;
 	g3_EndFrame();
 	rend_EndFrame();
+    rend_EndMineRender();
 }
 
 

@@ -68,7 +68,11 @@ d3Image::d3Image(bool pixelpack, bool linear, bool repeat) {
 }
 
 void d3Image::Init(const void *data, int w, int h, ImageFormat format, int samples, bool useMipmaps) {
-  std::pair<unsigned int, unsigned int> glFormat = convertFormat(format);
+  ImageFormatInfo formatInfo = convertFormat(format);
+  auto internalFormat = formatInfo.internalFormat;
+  auto externalFormat = formatInfo.externalFormat;
+  auto dataType = formatInfo.dataType;
+
   this->format = format;
   numMultipleSamples = samples;
   width = w;
@@ -77,21 +81,21 @@ void d3Image::Init(const void *data, int w, int h, ImageFormat format, int sampl
   GL_CheckDriver();
   if (samples > 0) {
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, deviceHandle);
-    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, glFormat.first, width, height,
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, width, height,
                             GL_TRUE); // Using 4 samples per pixel.
     GL_CheckDriver();
     uploadType = GL_TEXTURE_2D_MULTISAMPLE;
   } else {
     glBindTexture(GL_TEXTURE_2D, deviceHandle);
-    glTexImage2D(GL_TEXTURE_2D, 0, glFormat.first, width, height, 0, glFormat.second, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, externalFormat, dataType, data);
     GL_CheckDriver();
     uploadType = GL_TEXTURE_2D;
     if (useMipmaps) {
       glGenerateMipmap(GL_TEXTURE_2D);
     }
 
-    glTexParameteri(uploadType, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(uploadType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(uploadType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(uploadType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(uploadType, GL_TEXTURE_WRAP_S, GL_CLAMP);
     glTexParameteri(uploadType, GL_TEXTURE_WRAP_T, GL_CLAMP);
   }
@@ -109,30 +113,36 @@ int d3Image::GetWidth() const { return width; }
 int d3Image::GetHeight() const { return height; }
 unsigned int d3Image::GetHandle() const { return deviceHandle; }
 
-std::pair<unsigned int, unsigned int> d3Image::convertFormat(ImageFormat format) {
+
+ImageFormatInfo d3Image::convertFormat(ImageFormat format) {
   switch (format) {
   case ImageFormat::DXT1:
-    return {GL_COMPRESSED_RGBA_S3TC_DXT1_EXT, GL_RGBA}; // Assuming GL_RGBA as the external format
+    return {GL_COMPRESSED_RGBA_S3TC_DXT1_EXT, GL_RGBA, GL_UNSIGNED_BYTE};
   case ImageFormat::DXT5:
-    return {GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GL_RGBA}; // Assuming GL_RGBA as the external format
+    return {GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GL_RGBA, GL_UNSIGNED_BYTE};
   case ImageFormat::RGB:
-    return {GL_RGB, GL_RGB};
+    return {GL_RGB, GL_RGB, GL_UNSIGNED_BYTE};
   case ImageFormat::RGBA:
-    return {GL_RGBA, GL_RGBA};
+    return {GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE};
   case ImageFormat::Cubemap:
-    return {GL_RGB, GL_RGB}; // Cubemaps generally use GL_RGB or GL_RGBA, adjust as necessary
+    return {GL_RGB, GL_RGB, GL_UNSIGNED_BYTE};
   case ImageFormat::Depth:
-    return {GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT};
+    return {GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT};
   case ImageFormat::Depth24Stencil8:
-    return {GL_DEPTH_STENCIL, GL_DEPTH24_STENCIL8};
+    return {GL_DEPTH_STENCIL, GL_DEPTH24_STENCIL8, GL_UNSIGNED_INT_24_8};
   default:
-    Int3();                    // Error handling
-    return {GL_RGBA, GL_RGBA}; // Fallback formats
+    // Error handling
+    // Returning a default format
+    return {GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE};
   }
 }
 
 void d3Image::InitCubemap(const void* data[6], int size) {
-  std::pair<unsigned int, unsigned int> glFormat = convertFormat(ImageFormat::Cubemap);
+  ImageFormatInfo formatInfo = convertFormat(format);
+  auto internalFormat = formatInfo.internalFormat;
+  auto externalFormat = formatInfo.externalFormat;
+  auto dataType = formatInfo.dataType;
+
   glBindTexture(GL_TEXTURE_CUBE_MAP, deviceHandle);
   width = size;
   height = size;
@@ -141,12 +151,9 @@ void d3Image::InitCubemap(const void* data[6], int size) {
   for (GLuint i = 0; i < 6; ++i) {
     // Load each face of the cubemap
     if (data != nullptr) {
-      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat.first, width, height, 0, glFormat.second, GL_UNSIGNED_BYTE,
-                   data[i]);
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, width, height, 0, externalFormat, dataType, data[i]);
     } else {
-      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat.first, width, height, 0, glFormat.second,
-                   GL_UNSIGNED_BYTE,
-                   nullptr);
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, width, height, 0, externalFormat, dataType, nullptr);
     }
   }
 
@@ -160,13 +167,17 @@ void d3Image::InitCubemap(const void* data[6], int size) {
 }
 
 void d3Image::Resize(int width, int height) {
-  std::pair<unsigned int, unsigned int> glFormat = convertFormat(format);
+  ImageFormatInfo formatInfo = convertFormat(format);
+  auto internalFormat = formatInfo.internalFormat;
+  auto externalFormat = formatInfo.externalFormat;
+  auto dataType = formatInfo.dataType;
+
   if (numMultipleSamples > 0) {
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, deviceHandle);
-    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, numMultipleSamples, glFormat.first, width, height, GL_TRUE);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, numMultipleSamples, internalFormat, width, height, GL_TRUE);
   } else {
     glBindTexture(GL_TEXTURE_2D, deviceHandle);
-    glTexImage2D(GL_TEXTURE_2D, 0, glFormat.first, width, height, 0, glFormat.second, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, externalFormat, dataType, NULL);
   }
 }
 
@@ -509,6 +520,42 @@ void rend_DrawScaledBitmap(int x1, int y1, int x2, int y2, int bm, float u0, flo
   ptr_pnts[3] = &pnts[3];
   rend_SetTextureType(TT_LINEAR);
   rend_DrawPolygon2D(bm, ptr_pnts, 4);
+}
+
+void rend_Draw2DImage(d3Image *image, int x1, int y1, int x2, int y2, float u0, float v0, float u1, float v1, float r, float g, float b, float a) {
+  g3Point *ptr_pnts[4];
+  g3Point pnts[4];
+  for (int i = 0; i < 4; i++) {
+    pnts[i].p3_r = r;
+    pnts[i].p3_g = g;
+    pnts[i].p3_b = b;
+    pnts[i].p3_a = a;
+    pnts[i].p3_z = 1.0f;
+    pnts[i].p3_flags = PF_PROJECTED;
+  }
+
+  pnts[0].p3_sx = x1;
+  pnts[0].p3_sy = y1;
+  pnts[0].p3_u = u0;
+  pnts[0].p3_v = v0;
+  pnts[1].p3_sx = x2;
+  pnts[1].p3_sy = y1;
+  pnts[1].p3_u = u1;
+  pnts[1].p3_v = v0;
+  pnts[2].p3_sx = x2;
+  pnts[2].p3_sy = y2;
+  pnts[2].p3_u = u1;
+  pnts[2].p3_v = v1;
+  pnts[3].p3_sx = x1;
+  pnts[3].p3_sy = y2;
+  pnts[3].p3_u = u0;
+  pnts[3].p3_v = v1;
+  ptr_pnts[0] = &pnts[0];
+  ptr_pnts[1] = &pnts[1];
+  ptr_pnts[2] = &pnts[2];
+  ptr_pnts[3] = &pnts[3];
+  rend_SetTextureType(TT_LINEAR);
+  rend_DrawPolygon2D(image, ptr_pnts, 4);
 }
 
 // Draws a simple bitmap at the specified x,y location

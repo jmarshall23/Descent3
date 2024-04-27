@@ -120,6 +120,53 @@ d3Image *frameAlbedoTexture = nullptr;
 d3Image *frameDepthTexture = nullptr;
 d3RenderTexture *frameRenderTexture = nullptr;
 
+void rend_ResolveMSAA(d3RenderTexture *msaaRenderTexture, d3RenderTexture *destRenderTexture) {
+  int width = msaaRenderTexture->GetWidth();
+  int height = msaaRenderTexture->GetHeight();
+
+  GL_CheckDriver();
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, msaaRenderTexture->GetDeviceHandle());
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, destRenderTexture->GetDeviceHandle());
+  GL_CheckDriver();
+
+  // Resolve all of the render targets.
+  for (int i = 0; i < msaaRenderTexture->GetNumColorImages(); i++) {
+    glReadBuffer(GL_COLOR_ATTACHMENT0 + i);
+    glDrawBuffer(GL_COLOR_ATTACHMENT0 + i);
+    glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+  }
+
+  GL_CheckDriver();
+
+  // Resolve the Depth Buffer
+  glReadBuffer(GL_NONE);
+  glDrawBuffer(GL_NONE);
+  glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+
+  GL_CheckDriver();
+
+  glReadBuffer(GL_COLOR_ATTACHMENT0);
+  glDrawBuffer(GL_COLOR_ATTACHMENT0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void rend_BeginMineRender(void) {    
+    frameAlbedoTextureMSAA->Resize(OpenGL_state.screen_width, OpenGL_state.screen_height);
+    frameDepthTextureMSAA->Resize(OpenGL_state.screen_width, OpenGL_state.screen_height);
+    frameAlbedoTexture->Resize(OpenGL_state.screen_width, OpenGL_state.screen_height);
+    frameDepthTexture->Resize(OpenGL_state.screen_width, OpenGL_state.screen_height);
+    frameRenderTextureMSAA->MakeCurrent();
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void rend_EndMineRender(void) {
+    // Resolve the MSAA render targets. 
+    rend_ResolveMSAA(frameRenderTextureMSAA, frameRenderTexture);
+    rend_TransformSetToPassthru();
+    rend_Draw2DImage(frameAlbedoTexture, 0, -OpenGL_state.clip_y1, frameAlbedoTexture->GetWidth(),
+                     frameAlbedoTexture->GetHeight() - OpenGL_state.clip_y1, 0, 1, 1, 0, 1, 1, 1, 1);
+}
 
 // Sets up multi-texturing using ARB extensions
 void opengl_GetDLLFunctions(void) {

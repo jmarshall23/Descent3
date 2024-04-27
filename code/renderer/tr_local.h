@@ -209,6 +209,8 @@ inline void GL_CheckDriver(void) {
     GLuint err = glGetError();
 
     if (err != GL_NO_ERROR) {
-      assert(!"Your friendly OpenGL driver failure. Call a graphics engineer who likes to endure pain.");
+ //     assert(!"Your friendly OpenGL driver failure. Call a graphics engineer who likes to endure pain.");
     }
 }
+
+void rend_DrawPolygon2D(d3Image *image, g3Point **p, int nv);

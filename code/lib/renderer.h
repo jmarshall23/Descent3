@@ -299,6 +299,7 @@
 
 #include <windows.h>
 #include <utility>
+#include <tuple>
 #include "pstypes.h"
 #include "grdefs.h"
 
@@ -522,6 +523,8 @@ void rend_Close();
 // NOTE: scripts are expecting the old prototype that has a zvalue (which is ignored) before color
 void rend_DrawScaledBitmap(int x1, int y1, int x2, int y2, int bm, float u0, float v0, float u1, float v1,
                            int color = -1, float *alphas = NULL);
+
+void rend_Draw2DImage(class d3Image *image, int x1, int y1, int x2, int y2, float u0, float v0, float u1, float v1, float r, float g, float b, float a);
 
 // Sets the state of bilinear filtering for our textures
 void rend_SetFiltering(sbyte state);
@@ -828,6 +831,12 @@ enum class ImageFormat {
   // Add more formats as necessary
 };
 
+struct ImageFormatInfo {
+  unsigned int internalFormat;
+  unsigned int externalFormat;
+  unsigned int dataType;
+};
+
 class d3Image {
 public:
   d3Image();
@@ -854,8 +863,10 @@ private:
   int numMultipleSamples;
   unsigned int uploadType;
   ImageFormat format;
-  std::pair<unsigned int, unsigned int> d3Image::convertFormat(ImageFormat format);
+  ImageFormatInfo d3Image::convertFormat(ImageFormat format);
 };
 
+void rend_BeginMineRender(void);
+void rend_EndMineRender(void);
 
 #endif
