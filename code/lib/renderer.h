@@ -821,28 +821,38 @@ enum class ImageFormat {
   DXT5,
   RGB,
   RGBA,
+  Cubemap,
+  Depth,    
+  Depth24Stencil8 
   // Add more formats as necessary
 };
 
 class d3Image {
 public:
+  d3Image();
   d3Image(bool pixelpack, bool linear, bool repeat);
   ~d3Image();
 
-  void Init(const void *data, int w, int h, ImageFormat format, bool useMipmaps = false, bool isMSAA = false);
+  void Init(const void *data, int w, int h, ImageFormat format, int samples = 0, bool useMipmaps = false);
+  void InitCubemap(const void *data[6], int size);
+  void InitDepthmap(int w, int h, ImageFormat format, int samples);
+
   void TranslateBitmapToOpenGL(int bm_handle, int map_type, int replace, int tn);
 
   int GetWidth() const;
   int GetHeight() const;
+  int GetNumMultipleSamples() const { return numMultipleSamples; }
   unsigned int GetHandle() const;
+  void Resize(int width, int height);
 
   void Bind(int tn);
-
+  ImageFormat GetFormat() { return format; }
 private:
   unsigned int deviceHandle;
   int width;
   int height;
-  bool msaaEnabled;
+  int numMultipleSamples;
+  ImageFormat format;
   unsigned int convertFormat(ImageFormat format);
 };
 

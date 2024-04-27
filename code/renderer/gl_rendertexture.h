@@ -26,7 +26,7 @@
 
 ================================================================================================
 */
-#if 0
+
 /*
 ================================================
 d3RenderTexture holds both the color and depth images that are made
@@ -35,16 +35,16 @@ resident on the video hardware.
 */
 class d3RenderTexture {
 public:
-  d3RenderTexture(idImage *colorImage, idImage *depthImage);
+  d3RenderTexture(d3Image *colorImage, d3Image *depthImage);
   ~d3RenderTexture();
 
   int GetWidth() const;
   int GetHeight() const;
 
-  idImage *GetColorImage(int idx) const { return colorImages[idx]; }
-  idImage *GetDepthImage() const { return depthImage; }
+  d3Image *GetColorImage(int idx) const { return colorImages[idx]; }
+  d3Image *GetDepthImage() const { return depthImage; }
 
-  int GetNumColorImages() const { return colorImages.Num(); }
+  int GetNumColorImages() const { return colorImages.size(); }
 
   void Resize(int width, int height);
 
@@ -53,12 +53,11 @@ public:
 
   GLuint GetDeviceHandle(void) { return deviceHandle; }
 
-  void AddRenderImage(idImage *image);
+  void AddRenderImage(d3Image *image);
   void InitRenderTexture(void);
 
 private:
-  std::vector<idImage *> colorImages;
-  idImage *depthImage;
+  std::vector<d3Image *> colorImages;
+  d3Image *depthImage;
   GLuint deviceHandle;
 };
-#endif

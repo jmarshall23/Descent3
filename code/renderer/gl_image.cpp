@@ -31,8 +31,16 @@ ubyte *OpenGL_lightmap_states = NULL;
 
 uint *opengl_Upload_data = NULL;
 
+d3Image::d3Image() {
+    deviceHandle = Cur_texture_object_num++;
+    numMultipleSamples = 0;
+}
+
 d3Image::d3Image(bool pixelpack, bool linear, bool repeat) { 
   deviceHandle = Cur_texture_object_num++;
+
+  format = ImageFormat::RGBA;
+  numMultipleSamples = 0;
 
   glBindTexture(GL_TEXTURE_2D, deviceHandle);
   if (pixelpack) {
@@ -56,12 +64,14 @@ d3Image::d3Image(bool pixelpack, bool linear, bool repeat) {
   }  
 }
 
-void d3Image::Init(const void* data, int w, int h, ImageFormat format, bool useMipmaps, bool isMSAA) {
+void d3Image::Init(const void *data, int w, int h, ImageFormat format, int samples, bool useMipmaps) {
   GLenum glFormat = convertFormat(format);
 
-  if (msaaEnabled) {
+  numMultipleSamples = samples;
+
+  if (samples > 0) {
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, deviceHandle);
-    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, glFormat, width, height,
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, glFormat, width, height,
                             GL_TRUE); // Using 4 samples per pixel.
   } else {
     glBindTexture(GL_TEXTURE_2D, deviceHandle);
@@ -93,9 +103,71 @@ unsigned int d3Image::convertFormat(ImageFormat format) {
     return GL_RGB;
   case ImageFormat::RGBA:
     return GL_RGBA;
+  case ImageFormat::Cubemap:
+    return GL_RGB; // Default to GL_RGB for cubemaps unless specified otherwise
+  case ImageFormat::Depth:
+    return GL_DEPTH_COMPONENT;
+  case ImageFormat::Depth24Stencil8:
+    return GL_DEPTH24_STENCIL8;
   default:
     Int3();
     return GL_RGBA; // Fallback format
+  }
+}
+
+void d3Image::InitCubemap(const void* data[6], int size) {
+  GLenum glFormat = convertFormat(ImageFormat::Cubemap);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, deviceHandle);
+
+  for (GLuint i = 0; i < 6; ++i) {
+    // Load each face of the cubemap
+    if (data != nullptr) {
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, width, height, 0, glFormat, GL_UNSIGNED_BYTE,
+                   data[i]);
+    } else {
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, width, height, 0, glFormat, GL_UNSIGNED_BYTE,
+                   nullptr);
+    }
+  }
+
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+  glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+}
+
+void d3Image::InitDepthmap(int w, int h, ImageFormat format, int samples) {
+  GLenum glFormat = convertFormat(format);
+  glBindTexture(GL_TEXTURE_2D, deviceHandle);
+  numMultipleSamples = samples;
+  if (samples > 0) {
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, deviceHandle);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, glFormat, width, height, GL_TRUE);
+  } else {
+    glBindTexture(GL_TEXTURE_2D, deviceHandle);
+    glTexImage2D(GL_TEXTURE_2D, 0, glFormat, width, height, 0, glFormat, GL_UNSIGNED_BYTE, NULL);
+  }
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+  GLfloat borderColor[] = {1.0, 1.0, 1.0, 1.0};
+  glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void d3Image::Resize(int width, int height) {
+  GLenum glFormat = convertFormat(format);
+  if (numMultipleSamples > 0) {
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, deviceHandle);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, numMultipleSamples, glFormat, width, height, GL_TRUE);
+  } else {
+    glBindTexture(GL_TEXTURE_2D, deviceHandle);
+    glTexImage2D(GL_TEXTURE_2D, 0, glFormat, width, height, 0, glFormat, GL_UNSIGNED_BYTE, NULL);
   }
 }
 
