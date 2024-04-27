@@ -197,3 +197,18 @@ void opengl_MakeWrapTypeCurrent(int textureId, int mapType, int textureUnit);
 
 // Function to translate a generic bitmap to an OpenGL-compatible format
 void opengl_TranslateBitmapToOpenGL(int texnum, int bm_handle, int map_type, int replace, int tn);
+
+extern d3Image *frameAlbedoTextureMSAA;
+extern d3Image *frameDepthTextureMSAA;
+extern d3RenderTexture *frameRenderTextureMSAA;
+extern d3Image *frameAlbedoTexture;
+extern d3Image *frameDepthTexture;
+extern d3RenderTexture *frameRenderTexture;
+
+inline void GL_CheckDriver(void) {
+    GLuint err = glGetError();
+
+    if (err != GL_NO_ERROR) {
+      assert(!"Your friendly OpenGL driver failure. Call a graphics engineer who likes to endure pain.");
+    }
+}

@@ -298,6 +298,7 @@
 #define RENDERER_H
 
 #include <windows.h>
+#include <utility>
 #include "pstypes.h"
 #include "grdefs.h"
 
@@ -835,8 +836,6 @@ public:
 
   void Init(const void *data, int w, int h, ImageFormat format, int samples = 0, bool useMipmaps = false);
   void InitCubemap(const void *data[6], int size);
-  void InitDepthmap(int w, int h, ImageFormat format, int samples);
-
   void TranslateBitmapToOpenGL(int bm_handle, int map_type, int replace, int tn);
 
   int GetWidth() const;
@@ -846,14 +845,16 @@ public:
   void Resize(int width, int height);
 
   void Bind(int tn);
+  void BindNull(void);
   ImageFormat GetFormat() { return format; }
 private:
   unsigned int deviceHandle;
   int width;
   int height;
   int numMultipleSamples;
+  unsigned int uploadType;
   ImageFormat format;
-  unsigned int convertFormat(ImageFormat format);
+  std::pair<unsigned int, unsigned int> d3Image::convertFormat(ImageFormat format);
 };
 
 

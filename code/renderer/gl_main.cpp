@@ -112,6 +112,15 @@ bool opengl_Blending_on = 0;
 
 oeApplication *ParentApplication = NULL;
 
+d3Image *frameAlbedoTextureMSAA = nullptr;
+d3Image *frameDepthTextureMSAA = nullptr;
+d3RenderTexture *frameRenderTextureMSAA = nullptr;
+
+d3Image *frameAlbedoTexture = nullptr;
+d3Image *frameDepthTexture = nullptr;
+d3RenderTexture *frameRenderTexture = nullptr;
+
+
 // Sets up multi-texturing using ARB extensions
 void opengl_GetDLLFunctions(void) {
   UseMultitexture = true;

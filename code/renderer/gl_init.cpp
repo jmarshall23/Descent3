@@ -110,6 +110,24 @@ int opengl_Setup(HDC glhdc) {
     return NULL;
   }
 
+  if (frameRenderTexture == nullptr) {
+    frameAlbedoTexture = new d3Image();
+    frameDepthTexture = new d3Image();
+    frameAlbedoTexture->Init(nullptr, OpenGL_state.screen_width, OpenGL_state.screen_height, ImageFormat::RGBA, 0);
+    frameDepthTexture->Init(nullptr, OpenGL_state.screen_width, OpenGL_state.screen_height, ImageFormat::Depth, 0);
+
+    frameRenderTexture = new d3RenderTexture(frameAlbedoTexture, frameDepthTexture);
+    frameRenderTexture->InitRenderTexture();
+
+    frameAlbedoTextureMSAA = new d3Image();
+    frameDepthTextureMSAA = new d3Image();
+    frameAlbedoTextureMSAA->Init(nullptr, OpenGL_state.screen_width, OpenGL_state.screen_height, ImageFormat::RGBA, 4);
+    frameDepthTextureMSAA->Init(nullptr, OpenGL_state.screen_width, OpenGL_state.screen_height, ImageFormat::Depth, 4);
+    
+    frameRenderTextureMSAA = new d3RenderTexture(frameAlbedoTextureMSAA, frameDepthTextureMSAA);
+    frameRenderTextureMSAA->InitRenderTexture();
+  }
+  
   if (!Imgui_Already_loaded) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -123,6 +141,7 @@ int opengl_Setup(HDC glhdc) {
     io.Fonts->AddFontDefault();
     Imgui_Already_loaded = 1;
   }
+
   Already_loaded = 1;
 
   return 1;
@@ -316,6 +335,26 @@ void opengl_Close() {
   ImGui::DestroyContext();
   OpenGL_Imgui_FirstRender = false;
   Imgui_Already_loaded = 0;
+
+  if (frameRenderTexture != nullptr) {
+    delete frameAlbedoTextureMSAA;
+    frameAlbedoTextureMSAA = nullptr;
+
+    delete frameDepthTextureMSAA;
+    frameDepthTextureMSAA = nullptr;
+
+    delete frameAlbedoTexture;
+    frameAlbedoTexture = nullptr;
+
+    delete frameDepthTexture;
+    frameDepthTexture = nullptr;
+
+    delete frameRenderTextureMSAA;
+    frameRenderTextureMSAA = nullptr;
+
+    delete frameRenderTexture;
+    frameRenderTexture = nullptr;
+  }
 
 #if defined(WIN32)
   wglMakeCurrent(NULL, NULL);

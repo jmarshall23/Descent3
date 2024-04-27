@@ -32,15 +32,18 @@ ubyte *OpenGL_lightmap_states = NULL;
 uint *opengl_Upload_data = NULL;
 
 d3Image::d3Image() {
-    deviceHandle = Cur_texture_object_num++;
+    //deviceHandle = Cur_texture_object_num++;
+    glGenTextures(1, &deviceHandle);
     numMultipleSamples = 0;
 }
 
 d3Image::d3Image(bool pixelpack, bool linear, bool repeat) { 
-  deviceHandle = Cur_texture_object_num++;
+  //deviceHandle = Cur_texture_object_num++;
+  glGenTextures(1, &deviceHandle);
 
   format = ImageFormat::RGBA;
   numMultipleSamples = 0;
+  uploadType = GL_TEXTURE_2D;
 
   glBindTexture(GL_TEXTURE_2D, deviceHandle);
   if (pixelpack) {
@@ -65,24 +68,37 @@ d3Image::d3Image(bool pixelpack, bool linear, bool repeat) {
 }
 
 void d3Image::Init(const void *data, int w, int h, ImageFormat format, int samples, bool useMipmaps) {
-  GLenum glFormat = convertFormat(format);
-
+  std::pair<unsigned int, unsigned int> glFormat = convertFormat(format);
+  this->format = format;
   numMultipleSamples = samples;
+  width = w;
+  height = h;
 
+  GL_CheckDriver();
   if (samples > 0) {
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, deviceHandle);
-    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, glFormat, width, height,
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, glFormat.first, width, height,
                             GL_TRUE); // Using 4 samples per pixel.
+    GL_CheckDriver();
+    uploadType = GL_TEXTURE_2D_MULTISAMPLE;
   } else {
     glBindTexture(GL_TEXTURE_2D, deviceHandle);
-    glTexImage2D(GL_TEXTURE_2D, 0, glFormat, width, height, 0, glFormat, GL_UNSIGNED_BYTE, data);
-
+    glTexImage2D(GL_TEXTURE_2D, 0, glFormat.first, width, height, 0, glFormat.second, GL_UNSIGNED_BYTE, data);
+    GL_CheckDriver();
+    uploadType = GL_TEXTURE_2D;
     if (useMipmaps) {
       glGenerateMipmap(GL_TEXTURE_2D);
     }
+
+    glTexParameteri(uploadType, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(uploadType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(uploadType, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(uploadType, GL_TEXTURE_WRAP_T, GL_CLAMP);
   }
 
-  glBindTexture(GL_TEXTURE_2D, 0); // Unbind the texture.
+  GL_CheckDriver();
+  glBindTexture(uploadType, 0); // Unbind the texture.
+  GL_CheckDriver();
 }
 
 d3Image::~d3Image() { 
@@ -93,39 +109,43 @@ int d3Image::GetWidth() const { return width; }
 int d3Image::GetHeight() const { return height; }
 unsigned int d3Image::GetHandle() const { return deviceHandle; }
 
-unsigned int d3Image::convertFormat(ImageFormat format) {
+std::pair<unsigned int, unsigned int> d3Image::convertFormat(ImageFormat format) {
   switch (format) {
   case ImageFormat::DXT1:
-    return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+    return {GL_COMPRESSED_RGBA_S3TC_DXT1_EXT, GL_RGBA}; // Assuming GL_RGBA as the external format
   case ImageFormat::DXT5:
-    return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+    return {GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GL_RGBA}; // Assuming GL_RGBA as the external format
   case ImageFormat::RGB:
-    return GL_RGB;
+    return {GL_RGB, GL_RGB};
   case ImageFormat::RGBA:
-    return GL_RGBA;
+    return {GL_RGBA, GL_RGBA};
   case ImageFormat::Cubemap:
-    return GL_RGB; // Default to GL_RGB for cubemaps unless specified otherwise
+    return {GL_RGB, GL_RGB}; // Cubemaps generally use GL_RGB or GL_RGBA, adjust as necessary
   case ImageFormat::Depth:
-    return GL_DEPTH_COMPONENT;
+    return {GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT};
   case ImageFormat::Depth24Stencil8:
-    return GL_DEPTH24_STENCIL8;
+    return {GL_DEPTH_STENCIL, GL_DEPTH24_STENCIL8};
   default:
-    Int3();
-    return GL_RGBA; // Fallback format
+    Int3();                    // Error handling
+    return {GL_RGBA, GL_RGBA}; // Fallback formats
   }
 }
 
 void d3Image::InitCubemap(const void* data[6], int size) {
-  GLenum glFormat = convertFormat(ImageFormat::Cubemap);
+  std::pair<unsigned int, unsigned int> glFormat = convertFormat(ImageFormat::Cubemap);
   glBindTexture(GL_TEXTURE_CUBE_MAP, deviceHandle);
+  width = size;
+  height = size;
+  format = ImageFormat::Cubemap;
 
   for (GLuint i = 0; i < 6; ++i) {
     // Load each face of the cubemap
     if (data != nullptr) {
-      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, width, height, 0, glFormat, GL_UNSIGNED_BYTE,
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat.first, width, height, 0, glFormat.second, GL_UNSIGNED_BYTE,
                    data[i]);
     } else {
-      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, width, height, 0, glFormat, GL_UNSIGNED_BYTE,
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat.first, width, height, 0, glFormat.second,
+                   GL_UNSIGNED_BYTE,
                    nullptr);
     }
   }
@@ -139,35 +159,14 @@ void d3Image::InitCubemap(const void* data[6], int size) {
   glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
-void d3Image::InitDepthmap(int w, int h, ImageFormat format, int samples) {
-  GLenum glFormat = convertFormat(format);
-  glBindTexture(GL_TEXTURE_2D, deviceHandle);
-  numMultipleSamples = samples;
-  if (samples > 0) {
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, deviceHandle);
-    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, glFormat, width, height, GL_TRUE);
-  } else {
-    glBindTexture(GL_TEXTURE_2D, deviceHandle);
-    glTexImage2D(GL_TEXTURE_2D, 0, glFormat, width, height, 0, glFormat, GL_UNSIGNED_BYTE, NULL);
-  }
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-  GLfloat borderColor[] = {1.0, 1.0, 1.0, 1.0};
-  glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-}
-
 void d3Image::Resize(int width, int height) {
-  GLenum glFormat = convertFormat(format);
+  std::pair<unsigned int, unsigned int> glFormat = convertFormat(format);
   if (numMultipleSamples > 0) {
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, deviceHandle);
-    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, numMultipleSamples, glFormat, width, height, GL_TRUE);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, numMultipleSamples, glFormat.first, width, height, GL_TRUE);
   } else {
     glBindTexture(GL_TEXTURE_2D, deviceHandle);
-    glTexImage2D(GL_TEXTURE_2D, 0, glFormat, width, height, 0, glFormat, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, glFormat.first, width, height, 0, glFormat.second, GL_UNSIGNED_BYTE, NULL);
   }
 }
 
@@ -323,10 +322,14 @@ void d3Image::Bind(int tn) {
 #endif
     }
 
-    glBindTexture(GL_TEXTURE_2D, deviceHandle);
+    glBindTexture(uploadType, deviceHandle);
     OpenGL_last_bound[tn] = this;
     OpenGL_sets_this_frame[0]++;
   }
+}
+
+void d3Image::BindNull(void) {
+    glBindTexture(uploadType, 0);
 }
 
 // Sets up an appropriate wrap type for the current bound texture

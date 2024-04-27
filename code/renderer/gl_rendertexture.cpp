@@ -124,7 +124,11 @@ void d3RenderTexture::InitRenderTexture(void) {
     }
   }
 
-  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+  GLenum result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+  if (result != GL_FRAMEBUFFER_COMPLETE) {
+    char txt[512];
+    sprintf(txt, "Failure result: %d\n", result);
+    OutputDebugStringA(txt);
     assert(!"d3RenderTexture::InitRenderTexture: Failed to create rendertexture!");
   }
 

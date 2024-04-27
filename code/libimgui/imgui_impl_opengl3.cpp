@@ -695,8 +695,8 @@ bool ImGui_ImplOpenGL3_CreateFontsTexture()
     // (Bilinear sampling is required by default. Set 'io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines' or 'style.AntiAliasedLinesUseTex = false' to allow point/nearest sampling)
     GLint last_texture;
     GL_CALL(glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture));
-    //GL_CALL(glGenTextures(1, &bd->FontTexture));
-    bd->FontTexture = Cur_texture_object_num++;
+    GL_CALL(glGenTextures(1, &bd->FontTexture));
+    //bd->FontTexture = Cur_texture_object_num++;
     GL_CALL(glBindTexture(GL_TEXTURE_2D, bd->FontTexture));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
