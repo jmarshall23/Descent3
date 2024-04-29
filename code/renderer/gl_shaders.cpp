@@ -137,3 +137,30 @@ void d3HardwareShader::bindTexture(const std::string &name, GLuint textureID, GL
   glBindTexture(GL_TEXTURE_2D, textureID);
   glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), textureUnit);
 }
+
+d3HardwareShaderScopedBind::d3HardwareShaderScopedBind(d3HardwareShader *shader) {
+  this->shader = shader;
+  shader->use();
+
+  // Enable vertex attributes
+  glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(2);
+  glEnableVertexAttribArray(3);
+
+  // Set vertex attribute pointers (assuming arrays are tightly packed)
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, GL_verts);       // Vertex positions
+  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, GL_tex_coords);  // Texture coordinates
+  glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, GL_tex_coords2); // Lightmap coordinates
+  glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 0, GL_colors);      // Vertex Colors
+}
+
+d3HardwareShaderScopedBind::~d3HardwareShaderScopedBind() {
+  shader->bindNull();
+
+  // Disable vertex attributes
+  glDisableVertexAttribArray(0);
+  glDisableVertexAttribArray(1);
+  glDisableVertexAttribArray(2);
+  glDisableVertexAttribArray(3);
+}

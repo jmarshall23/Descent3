@@ -253,8 +253,8 @@ void PostRender(int roomnum, int selectedObject) {
     } else if (Postrender_list[i].type == PRT_OBJECT) {
       object *objp = &Objects[Postrender_list[i].objnum];
 
-      if (!OBJECT_OUTSIDE(&Objects[Postrender_list[i].objnum]))
-        SetupPostrenderRoom(&Rooms[Objects[Postrender_list[i].objnum].roomnum]);
+  //    if (!OBJECT_OUTSIDE(&Objects[Postrender_list[i].objnum]))
+  //      SetupPostrenderRoom(&Rooms[Objects[Postrender_list[i].objnum].roomnum]);
 
       if (selectedObject != -1 && Postrender_list[i].objnum == selectedObject) {
             rend_EditorFaceSelected(true);
@@ -263,7 +263,7 @@ void PostRender(int roomnum, int selectedObject) {
       RenderObject(objp);
     } else {
       // Do room face
-      DrawPostrenderFace(Postrender_list[i].roomnum, Postrender_list[i].facenum);
+     // DrawPostrenderFace(Postrender_list[i].roomnum, Postrender_list[i].facenum);
     }
   }
   Num_postrenders = 0;

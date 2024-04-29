@@ -1803,11 +1803,11 @@ int IsPointVisible(vector *pos, float size, float *pointz) {
 
     if (pnt.p3_z < -size)
       return 0; // behind plane!
-    if (pnt.p3_z > Far_clip_z + size)
-      return 0; // too far away!
-    if (Render_FOV != last_render_fov) {
-      last_render_fov = Render_FOV;
-      int angle_adjust = (Render_FOV / 2) * (65536 / 360);
+   // if (pnt.p3_z > Far_clip_z + size)
+   //   return 0; // too far away!
+    if (Render_FOV * 2 != last_render_fov) {
+      last_render_fov = Render_FOV * 2;
+      int angle_adjust = ((Render_FOV * 2) / 2) * (65536 / 360);
       vector rvec = {1, 0, 0};
       vector lvec = {-1, 0, 0};
       vector tvec = {0, 1, 0};

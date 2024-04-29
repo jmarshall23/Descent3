@@ -2316,28 +2316,28 @@ void RenderRoomUnsorted(room *rp) {
     face *fp = &rp->faces[fn];
     int fogged_portal = 0;
 
-    if (!(fp->flags & FF_VISIBLE) || (fp->flags & FF_NOT_FACING)) {
-      if (GameTextures[fp->tmap].flags & TF_SMOOTH_SPECULAR) {
-        if (!Render_mirror_for_room && Detail_settings.Specular_lighting &&
-            (GameTextures[fp->tmap].flags & TF_SPECULAR) &&
-            ((fp->special_handle != BAD_SPECIAL_FACE_INDEX) || (rp->flags & RF_EXTERNAL))) {
-          fp->flags |= FF_SPEC_INVISIBLE;
-          UpdateSpecularFace(rp, fp);
-        }
-      }
-      fp->flags &= ~(FF_NOT_FACING | FF_VISIBLE);
-      continue; // this guy shouldn't be rendered
-    }
-
-    // Clear visibility flags
-    if (Render_mirror_for_room == false) {
-      fp->flags &= ~(FF_VISIBLE | FF_NOT_FACING);
-    } else {
-      if (rp == &Rooms[Mirror_room]) {
-        if (rp->faces[fn].tmap == rp->faces[rp->mirror_face].tmap)
-          continue; // Don't render the mirror face if rendering the mirror
-      }
-    }
+    //if (!(fp->flags & FF_VISIBLE) || (fp->flags & FF_NOT_FACING)) {
+    //  if (GameTextures[fp->tmap].flags & TF_SMOOTH_SPECULAR) {
+    //    if (!Render_mirror_for_room && Detail_settings.Specular_lighting &&
+    //        (GameTextures[fp->tmap].flags & TF_SPECULAR) &&
+    //        ((fp->special_handle != BAD_SPECIAL_FACE_INDEX) || (rp->flags & RF_EXTERNAL))) {
+    //      fp->flags |= FF_SPEC_INVISIBLE;
+    //      UpdateSpecularFace(rp, fp);
+    //    }
+    //  }
+    //  fp->flags &= ~(FF_NOT_FACING | FF_VISIBLE);
+    //  continue; // this guy shouldn't be rendered
+    //}
+    //
+    //// Clear visibility flags
+    //if (Render_mirror_for_room == false) {
+    //  fp->flags &= ~(FF_VISIBLE | FF_NOT_FACING);
+    //} else {
+    //  if (rp == &Rooms[Mirror_room]) {
+    //    if (rp->faces[fn].tmap == rp->faces[rp->mirror_face].tmap)
+    //      continue; // Don't render the mirror face if rendering the mirror
+    //  }
+    //}
 
     if (!FaceIsRenderable(rp, fp))
       continue; // skip this face
@@ -2447,7 +2447,7 @@ void ComputeRoomPulseLight(room *rp) {
 #pragma mark---
 #endif
 
-#define CORONA_DIST_CUTOFF 5.0f
+#define CORONA_DIST_CUTOFF 0.0f
 // Draws a glow around a light
 void RenderSingleLightGlow(int index) {
   int bm_handle;
@@ -3053,7 +3053,7 @@ void RenderRoom(room *rp) {
   }
 
   if (Num_fog_faces_to_render > 0) {
-    RenderFogFaces(rp);
+   // RenderFogFaces(rp);
     Num_fog_faces_to_render = 0;
   }
 }

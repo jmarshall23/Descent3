@@ -160,23 +160,8 @@ void opengl_DrawMultitexturePolygon3D(int handle, g3Point **p, int nv, int map_t
 
   opengl_SetMultitextureBlendMode(true);
 
-  // Enable vertex attributes
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-  glEnableVertexAttribArray(2);
-
-  // Set vertex attribute pointers (assuming arrays are tightly packed)
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, GL_verts);       // Vertex positions
-  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, GL_tex_coords);  // Texture coordinates
-  glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, GL_tex_coords2); // Lightmap coordinates
-
   // And draw!
   glDrawArrays(GL_POLYGON, 0, nv);
-
-  // Disable vertex attributes
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
-  glDisableVertexAttribArray(2);
 
   OpenGL_polys_drawn++;
   OpenGL_verts_processed += nv;
@@ -250,22 +235,21 @@ void rend_DrawPolygon3D(int handle, g3Point **p, int nv, int map_type) {
 
   ASSERT(nv < 100);
 
-  
-
   if (OpenGL_state.cur_texture_quality == 0) {
+    d3HardwareShaderScopedBind scopedShaderBind(shaderGeneric);
     g3_RefreshTransforms(false);
-    opengl_DrawFlatPolygon3D(p, nv);
+    opengl_DrawFlatPolygon3D(p, nv);    
     return;
   }
 
   if (Overlay_type != OT_NONE && UseMultitexture) {
-    shaderGenericLightmap->use();
+    d3HardwareShaderScopedBind scopedShaderBind(shaderGenericLightmap);
     g3_RefreshTransforms(false);
     opengl_DrawMultitexturePolygon3D(handle, p, nv, map_type);
-    shaderGenericLightmap->bindNull();
     return;
   }
 
+  d3HardwareShaderScopedBind scopedShaderBind(shaderGeneric);
   g3_RefreshTransforms(false);
 
   if (OpenGL_state.cur_light_state == LS_FLAT_GOURAUD) {

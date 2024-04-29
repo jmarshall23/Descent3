@@ -46,4 +46,14 @@ private:
   GLuint compileShader(const std::string &source, GLenum type);
 };
 
+
+class d3HardwareShaderScopedBind {
+public:
+  d3HardwareShaderScopedBind(d3HardwareShader *shader);
+ ~d3HardwareShaderScopedBind();
+
+private:
+  d3HardwareShader *shader;
+};
+
 #endif // D3HARDWARESHADER_H
