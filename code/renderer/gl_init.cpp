@@ -32,6 +32,8 @@ int opengl_Setup(HDC glhdc) {
   pfd.nVersion = 1;
   pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER | PFD_GENERIC_ACCELERATED;
   pfd.iPixelType = PFD_TYPE_RGBA;
+  pfd.cColorBits = 32;
+  pfd.cDepthBits = 32;
 
   /*if (!WindowGL)
   {
@@ -68,10 +70,10 @@ int opengl_Setup(HDC glhdc) {
 
   // Try and set the new PFD
   if (SetPixelFormat(glhdc, pf, &pfd) == FALSE) {
-    DWORD ret = GetLastError();
-    Int3();
-    // FreeLibrary(opengl_dll_handle);
-    return NULL;
+   // DWORD ret = GetLastError();
+   // Int3();
+   // // FreeLibrary(opengl_dll_handle);
+   // return NULL;
   }
 
   mprintf((0, "SetPixelFormat successful!\n"));
@@ -126,6 +128,11 @@ int opengl_Setup(HDC glhdc) {
     
     frameRenderTextureMSAA = new d3RenderTexture(frameAlbedoTextureMSAA, frameDepthTextureMSAA);
     frameRenderTextureMSAA->InitRenderTexture();
+  }
+
+  if (shaderGeneric == nullptr) {
+      shaderGeneric = new d3HardwareShader("universalShaderCore.vert", "universalShaderCore.frag", "");
+      shaderGenericLightmap = new d3HardwareShader("universalShaderCore.vert", "universalShaderCore.frag", "#define LIGHTMAP\n");
   }
   
   if (!Imgui_Already_loaded) {
@@ -354,6 +361,14 @@ void opengl_Close() {
 
     delete frameRenderTexture;
     frameRenderTexture = nullptr;
+  }
+
+  if (shaderGeneric != nullptr) {
+    delete shaderGeneric;
+    shaderGeneric = nullptr;
+
+    delete shaderGenericLightmap;
+    shaderGenericLightmap = nullptr;
   }
 
 #if defined(WIN32)

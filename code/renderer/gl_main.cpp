@@ -120,6 +120,9 @@ d3Image *frameAlbedoTexture = nullptr;
 d3Image *frameDepthTexture = nullptr;
 d3RenderTexture *frameRenderTexture = nullptr;
 
+d3HardwareShader *shaderGeneric = nullptr;
+d3HardwareShader *shaderGenericLightmap = nullptr;
+
 void rend_ResolveMSAA(d3RenderTexture *msaaRenderTexture, d3RenderTexture *destRenderTexture) {
   int width = msaaRenderTexture->GetWidth();
   int height = msaaRenderTexture->GetHeight();
@@ -1150,12 +1153,20 @@ void rend_TransformSetViewport(int lx, int ty, int width, int height) {
 }
 
 void rend_TransformSetProjection(float trans[4][4]) {
-  glMatrixMode(GL_PROJECTION);
-  glLoadMatrixf(&trans[0][0]);
+  if (currentBoundShader) {
+    currentBoundShader->setMat4("projection", &trans[0][0]);
+  } else {
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixf(&trans[0][0]);
+  }  
 }
 
 void rend_TransformSetModelView(float trans[4][4]) {
-  glMatrixMode(GL_MODELVIEW);
-  glLoadMatrixf(&trans[0][0]);
+  if (currentBoundShader) {
+    currentBoundShader->setMat4("modelView", &trans[0][0]);
+  } else {
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrixf(&trans[0][0]);
+  }
 }
 

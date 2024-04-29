@@ -21,5 +21,5 @@ ENDIF()
 #renderer.cpp
 #Direct3D.cpp
 
-ADD_LIBRARY(renderer STATIC ${CPPS} "gl_image.cpp" "gl_render.cpp" "gl_init.cpp" "gl_rendertexture.cpp")
+ADD_LIBRARY(renderer STATIC ${CPPS} "gl_image.cpp" "gl_render.cpp" "gl_init.cpp" "gl_rendertexture.cpp" "gl_shaders.cpp" )
 target_link_libraries(renderer opengl32)

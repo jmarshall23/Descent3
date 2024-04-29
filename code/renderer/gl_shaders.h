@@ -19,16 +19,31 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "gl/glew.h"
+#ifndef D3HARDWARESHADER_H
+#define D3HARDWARESHADER_H
+
 #include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
+#include "GL/glew.h"
 
 class d3HardwareShader {
 public:
-	d3HardwareShader(const std::string &vertexPath, const std::string &fragmentPath);
+  d3HardwareShader(const std::string &vertexFilename, const std::string &fragmentFilename, std::string preprocessor);
+  ~d3HardwareShader(); // Destructor to release shader program
+
+  void use(); // Activate the shader program
+  void bindNull();
+
+  // Set uniforms
+  void setMat4(const std::string &name, float *matrix);
+  void setInt(const std::string &name, int value);
+
+  // Bind textures
+  void bindTexture(const std::string &name, GLuint textureID, GLenum textureUnit);
 private:
-    std::string readShaderFile(const std::string &filename);
-    GLuint compileShader(const std::string &source, GLenum type);
+  GLuint shaderProgram;
+
+  std::string readShaderFile(const std::string &filename);
+  GLuint compileShader(const std::string &source, GLenum type);
 };
+
+#endif // D3HARDWARESHADER_H

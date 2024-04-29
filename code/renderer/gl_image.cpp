@@ -353,6 +353,17 @@ void d3Image::BindNull(void) {
 void opengl_MakeWrapTypeCurrent(int handle, int map_type, int tn) {
   int uwrap;
   wrap_type dest_wrap;
+  
+  if (currentBoundShader) {
+    char param[512];
+    sprintf(param, "texture%d", tn);
+
+    if (map_type == MAP_TYPE_LIGHTMAP) {
+      currentBoundShader->bindTexture(param, OpenGL_lightmap_remap[handle]->GetHandle(), tn);
+    } else {
+      currentBoundShader->bindTexture(param, OpenGL_bitmap_remap[handle]->GetHandle(), tn);
+    }
+  }
 
   if (tn == 1)
     dest_wrap = WT_CLAMP;

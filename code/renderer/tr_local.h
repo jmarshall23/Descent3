@@ -51,6 +51,7 @@
 
 class d3image;
 #include "gl_rendertexture.h"
+#include "gl_shaders.h"
 
 #define MAX_POINTS_IN_POLY 100
 
@@ -214,3 +215,7 @@ inline void GL_CheckDriver(void) {
 }
 
 void rend_DrawPolygon2D(d3Image *image, g3Point **p, int nv);
+
+extern d3HardwareShader *shaderGeneric;
+extern d3HardwareShader *shaderGenericLightmap;
+extern d3HardwareShader *currentBoundShader;
