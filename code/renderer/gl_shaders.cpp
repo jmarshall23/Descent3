@@ -33,8 +33,8 @@ d3HardwareShader::d3HardwareShader(const std::string &vertexFilename, const std:
   std::string vertexCodeShader = readShaderFile(vertexPath);
   std::string fragmentCodeShader = readShaderFile(fragmentPath);
 
-  std::string vertexCode = "#version 330 core\n" + preprocessor + "\n" + vertexCodeShader;
-  std::string fragmentCode = "#version 330 core\n" + preprocessor + "\n" + fragmentCodeShader;
+  std::string vertexCode = "#version 420 core\n" + preprocessor + "\n" + vertexCodeShader;
+  std::string fragmentCode = "#version 420 core\n" + preprocessor + "\n" + fragmentCodeShader;
 
   GLuint vertexShader = compileShader(vertexCode, GL_VERTEX_SHADER);
   GLuint fragmentShader = compileShader(fragmentCode, GL_FRAGMENT_SHADER);
@@ -132,6 +132,10 @@ void d3HardwareShader::setInt(const std::string &name, int value) {
   glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), value);
 }
 
+void d3HardwareShader::setVector(const std::string& name, const vector& value) {
+  glUniform4f(glGetUniformLocation(shaderProgram, name.c_str()), value.x, value.y, value.z, 1.0f);
+}
+
 void d3HardwareShader::bindTexture(const std::string &name, GLuint textureID, GLenum textureUnit) {
   glActiveTexture(GL_TEXTURE0 + textureUnit);
   glBindTexture(GL_TEXTURE_2D, textureID);
@@ -141,7 +145,7 @@ void d3HardwareShader::bindTexture(const std::string &name, GLuint textureID, GL
 d3HardwareShaderScopedBind::d3HardwareShaderScopedBind(d3HardwareShader *shader) {
   this->shader = shader;
   shader->use();
-
+  shader->setVector("viewOrigin", View_position);
   // Enable vertex attributes
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);

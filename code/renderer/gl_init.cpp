@@ -114,25 +114,36 @@ int opengl_Setup(HDC glhdc) {
 
   if (frameRenderTexture == nullptr) {
     frameAlbedoTexture = new d3Image();
+    frameEmissiveTexture = new d3Image();
     frameDepthTexture = new d3Image();
+
     frameAlbedoTexture->Init(nullptr, OpenGL_state.screen_width, OpenGL_state.screen_height, ImageFormat::RGBA, 0);
+    frameEmissiveTexture->Init(nullptr, OpenGL_state.screen_width, OpenGL_state.screen_height, ImageFormat::RGBA, 0);
     frameDepthTexture->Init(nullptr, OpenGL_state.screen_width, OpenGL_state.screen_height, ImageFormat::Depth, 0);
 
     frameRenderTexture = new d3RenderTexture(frameAlbedoTexture, frameDepthTexture);
+    frameRenderTexture->AddRenderImage(frameEmissiveTexture);
     frameRenderTexture->InitRenderTexture();
 
     frameAlbedoTextureMSAA = new d3Image();
     frameDepthTextureMSAA = new d3Image();
+    frameEmissiveTextureMSAA = new d3Image();
+
     frameAlbedoTextureMSAA->Init(nullptr, OpenGL_state.screen_width, OpenGL_state.screen_height, ImageFormat::RGBA, 8);
+    frameEmissiveTextureMSAA->Init(nullptr, OpenGL_state.screen_width, OpenGL_state.screen_height, ImageFormat::RGBA, 8);
     frameDepthTextureMSAA->Init(nullptr, OpenGL_state.screen_width, OpenGL_state.screen_height, ImageFormat::Depth, 8);
     
     frameRenderTextureMSAA = new d3RenderTexture(frameAlbedoTextureMSAA, frameDepthTextureMSAA);
+    frameRenderTextureMSAA->AddRenderImage(frameEmissiveTextureMSAA);
     frameRenderTextureMSAA->InitRenderTexture();
   }
 
   if (shaderGeneric == nullptr) {
       shaderGeneric = new d3HardwareShader("universalShaderCore.vert", "universalShaderCore.frag", "");
+      shaderPostColorFinal = new d3HardwareShader("postColorFinal.vert", "postColorFinal.frag", "");
       shaderGenericLightmap = new d3HardwareShader("universalShaderCore.vert", "universalShaderCore.frag", "#define LIGHTMAP\n");
+      shaderGenericColorBlend = new d3HardwareShader("universalShaderCore.vert", "universalShaderCore.frag", "#define COLOR_BLEND\n");
+      shaderGenericColorBlendEmissive = new d3HardwareShader("universalShaderCore.vert", "universalShaderCore.frag", "#define COLOR_BLEND\n#define EMISSIVE\n");
   }
   
   if (!Imgui_Already_loaded) {
@@ -361,6 +372,12 @@ void opengl_Close() {
 
     delete frameRenderTexture;
     frameRenderTexture = nullptr;
+
+    delete frameEmissiveTexture;
+    frameEmissiveTexture = nullptr;
+
+    delete frameEmissiveTextureMSAA;
+    frameEmissiveTextureMSAA = nullptr;
   }
 
   if (shaderGeneric != nullptr) {
@@ -369,6 +386,15 @@ void opengl_Close() {
 
     delete shaderGenericLightmap;
     shaderGenericLightmap = nullptr;
+
+    delete shaderGenericColorBlend;
+    shaderGenericColorBlend = nullptr;
+
+    delete shaderGenericColorBlendEmissive;
+    shaderGenericColorBlendEmissive = nullptr;
+
+    delete shaderPostColorFinal;
+    shaderPostColorFinal = nullptr;
   }
 
 #if defined(WIN32)

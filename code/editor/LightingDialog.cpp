@@ -418,11 +418,11 @@ void CLightingDialog::OnLitepadSetdefault()
 
 void CLightingDialog::OnLitepadSmoothall() 
 {
-	int answer=MessageBox ("Are you sure you wish to calculate lighting on the indoor mine?","Light Question",MB_YESNO);
-	if (answer==IDNO)
-		return;
-
-	MessageBox ("I will now calculate radiosity for the indoor engine.  You may prematurely break out by pressing any key during the calculations","Message",MB_OK);
+	//int answer=MessageBox ("Are you sure you wish to calculate lighting on the indoor mine?","Light Question",MB_YESNO);
+	//if (answer==IDNO)
+	//	return;
+	//
+	//MessageBox ("I will now calculate radiosity for the indoor engine.  You may prematurely break out by pressing any key during the calculations","Message",MB_OK);
 
 	DoRadiosityForRooms();
 	World_changed=1;

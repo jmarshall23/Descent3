@@ -36,6 +36,7 @@ public:
   // Set uniforms
   void setMat4(const std::string &name, float *matrix);
   void setInt(const std::string &name, int value);
+  void setVector(const std::string &name, const vector &value);
 
   // Bind textures
   void bindTexture(const std::string &name, GLuint textureID, GLenum textureUnit);

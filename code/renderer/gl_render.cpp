@@ -21,6 +21,12 @@
 
 #include "tr_local.h"
 
+bool g_lightGlow = false;
+
+void rend_SetLightGlow(bool enabled) {
+    g_lightGlow = enabled;
+}
+
 // Turns on/off multitexture blending
 void opengl_SetMultitextureBlendMode(bool state) {
   if (OpenGL_multitexture_state == state)
@@ -236,7 +242,7 @@ void rend_DrawPolygon3D(int handle, g3Point **p, int nv, int map_type) {
   ASSERT(nv < 100);
 
   if (OpenGL_state.cur_texture_quality == 0) {
-    d3HardwareShaderScopedBind scopedShaderBind(shaderGeneric);
+    d3HardwareShaderScopedBind scopedShaderBind(shaderGenericColorBlend);
     g3_RefreshTransforms(false);
     opengl_DrawFlatPolygon3D(p, nv);    
     return;
@@ -249,7 +255,14 @@ void rend_DrawPolygon3D(int handle, g3Point **p, int nv, int map_type) {
     return;
   }
 
-  d3HardwareShaderScopedBind scopedShaderBind(shaderGeneric);
+  alpha = Alpha_multiplier * OpenGL_Alpha_factor;
+  d3HardwareShader *genericShader = shaderGeneric;
+
+  if (alpha < 1 && !g_lightGlow) {
+    genericShader = shaderGenericColorBlendEmissive;
+  }
+
+  d3HardwareShaderScopedBind scopedShaderBind(genericShader);
   g3_RefreshTransforms(false);
 
   if (OpenGL_state.cur_light_state == LS_FLAT_GOURAUD) {
@@ -265,8 +278,6 @@ void rend_DrawPolygon3D(int handle, g3Point **p, int nv, int map_type) {
   // make sure our bitmap is ready to be drawn
   opengl_MakeBitmapCurrent(handle, map_type, 0);
   opengl_MakeWrapTypeCurrent(handle, map_type, 0);
-
-  alpha = Alpha_multiplier * OpenGL_Alpha_factor;
 
   vertp = &GL_verts[0];
   texp = &GL_tex_coords[0];
@@ -536,7 +547,9 @@ void rend_DrawPolygon2D(d3Image *image, g3Point **p, int nv) {
   // make sure our bitmap is ready to be drawn
   // opengl_MakeBitmapCurrent(handle, MAP_TYPE_BITMAP, 0);
   // opengl_MakeWrapTypeCurrent(handle, MAP_TYPE_BITMAP, 0);
-  image->Bind(0);
+  if (image) {
+    image->Bind(0);
+  }  
 
   float alpha = 1.0f;
    //Alpha_multiplier *OpenGL_Alpha_factor;

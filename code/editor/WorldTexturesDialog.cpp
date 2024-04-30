@@ -2743,11 +2743,11 @@ void CWorldTexturesDialog::OnAddNewHuge()
 	int c=1,finding_name=1;
 	int anim=0;
 
-	if (!Network_up)
-	{
-		OutrageMessageBox ("Sorry babe, the network is down.  This action is a no-no.\n");
-		return;
-	}
+	//if (!Network_up)
+	//{
+	//	OutrageMessageBox ("Sorry babe, the network is down.  This action is a no-no.\n");
+	//	return;
+	//}
 
 	int answer=MessageBox ("256x256 textures are for SKIES ONLY.  If you are caught using them for any other purpose you will be killed!  Are you sure this is what you want to do?","WARNING!",MB_YESNO);
 	if (answer==IDNO)

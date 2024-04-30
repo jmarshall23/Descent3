@@ -3583,6 +3583,7 @@ void RenderLightGlows() {
   rend_SetAlphaType(AT_SATURATE_TEXTURE);
   rend_SetOverlayType(OT_NONE);
   rend_SetFogState(0);
+  rend_SetLightGlow(true);
   int count = 0;
 
   for (int i = 0; i < MAX_LIGHT_GLOWS && count < Num_glows; i++) {
@@ -3592,6 +3593,7 @@ void RenderLightGlows() {
     }
   }
 
+  rend_SetLightGlow(false);
   rend_SetZBufferWriteMask(1);
   rend_SetZBufferState(1);
 }

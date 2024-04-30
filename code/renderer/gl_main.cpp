@@ -113,15 +113,20 @@ bool opengl_Blending_on = 0;
 oeApplication *ParentApplication = NULL;
 
 d3Image *frameAlbedoTextureMSAA = nullptr;
+d3Image *frameEmissiveTextureMSAA = nullptr;
 d3Image *frameDepthTextureMSAA = nullptr;
 d3RenderTexture *frameRenderTextureMSAA = nullptr;
 
 d3Image *frameAlbedoTexture = nullptr;
+d3Image *frameEmissiveTexture = nullptr;
 d3Image *frameDepthTexture = nullptr;
 d3RenderTexture *frameRenderTexture = nullptr;
 
 d3HardwareShader *shaderGeneric = nullptr;
 d3HardwareShader *shaderGenericLightmap = nullptr;
+d3HardwareShader *shaderGenericColorBlend = nullptr;
+d3HardwareShader *shaderGenericColorBlendEmissive = nullptr;
+d3HardwareShader *shaderPostColorFinal = nullptr;
 
 void rend_ResolveMSAA(d3RenderTexture *msaaRenderTexture, d3RenderTexture *destRenderTexture) {
   int width = msaaRenderTexture->GetWidth();
@@ -166,8 +171,12 @@ void rend_BeginMineRender(void) {
 void rend_EndMineRender(void) {
     // Resolve the MSAA render targets. 
     rend_ResolveMSAA(frameRenderTextureMSAA, frameRenderTexture);
+
+    d3HardwareShaderScopedBind postColorbind(shaderPostColorFinal);
     rend_TransformSetToPassthru();
-    rend_Draw2DImage(frameAlbedoTexture, 0, -OpenGL_state.clip_y1, frameAlbedoTexture->GetWidth(),
+    shaderPostColorFinal->bindTexture("texture0", frameAlbedoTexture->GetHandle(), 0);
+    shaderPostColorFinal->bindTexture("texture1", frameEmissiveTexture->GetHandle(), 1);
+    rend_Draw2DImage(nullptr, 0, -OpenGL_state.clip_y1, frameAlbedoTexture->GetWidth(),
                      frameAlbedoTexture->GetHeight() - OpenGL_state.clip_y1, 0, 1, 1, 0, 1, 1, 1, 1);
 }
 
@@ -1131,21 +1140,70 @@ void rend_GetStatistics(tRendererStats *stats) {
   }
 }
 
+void glOrthoMatrix(float m[16], GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble nearVal, GLdouble farVal) {
+  GLdouble tx = -(right + left) / (right - left);
+  GLdouble ty = -(top + bottom) / (top - bottom);
+  GLdouble tz = -(farVal + nearVal) / (farVal - nearVal);
+
+  m[0] = 2 / (right - left);
+  m[1] = 0;
+  m[2] = 0;
+  m[3] = 0;
+  m[4] = 0;
+  m[5] = 2 / (top - bottom);
+  m[6] = 0;
+  m[7] = 0;
+  m[8] = 0;
+  m[9] = 0;
+  m[10] = -2 / (farVal - nearVal);
+  m[11] = 0;
+  m[12] = tx;
+  m[13] = ty;
+  m[14] = tz;
+  m[15] = 1;
+}
+
+void glSetIdentityMatrix(float m[16]) {
+  // Set all elements to zero
+  m[0] = m[1] = m[2] = m[3] = 0.0;
+  m[4] = m[5] = m[6] = m[7] = 0.0;
+  m[8] = m[9] = m[10] = m[11] = 0.0;
+  m[12] = m[13] = m[14] = m[15] = 0.0;
+
+  // Set diagonal elements to 1
+  m[0] = 1.0;  // Element 1,1
+  m[5] = 1.0;  // Element 2,2
+  m[10] = 1.0; // Element 3,3
+  m[15] = 1.0; // Element 4,4
+}
+
 void rend_TransformSetToPassthru(void) {
   int width = OpenGL_state.screen_width;
   int height = OpenGL_state.screen_height;
 
-  // Projection
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho((GLfloat)0.0f, (GLfloat)(width), (GLfloat)(height), (GLfloat)0.0f, 0.0f, 1.0f);
+  float m[16], m2[16];
 
-  // Viewport
+    // Viewport
   glViewport(0, 0, width, height);
 
-  // ModelView
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
+  if (currentBoundShader) {
+    glOrthoMatrix(m, (GLfloat)0.0f, (GLfloat)(width), (GLfloat)(height), (GLfloat)0.0f, 0.0f, 1.0f);
+    currentBoundShader->setMat4("projection", m);
+
+    glSetIdentityMatrix(m2);
+    currentBoundShader->setMat4("modelView", m2);
+  } else {
+    // Projection
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrthoMatrix(m, (GLfloat)0.0f, (GLfloat)(width), (GLfloat)(height), (GLfloat)0.0f, 0.0f, 1.0f);
+    glLoadMatrixf(m);
+
+    // ModelView
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+  }
+
 }
 
 void rend_TransformSetViewport(int lx, int ty, int width, int height) {

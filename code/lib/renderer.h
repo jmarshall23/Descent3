@@ -577,6 +577,8 @@ void rend_SetFogColor(ddgr_color fogcolor);
 // sets the alpha type
 void rend_SetAlphaType(sbyte);
 
+void rend_SetLightGlow(bool enabled);
+
 // Sets the constant alpha value
 void rend_SetAlphaValue(ubyte val);
 
