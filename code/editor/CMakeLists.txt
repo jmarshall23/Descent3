@@ -521,7 +521,6 @@ set(SOURCE
     PropertyPhysicsDlg.cpp
     QuickCompile.cpp
     rad_cast.cpp
-    rad_hemicube.cpp
     rad_init.cpp
     Read3ds.cpp
     RobotEditWeaponsDialog.cpp
