@@ -395,22 +395,16 @@
 //#include "ObjScript.h"
 
 //vertices for the default room created by CreateNewMine()
-vector default_room_verts[] = {	{ -10,  8, 20 },
-											{  -5, 10, 20 },
-											{   5, 10, 20 },
-											{  10,  8, 20 },
-											{  10, -8, 20 },
-											{   5,-10, 20 },
-											{  -5,-10, 20 },
-											{ -10, -8, 20 },
-											{ -10,  8,-20 },
-											{  -5, 10,-20 },
-											{   5, 10,-20 },
-											{  10,  8,-20 },
-											{  10, -8,-20 },
-											{   5,-10,-20 },
-											{  -5,-10,-20 },
-											{ -10, -8,-20 } };
+vector default_room_verts[] = {
+    {-10, 10, 10},  // Vertex 0
+    {10, 10, 10},   // Vertex 1
+    {10, -10, 10},  // Vertex 2
+    {-10, -10, 10}, // Vertex 3
+    {-10, 10, -10}, // Vertex 4
+    {10, 10, -10},  // Vertex 5
+    {10, -10, -10}, // Vertex 6
+    {-10, -10, -10} // Vertex 7
+};
 
 extern void AssignDefaultUVsToRoom(room *rp);
 
@@ -424,39 +418,45 @@ room *CreateDefaultRoom()
 	int i;
 
 	//Get a pointer to our room
-	rp = CreateNewRoom(16,10,0);		//16 verts, 10 faces, normal room
+	rp = CreateNewRoom(8,6,0);		//16 verts, 10 faces, normal room
 	ASSERT(rp != NULL);
 
 	//Set the vertices for the room
-	for (i=0;i<16;i++)
+	for (i=0;i<8;i++)
 		rp->verts[i] = default_room_verts[i] + Mine_origin;
 
-	//Set the faces for the room
-	InitRoomFace(&rp->faces[0],8);
-	for (i=0;i<8;i++)
-		rp->faces[0].face_verts[i] = i;
+	// Set the faces for the room (6 faces of a cube)
+    // Top face
+    InitRoomFace(&rp->faces[0], 4);
+    int indices[4] = {0, 1, 2, 3};
+    for (i = 0; i < 4; i++)
+        rp->faces[0].face_verts[i] = indices[i];
 
-	InitRoomFace(&rp->faces[1],8);
-	for (i=0;i<8;i++)
-		rp->faces[1].face_verts[i] = 15-i;
+    // Bottom face
+    InitRoomFace(&rp->faces[1], 4);
+    int indicesBottom[4] = {4, 5, 6, 7};
+    for (i = 0; i < 4; i++)
+        rp->faces[1].face_verts[i] = indicesBottom[i];
 
-	for (i=0;i<8;i++) {
-		InitRoomFace(&rp->faces[i+2],4);
-		rp->faces[i+2].face_verts[0] = i;
-		rp->faces[i+2].face_verts[1] = i+8;
-		rp->faces[i+2].face_verts[2] = ((i+1)%8)+8;
-		rp->faces[i+2].face_verts[3] = (i+1)%8;
-	}
+    // Four side faces
+    int sideIndices[4][4] = {{0, 3, 7, 4}, {1, 0, 4, 5}, {2, 1, 5, 6}, {3, 2, 6, 7}};
+    for (i = 0; i < 4; i++) {
+        InitRoomFace(&rp->faces[i+2], 4);
+        for (int j = 0; j < 4; j++)
+            rp->faces[i+2].face_verts[j] = sideIndices[i][j];
+    }
 
-	//Set normals, textures and UVLs for face
-	for (i=0;i<10;i++) {
-		if (! ComputeFaceNormal(rp,i))
-			Int3();	//this is odd.  Get Matt!
-		rp->faces[i].tmap = i+1;
-		AssignDefaultUVsToRoomFace(rp,i);
-	}
+	// Set normals, textures, and UVLs for each face
+    for (i = 0; i < 6; i++) {
+      if (!ComputeFaceNormal(rp, i))
+        Int3(); // This is odd. Call debugger or log an error.
 
-	return rp;
+      rp->faces[i].tmap = i + 1; // Assign a texture map to each face, assuming each face has a unique texture
+
+      AssignDefaultUVsToRoomFace(rp, i); // Assign UV coordinates based on predefined patterns
+    }
+
+    return rp; // Return the pointer to the newly created room
 }
 
 #define DEFAULT_SCRIPT "//Empty script\xd\xa"
