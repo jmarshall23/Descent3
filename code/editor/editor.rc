@@ -83,7 +83,7 @@ IDR_EDITORTYPE          ICON    DISCARDABLE     "res\\editorDoc.ico"
 IDR_MAINFRAME           BITMAP  MOVEABLE PURE   "res\\Toolbar.bmp"
 IDR_SRVR_INPLACE        BITMAP  MOVEABLE PURE   "res\\IToolbar.bmp"
 IDB_MATTHEAD            BITMAP  DISCARDABLE     "res\\Matt2.bmp"
-IDB_D3SPLASH            BITMAP  DISCARDABLE     "res\\D3.bmp"
+IDB_D3SPLASH            BITMAP  DISCARDABLE     "res\\splash.bmp"
 IDB_NORTH               BITMAP  DISCARDABLE     "res\\north.bmp"
 IDB_EAST                BITMAP  DISCARDABLE     "res\\east.bmp"
 IDB_SOUTH               BITMAP  DISCARDABLE     "res\\south.bmp"
@@ -1895,8 +1895,8 @@ BEGIN
     PUSHBUTTON      "Edit Sounds",IDC_TERR_SOUND,7,476,42,17
 END
 
-IDD_D3SPLASH DIALOG DISCARDABLE  0, 0, 215, 149
-STYLE DS_CENTER | WS_POPUP | WS_BORDER
+IDD_D3SPLASH DIALOG DISCARDABLE  0, 0, 320, 200
+STYLE DS_CENTER | WS_POPUP
 FONT 8, "MS Sans Serif"
 BEGIN
 END

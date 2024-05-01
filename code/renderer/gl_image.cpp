@@ -822,7 +822,7 @@ void rend_DrawScaledChunkedBitmap(chunked_bitmap *chunk, int x, int y, int neww,
 void opengl_ResetCache(void) {
   if (OpenGL_cache_initted) {
     mem_free(OpenGL_lightmap_remap);
-//    mem_free(OpenGL_bitmap_remap);
+    mem_free(OpenGL_bitmap_remap);
     mem_free(OpenGL_lightmap_states);
     mem_free(OpenGL_bitmap_states);
     OpenGL_cache_initted = 0;

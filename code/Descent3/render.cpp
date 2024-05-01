@@ -1148,9 +1148,7 @@ void BuildRoomList(int start_room_num) {
 // mprintf((0,"N_render_rooms = %d ",N_render_rooms));
 
   // Add all external rooms to render list if that flag set
-  if (IsEditor()) {
-    int i;
-    room *rp;
+#ifdef EDITOR    
     for (i = 0, rp = Rooms; i <= MAX_ROOMS; i++, rp++) {
       if (rp->used) {
         for (int t = 0; t < rp->num_faces; t++)
@@ -1162,7 +1160,7 @@ void BuildRoomList(int start_room_num) {
         Rooms_visited[i] = 1;
       }
     }
-  }
+#endif
 
 }
 #ifdef EDITOR

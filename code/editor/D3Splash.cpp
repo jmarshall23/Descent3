@@ -132,42 +132,67 @@ void CD3Splash::PostNcDestroy()
 
 void CD3Splash::OnPaint() 
 {
-	CPaintDC dc(this);	// device context for painting
-	CDC sdc;			// source dc
-	CBitmap *bmp;
-	CFont *fnt;
-	CSize textdim;
-	BITMAP bm;
-	RECT uprect;
-	int x, y;
+  CPaintDC dc(this); // device context for painting
+  CDC sdc;           // source dc
+  CBitmap *bmp;
+  CFont fnt, smallFnt, rightTextFnt; // Two fonts, original and a smaller one
+  CFont *oldFont;
+  CSize textdim;
+  BITMAP bm;
+  RECT uprect;
+  int x, y;
 
-	GetClientRect(&uprect);
+  GetClientRect(&uprect);
 
-	m_SplashBmp.GetObject(sizeof(bm), &bm);
-	
-	sdc.CreateCompatibleDC(NULL);
-	bmp = sdc.SelectObject(&m_SplashBmp);
-	dc.StretchBlt(uprect.left+1,uprect.top+1,uprect.right-uprect.left-2,uprect.bottom-uprect.top-2, &sdc, 0,0,bm.bmWidth,bm.bmHeight,SRCCOPY); 
-	sdc.SelectObject(bmp);
+  m_SplashBmp.GetObject(sizeof(bm), &bm);
 
-	fnt = dc.SelectObject(GetFont());
-	dc.SetBkMode(TRANSPARENT);
-	dc.SetTextColor(RGB(255,255,255));
-			
-	textdim = dc.GetTextExtent(&m_TextLines[0][0], lstrlen(m_TextLines[0]));
+  sdc.CreateCompatibleDC(NULL);
+  bmp = sdc.SelectObject(&m_SplashBmp);
+  dc.StretchBlt(uprect.left, uprect.top, uprect.right - uprect.left, uprect.bottom - uprect.top, &sdc, 0, 0, bm.bmWidth,
+                bm.bmHeight, SRCCOPY);
+  sdc.SelectObject(bmp);
 
-	y = uprect.bottom-(4*(textdim.cy+2));
+  // Original font setup
+  fnt.CreateFont(18, 0, 0, 0, FW_BOLD, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                 DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, "Times New Roman");
+  oldFont = dc.SelectObject(&fnt);
+  dc.SetBkMode(TRANSPARENT);
+  dc.SetTextColor(RGB(255, 255, 255));
 
-	for (int r = 0; r < 3; r++)
-	{
-		if (lstrlen(m_TextLines[r])) {
-			textdim = dc.GetTextExtent(&m_TextLines[r][0], lstrlen(m_TextLines[r]));
-			x = ((uprect.right-uprect.left) - textdim.cx)/2;
-			dc.TextOut(x,y,&m_TextLines[r][0], lstrlen(m_TextLines[r]));
-			y += textdim.cy +2;
-		}
-	}
-	dc.SelectObject(fnt);
+  // Draw the main title text
+  const char *mainTitle = "Descent 3 Apex Editor";
+  textdim = dc.GetTextExtent(mainTitle, strlen(mainTitle));
+  y = uprect.bottom - (textdim.cy + 20); // Adjusted for padding
+  dc.TextOut(uprect.left + 10, y, mainTitle, strlen(mainTitle));
+
+  // Smaller font setup for copyright text, 30% smaller than previously, using Times New Roman
+  smallFnt.CreateFont(12, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                      DEFAULT_QUALITY, DEFAULT_PITCH | FF_ROMAN, "Times New Roman");
+  dc.SelectObject(&smallFnt);
+  dc.SetTextColor(RGB(128, 128, 128)); // Gray color
+
+  // Draw the copyright text
+ // const char *copyrightText = "(c) 2024 Justin Marshall";
+  char versionText[512];
+  sprintf(versionText, "Build: %s %s", __DATE__, __TIME__);
+  textdim = dc.GetTextExtent(versionText, strlen(versionText));
+  y += textdim.cy + 5; // Slight padding between lines
+  dc.TextOut(uprect.left + 10, y, versionText, strlen(versionText));
+
+   // Right text font setup
+  rightTextFnt.CreateFont(16, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS,
+                          CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_ROMAN, "Times New Roman");
+  dc.SelectObject(&rightTextFnt);
+  dc.SetTextColor(RGB(255, 255, 255)); // White color for the side text
+
+  const char *copyrightText = "(c) 2024 Justin Marshall";
+  textdim = dc.GetTextExtent(copyrightText, strlen(copyrightText));
+  x = uprect.right - textdim.cx - 10;          // Right align with padding
+  y = uprect.bottom - (textdim.cy + 20); // Adjusted for padding
+  dc.TextOut(x, y, copyrightText, strlen(copyrightText));
+
+  // Re-select the old font to clean up
+  dc.SelectObject(oldFont);
 }
 
 
