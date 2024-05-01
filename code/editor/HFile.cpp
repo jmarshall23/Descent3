@@ -451,7 +451,7 @@ room *CreateDefaultRoom()
       if (!ComputeFaceNormal(rp, i))
         Int3(); // This is odd. Call debugger or log an error.
 
-      rp->faces[i].tmap = i + 1; // Assign a texture map to each face, assuming each face has a unique texture
+      rp->faces[i].tmap = 2; // Assign a texture map to each face, assuming each face has a unique texture
 
       AssignDefaultUVsToRoomFace(rp, i); // Assign UV coordinates based on predefined patterns
     }

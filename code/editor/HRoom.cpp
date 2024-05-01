@@ -526,7 +526,7 @@ void AddRoom()
 			Int3();		//Bad!  Get Matt!
 
 		//Assign arbitrary texture map
-		rp->faces[i].tmap = i+1;
+		rp->faces[i].tmap = 2;
 	}
 #else
 	int texnum = Editor_state.GetCurrentTexture();
