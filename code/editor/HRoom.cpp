@@ -445,6 +445,21 @@ void SelectPrevFace()
 
 #define DEFAULT_ROOM_LENGTH  20.0
 
+// Function to check if the face is facing towards the camera
+// Returns 1 if facing towards the camera, 0 otherwise
+int IsFacingCamera(vector faceNormal) {
+  vector camDirection = Viewer_object->orient.rvec;
+
+  // Calculate dot product
+  float dotProduct = faceNormal.x * camDirection.x + faceNormal.y * camDirection.y + faceNormal.z * camDirection.z;
+
+  if (dotProduct > 0) {
+    return 1; // Facing the camera
+  } else {
+    return 0; // Facing away from the camera or parallel
+  }
+}
+
 // Adds a room at the current room/face.  The room is created by extuding out from the current face
 void AddRoom()
 {
@@ -474,8 +489,12 @@ void AddRoom()
 		return;
 	}
 
-	//Compute delta vector
-	room_delta = cfp->normal * -DEFAULT_ROOM_LENGTH;
+    // Compute delta vector based on whether the face is facing the camera
+    if (!IsFacingCamera(cfp->normal)) {
+        room_delta = cfp->normal * DEFAULT_ROOM_LENGTH; // Extrude away from the camera
+    } else {
+        room_delta = cfp->normal * -DEFAULT_ROOM_LENGTH; // Normal extrusion
+    }
 
 	//Set the vertices for the room
 	for (i=0;i<cnv;i++) {
