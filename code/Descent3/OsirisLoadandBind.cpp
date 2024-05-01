@@ -1039,8 +1039,13 @@ int Osiris_LoadLevelModule(char *module_name) {
   if (!mod_LoadModule(&OSIRIS_loaded_modules[loaded_id].mod, fullpath)) {
     // there was an error trying to load the module
     mprintf((0, "OSIRIS: Osiris_LoadLevelModule(%s): Unable to load module\n", module_name));
+#ifndef EDITOR
     Int3();
     return -3;
+#else
+    return -1;
+#endif
+   
   }
 
   // the module has loaded, attempt to import all the level functions

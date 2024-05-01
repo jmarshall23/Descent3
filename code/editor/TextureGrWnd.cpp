@@ -1955,6 +1955,7 @@ BOOL CTextureGrWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 // MFC file
 void ShowRadView()
 {
+#if 0
 	grSurface *cur_surf;
 	int i,t;
 
@@ -1989,7 +1990,7 @@ void ShowRadView()
 	tview->SendMessage (WM_PAINT);
 	
 	World_changed=1;
-
+#endif
 }
 
 

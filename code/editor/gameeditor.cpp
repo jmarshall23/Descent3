@@ -839,7 +839,7 @@ void EditorToGame()
 		flags = OEAPP_WINDOWED;
 		Descent = new oeWin32Application("D3 Game Window", 
 						flags, 
-						app_info.hinst);
+						GetModuleHandleA(NULL));
 		Descent->init();
 		set_size = true;
 		Descent->get_info(&app_info);

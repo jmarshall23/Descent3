@@ -1212,10 +1212,7 @@ void DoRadiosityForRooms ()
 		
 	mprintf ((0,"This radiosity run is using %d lightmaps.\n",Lightmaps_for_rad));
 	mprintf ((0,"Solving radiosity equation (press tilde key to stop)...\n"));
-	if (D3EditState.hemicube_radiosity)
-		DoRadiosityRun (SM_HEMICUBE,Light_surfaces,facecount);
-	else
-		DoRadiosityRun (SM_RAYCAST,Light_surfaces,facecount);
+	DoRadiosityRun(SM_RAYCAST, Light_surfaces, facecount);		
 	mprintf ((0,"Done solving radiosity - cleaning up...\n"));
 
 	surface_index=0;
