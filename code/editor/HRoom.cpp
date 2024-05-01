@@ -448,7 +448,7 @@ void SelectPrevFace()
 // Function to check if the face is facing towards the camera
 // Returns 1 if facing towards the camera, 0 otherwise
 int IsFacingCamera(vector faceNormal) {
-  vector camDirection = Viewer_object->orient.rvec;
+  vector camDirection = Viewer_object->orient.fvec;
 
   // Calculate dot product
   float dotProduct = faceNormal.x * camDirection.x + faceNormal.y * camDirection.y + faceNormal.z * camDirection.z;
@@ -490,7 +490,7 @@ void AddRoom()
 	}
 
     // Compute delta vector based on whether the face is facing the camera
-    if (!IsFacingCamera(cfp->normal)) {
+    if (IsFacingCamera(cfp->normal)) {
         room_delta = cfp->normal * DEFAULT_ROOM_LENGTH; // Extrude away from the camera
     } else {
         room_delta = cfp->normal * -DEFAULT_ROOM_LENGTH; // Normal extrusion
