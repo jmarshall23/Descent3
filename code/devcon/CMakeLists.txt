@@ -1,0 +1,5 @@
+SET (HEADERS )
+SET (CPPS
+		DevConsole.cpp)
+
+ADD_LIBRARY(devcon STATIC ${HEADERS} ${CPPS})
